@@ -42,6 +42,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this" {
+  provider          = aws.acc
   bucket = aws_s3_bucket.this.id
   rule {
     object_ownership = "BucketOwnerPreferred"
@@ -49,10 +50,11 @@ resource "aws_s3_bucket_ownership_controls" "this" {
 }
 
 resource "aws_s3_bucket_acl" "this" {
-  depends_on = [aws_s3_bucket_ownership_controls.this]
-
+  provider          = aws.acc
   bucket = aws_s3_bucket.this.id
   acl    = "private"
+
+  depends_on = [aws_s3_bucket_ownership_controls.this]
 }
 
 data "archive_file" "this" {
@@ -99,6 +101,7 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
+  provider          = aws.acc
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.image_extraction_lambda_function.arn
@@ -108,6 +111,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
+  provider          = aws.acc
   bucket      = aws_s3_bucket.this.id
   eventbridge = true
 
@@ -142,6 +146,7 @@ resource "aws_dynamodb_table" "images_metadata" {
 ########### triggering the step function ###########
 # create an eventbridge role
 resource "aws_iam_role" "sfn_event_role" {
+  provider          = aws.acc
   name_prefix = "sfn-event-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -173,6 +178,7 @@ resource "aws_iam_role" "sfn_event_role" {
 
 # create an event rule
 resource "aws_cloudwatch_event_rule" "sfn_rule" {
+  provider          = aws.acc
   name        = "sfn-rule"
   description = "Trigger Step Function"
 
@@ -194,6 +200,7 @@ EOF
 
 # define the step function as the target for the eventbridge rule
 resource "aws_cloudwatch_event_target" "sfn_target" {
+  provider          = aws.acc
   rule     = aws_cloudwatch_event_rule.sfn_rule.name
   arn      = aws_sfn_state_machine.sfn_state_machine.arn
   role_arn = aws_iam_role.sfn_event_role.arn
