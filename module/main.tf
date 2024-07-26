@@ -232,6 +232,7 @@ resource "aws_dynamodb_table" "images_metadata" {
   }
 }
 
+
 ####################################################
 ########### triggering the step function ###########
 # create an eventbridge role
