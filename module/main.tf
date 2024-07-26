@@ -86,7 +86,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
-  bucket = aws_s3_bucket.this.id
+  bucket                  = aws_s3_bucket.this.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -160,8 +160,8 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
   }
 
   tracing_configuration {
-        enabled = true
-    }
+    enabled = true
+  }
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
