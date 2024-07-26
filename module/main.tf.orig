@@ -1,0 +1,528 @@
+data "aws_caller_identity" "current" {
+  provider = aws.acc
+}
+
+data "aws_region" "current" {
+  provider = aws.acc
+}
+
+resource "aws_kms_key" "this" {
+  provider    = aws.acc
+  is_enabled  = true
+  description = "Key used for sqs encryption"
+  key_usage   = "ENCRYPT_DECRYPT"
+  policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
+    account_id = data.aws_caller_identity.current.account_id,
+    aws_region = data.aws_region.current.name
+  })
+  enable_key_rotation = true
+}
+
+# deploy sfn role
+resource "aws_iam_role" "sfn_role" {
+  provider           = aws.acc
+  name               = "${var.sfn_role_name}-${data.aws_region.current.name}"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "states.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# add iam policy for the sfn role
+data "aws_iam_policy_document" "sfn_role_policy" {
+  provider    = aws.acc
+  statement {
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+    resources = [
+      "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "logs:CreateLogDelivery",
+      "logs:GetLogDelivery",
+      "logs:UpdateLogDelivery",
+      "logs:DeleteLogDelivery",
+      "logs:ListLogDeliveries",
+      "logs:PutResourcePolicy",
+      "logs:DescribeResourcePolicies",
+      "logs:DescribeLogGroups"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+# attach sfn role polixy to sfn role
+resource "aws_iam_role_policy" "sfn_role_policy" {
+  provider   = aws.acc
+  name       = "sfn_role_policy"
+  role       = aws_iam_role.sfn_role.id
+  policy     = data.aws_iam_policy_document.sfn_role_policy.json
+  depends_on = [aws_iam_role.sfn_role]
+}
+
+# deploy aws_cloudwatch_log_group of my state machine
+resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
+  provider          = aws.acc
+  name_prefix       = "/aws/vendedlogs/states/"
+  retention_in_days = 60
+}
+
+# deploy aws step function
+resource "aws_sfn_state_machine" "sfn_state_machine" {
+  provider       = aws.acc
+  name       = var.sfn_name
+  role_arn   = aws_iam_role.sfn_role.arn
+  definition = templatefile("${path.module}/templates/statemachine.asl.json", {
+    account_id = data.aws_caller_identity.current.account_id,
+    aws_region = data.aws_region.current.name
+  })
+#   definition = <<EOF
+# {
+#   "Comment": "A Hello World example of the Amazon States Language using Pass states",
+#   "StartAt": "HelloWorld",
+#   "States": {
+#     "HelloWorld": {
+#       "Type": "Pass",
+#       "ResultAsJSON": {
+#         "greeting": "Hello World!"
+#       },
+#       "End": true
+#     }
+#   }
+# }
+# EOF
+  logging_configuration {
+    log_destination        = "${aws_cloudwatch_log_group.EnverusSFNLogGroup.arn}:*"
+    include_execution_data = true
+    level                  = "ALL"
+  }
+}
+
+resource "aws_kms_alias" "this" {
+  provider      = aws.acc
+  name          = "alias/${var.kms_alias_name}"
+  target_key_id = aws_kms_key.this.id
+}
+
+resource "random_id" "name" {
+  byte_length = 6
+  prefix      = "terraform-aws-lambda-dlq-"
+}
+
+resource "aws_sqs_queue" "dlq" {
+  provider          = aws.acc
+  name              = random_id.name.hex
+  kms_master_key_id = aws_kms_alias.this.name
+}
+
+# Setup VPC
+resource "aws_vpc" "vpc" {
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+}
+
+## Security Group 
+resource "aws_default_security_group" "private_lambda_0" {
+  provider = aws.acc
+  vpc_id   = aws_vpc.vpc.id
+}
+
+###### custome security group
+resource "aws_security_group" "allow_lambda_traffic" {
+  provider    = aws.acc
+  name        = "lambda_sg"
+  description = "Allow traffic to lambda"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+    cidr_blocks = [
+      var.vpc_cidr_block
+    ]
+    description = "Allows traffic from endpoints"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allows outbound traffic"
+  }
+}
+
+# Setup LOGGING VPC
+resource "aws_flow_log" "vpclogs" {
+  provider        = aws.acc
+  iam_role_arn    = aws_iam_role.vpclogs.arn
+  log_destination = aws_cloudwatch_log_group.vpclogs.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.vpc.id
+
+}
+
+resource "aws_kms_key" "this2" {
+  provider    = aws.acc
+  is_enabled  = true
+  description = "Key used for log group encryption"
+  key_usage   = "ENCRYPT_DECRYPT"
+  policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
+    account_id = data.aws_caller_identity.current.account_id,
+    aws_region = data.aws_region.current.name
+  })
+  enable_key_rotation = true
+}
+
+resource "aws_kms_alias" "this2" {
+  provider      = aws.acc
+  name          = "alias/${var.kms_alias_name2}"
+  target_key_id = aws_kms_key.this2.id
+}
+
+resource "random_id" "name2" {
+  byte_length = 6
+  prefix      = "terraform-aws-log-group-"
+}
+
+resource "aws_cloudwatch_log_group" "vpclogs" {
+  provider          = aws.acc
+  name              = random_id.name2.hex
+  retention_in_days = 365
+  kms_key_id        = aws_kms_alias.this2.arn
+}
+
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "vpclogs" {
+  name               = "vpclogsrole"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+
+data "aws_iam_policy_document" "vpclogs" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+
+    resources = [aws_flow_log.vpclogs.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "vpclogs" {
+  name   = "vpclogspolicy"
+  role   = aws_iam_role.vpclogs.id
+  policy = data.aws_iam_policy_document.vpclogs.json
+}
+
+# Setup Subnet
+resource "aws_subnet" "subnet_private" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.subnet_private_cidr_block
+  map_public_ip_on_launch = false
+
+  depends_on = [
+    aws_vpc.vpc
+  ]
+}
+
+## Route Tables
+
+resource "aws_route_table" "private_0" {
+  vpc_id = aws_vpc.vpc.id
+
+  depends_on = [
+    aws_vpc.vpc
+  ]
+
+}
+
+## Route Table <-> Subnet associations
+
+resource "aws_route_table_association" "private_0" {
+  subnet_id      = aws_subnet.subnet_private.id
+  route_table_id = aws_route_table.private_0.id
+}
+
+
+resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment_lambda_vpc_access_execution" {
+  role       = aws_iam_role.image_extraction_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
+resource "aws_lambda_function" "tag_aws_resources_lambda_function" {
+  provider                       = aws.acc
+  filename                       = data.archive_file.this.output_path
+  function_name                  = "image-extraction"
+  role                           = aws_iam_role.image_extraction_lambda_role.arn
+  handler                        = "image-extraction.lambda_handler"
+  source_code_hash               = data.archive_file.this.output_base64sha256
+  runtime                        = "python3.8"
+  timeout                        = "120"
+  reserved_concurrent_executions = 100
+
+  tracing_config {
+    mode = "Active"
+  }
+  dead_letter_config {
+    target_arn = aws_sqs_queue.dlq.arn
+  }
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.subnet_private.id]
+    security_group_ids = [aws_security_group.allow_lambda_traffic.id]
+  }
+}
+
+# Service Endpoint for SQS
+resource "aws_vpc_endpoint" "sqs" {
+  provider            = aws.acc
+  private_dns_enabled = true
+  service_name        = join(".", ["com.amazonaws", data.aws_region.current.name, "sqs"])
+  vpc_endpoint_type   = "Interface"
+  vpc_id              = aws_vpc.vpc.id
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  # Interface types get this. It connects the Endpoint to a subnet
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE SQS Service Endpoint to the SUBNET
+resource "aws_vpc_endpoint_subnet_association" "sqs_assoc" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.sqs.id
+}
+
+# Service Endpoint for logs
+resource "aws_vpc_endpoint" "logs" {
+  provider            = aws.acc
+  private_dns_enabled = true
+  service_name        = join(".", ["com.amazonaws", data.aws_region.current.name, "logs"])
+  vpc_endpoint_type   = "Interface"
+  vpc_id              = aws_vpc.vpc.id
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  # Interface types get this. It connects the Endpoint to a subnet
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE LOGS Service Endpoint to the SUBNET
+resource "aws_vpc_endpoint_subnet_association" "logs_assoc" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.logs.id
+}
+
+
+# Service Endpoint for EC2
+resource "aws_vpc_endpoint" "ec2" {
+  provider          = aws.acc
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = join(".", ["com.amazonaws", data.aws_region.current.name, "ec2"])
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  private_dns_enabled = true
+
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE EC2 Service Endpoint to the SUBNET
+resource "aws_vpc_endpoint_subnet_association" "ec2" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.ec2.id
+}
+
+# Service Endpoint for ebs_volume
+resource "aws_vpc_endpoint" "ebs_volume" {
+  provider          = aws.acc
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = join(".", ["com.amazonaws", data.aws_region.current.name, "ebs"])
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  private_dns_enabled = true
+
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE ebs_volume Service Endpoint to the SUBNET
+resource "aws_vpc_endpoint_subnet_association" "ebs_volume" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.ebs_volume.id
+}
+
+# Service Endpoint for RDS
+resource "aws_vpc_endpoint" "rds" {
+  provider          = aws.acc
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = join(".", ["com.amazonaws", data.aws_region.current.name, "rds"])
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  private_dns_enabled = true
+
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE rds Service Endpoint to the SUBNET
+resource "aws_vpc_endpoint_subnet_association" "rds" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.rds.id
+}
+
+
+# Service Endpoint for elasticloadbalancing
+resource "aws_vpc_endpoint" "elasticloadbalancing" {
+  provider          = aws.acc
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = join(".", ["com.amazonaws", data.aws_region.current.name, "elasticloadbalancing"])
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.allow_lambda_traffic.id
+  ]
+
+  private_dns_enabled = true
+
+  subnet_ids = [
+    aws_subnet.subnet_private.id
+  ]
+}
+
+# ASSOCIATE rds Service Endpoint to the elasticloadbalancing
+resource "aws_vpc_endpoint_subnet_association" "elasticloadbalancing" {
+  subnet_id       = aws_subnet.subnet_private.id
+  vpc_endpoint_id = aws_vpc_endpoint.elasticloadbalancing.id
+}
+
+
+data "archive_file" "this" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda/"
+  output_path = "${path.module}/output/image-extraction.zip"
+}
+
+
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  provider      = aws.acc
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tag_aws_resources_lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.aws-api-manual-invoke.arn
+}
+
+
+resource "aws_cloudwatch_event_rule" "aws-api-manual-invoke" {
+  provider    = aws.acc
+  name        = "aws-api-manual-invoke"
+  description = "Capture AWS Ec2 RunInstances, CreateVolume API trigged manually for tagging"
+
+  event_pattern = <<PATTERN
+    {
+      "source": [
+        "aws.ec2",
+        "aws.rds",
+        "aws.elasticloadbalancing"
+      ],
+      "detail-type": [
+        "AWS API Call via CloudTrail"
+      ],
+      "detail": {
+        "eventSource": [
+          "ec2.amazonaws.com",
+          "rds.amazonaws.com",
+          "elasticloadbalancing.amazonaws.com"
+        ],
+        "eventName": [
+          "RunInstances",
+          "CreateVolume",
+          "CreateDBInstance",
+          "CreateDBCluster",
+          "CreateLoadBalancer",
+          "CreateTargetGroup"
+        ]
+      }
+    }
+PATTERN
+}
+
+resource "aws_cloudwatch_event_target" "aws-api-manual-invoke_lambda_target" {
+  provider  = aws.acc
+  rule      = aws_cloudwatch_event_rule.aws-api-manual-invoke.name
+  target_id = "Invoke-Lambda"
+  arn       = aws_lambda_function.tag_aws_resources_lambda_function.arn
+}
