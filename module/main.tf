@@ -24,20 +24,20 @@ resource "aws_kms_alias" "this" {
   target_key_id = aws_kms_key.this.id
 }
 
-resource "random_id" "name" {
+resource "random_id" "this" {
   byte_length = 6
   prefix      = "terraform-aws-"
 }
 
 resource "aws_sqs_queue" "dlq" {
   provider          = aws.acc
-  name              = random_id.name.hex
+  name              = random_id.this.hex
   kms_master_key_id = aws_kms_alias.this.name
 }
 
 resource "aws_s3_bucket" "this" {
   provider      = aws.acc
-  bucket        = "sfn-bucket-${random_id.name.hex}"
+  bucket        = "sfn-bucket-${random_id.this.hex}"
   force_destroy = true
 }
 
