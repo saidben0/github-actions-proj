@@ -41,6 +41,65 @@ resource "aws_s3_bucket" "this" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.this.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+    id     = "log"
+    status = "Enabled"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 90
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# resource "aws_s3_bucket_logging" "this" {
+#   bucket = aws_s3_bucket.this.id
+
+#   target_bucket = aws_s3_bucket.log_bucket.id
+#   target_prefix = "log/"
+# }
+
 resource "aws_s3_bucket_ownership_controls" "this" {
   provider = aws.acc
   bucket   = aws_s3_bucket.this.id
@@ -85,7 +144,8 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
 resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
   provider          = aws.acc
   name_prefix       = "/aws/vendedlogs/states/"
-  retention_in_days = 60
+  kms_key_id        = aws_kms_key.this.arn
+  retention_in_days = 365
 }
 
 resource "aws_sfn_state_machine" "sfn_state_machine" {
@@ -98,6 +158,10 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
     include_execution_data = true
     level                  = "ALL"
   }
+
+  tracing_configuration {
+        enabled = true
+    }
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
@@ -134,6 +198,15 @@ resource "aws_dynamodb_table" "images_metadata" {
   attribute {
     name = "ImageId"
     type = "S"
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+
+  server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.this.arn
   }
 
   tags = {
