@@ -199,7 +199,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "${aws_s3_object.inputs.key}"
+    filter_prefix       = aws_s3_object.inputs.key
   }
 
   depends_on = [aws_lambda_permission.allow_bucket]
