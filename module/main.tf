@@ -120,6 +120,19 @@ resource "aws_s3_bucket_acl" "this" {
   depends_on = [aws_s3_bucket_ownership_controls.this]
 }
 
+resource "aws_s3_object" "inputs" {
+  bucket = aws_s3_bucket.this.id
+  key    = "inputs/"
+  source = "/dev/null"
+}
+
+resource "aws_s3_object" "outputs" {
+  bucket = aws_s3_bucket.this.id
+  key    = "outputs/"
+  source = "/dev/null"
+}
+
+
 data "archive_file" "this" {
   type        = "zip"
   source_dir  = "${path.module}/lambda/"
@@ -186,7 +199,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "input/"
+    filter_prefix       = "inputs/"
   }
 
   depends_on = [aws_lambda_permission.allow_bucket]
