@@ -122,13 +122,13 @@ resource "aws_s3_bucket_acl" "this" {
 
 resource "aws_s3_object" "inputs" {
   bucket = aws_s3_bucket.this.id
-  key    = "inputs/"
+  key    = "inputs/dir1/dir2/"
   source = "/dev/null"
 }
 
 resource "aws_s3_object" "outputs" {
   bucket = aws_s3_bucket.this.id
-  key    = "outputs/"
+  key    = "outputs/dir1/dir2/"
   source = "/dev/null"
 }
 
