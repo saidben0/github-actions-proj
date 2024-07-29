@@ -1,0 +1,62 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        
+      # - name: Set up Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: 1.4.0  # Specify the version of Terraform you want to use
+
+      # - name: Cache Terraform providers
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ~/.terraform.d/plugin-cache
+      #     key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-terraform-
+      
+      - name: Terraform Version
+        run: terraform -version
+        
+      - name: Terraform Init
+        run: |
+          pwd && cd dev-use1/ && ls -al
+          rm -rf .terraform*
+          terraform init
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: |
+          pwd && cd dev-use1/ && ls -al
+          terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          pwd && cd dev-use1/ && ls -al
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        # env:
+        #   TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}  # Example of passing a secret variable
+
+      - name: Clean up
+        run: terraform workspace select default || terraform workspace new default
