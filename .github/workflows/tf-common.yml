@@ -1,0 +1,80 @@
+name: Terraform Deploy
+
+on:
+  workflow_call:
+    inputs:
+      aws-env:
+        required: true
+        type: string
+    # secrets:
+    #   token:
+    #     required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: development
+    
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+      - name: Print Workflow Inputs
+        run: |
+          echo ${{ inputs.aws-env }}
+      
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      # Install Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.2
+      
+      # - name: Cache Terraform providers
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ~/.terraform.d/plugin-cache
+      #     key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-terraform-
+      
+      - name: Terraform Version
+        run: terraform -version
+        
+      - name: Terraform Init
+        run: |
+          cd ${{ inputs.aws-env }}/
+          rm -rf .terraform*
+          terraform init
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: |
+          cd ${{ inputs.aws-env }}/
+          terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd ${{ inputs.aws-env }}/
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply (Run only on merged PR to main)
+        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+        # if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd ${{ inputs.aws-env }}/
+          terraform apply -auto-approve tfplan
+        # env:
+        #   TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}  # Example of passing a secret variable
+
+      - name: Clean up
+        run: terraform workspace select default || terraform workspace new default

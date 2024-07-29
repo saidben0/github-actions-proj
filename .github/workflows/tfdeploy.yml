@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: Deploy Infra to AWS Env
 
 on:
   push:
@@ -10,71 +10,6 @@ on:
 
 jobs:
   dev-use1:
-    runs-on: ubuntu-latest
-    environment: development
-    
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-    
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.2
-          # cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      
-      # - name: Set up Terraform
-      #   uses: hashicorp/setup-terraform@v2
-      #   with:
-      #     terraform_version: 1.4.0  # Specify the version of Terraform you want to use
-
-      # - name: Cache Terraform providers
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       ~/.terraform.d/plugin-cache
-      #     key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-terraform-
-      
-      - name: Terraform Version
-        run: terraform -version
-        
-      - name: Terraform Init
-        run: |
-          cd ${{ github.job }}/
-          rm -rf .terraform*
-          terraform init
-
-      - name: Terraform Format
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        run: |
-          cd ${{ github.job }}/
-          terraform validate
-
-      - name: Terraform Plan
-        id: plan
-        run: |
-          cd ${{ github.job }}/
-          terraform plan -out=tfplan
-
-      - name: Terraform Apply (Run only on merged PR to main)
-        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-        # if: github.event_name == 'pull_request' && github.base_ref == 'main'
-        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          cd ${{ github.job }}/
-          terraform apply -auto-approve tfplan
-        # env:
-        #   TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}  # Example of passing a secret variable
-
-      - name: Clean up
-        run: terraform workspace select default || terraform workspace new default
+    uses: ./.github/workflows/tf-common.yml
+    with:
+      aws-env: dev-use1
