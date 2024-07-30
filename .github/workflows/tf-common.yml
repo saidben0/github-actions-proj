@@ -80,7 +80,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+        # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         run: |
           cd ${{ inputs.aws-env }}/
           terraform plan -out=tfplan
