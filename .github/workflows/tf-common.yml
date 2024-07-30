@@ -16,10 +16,6 @@ on:
     #   token:
     #     required: true
 
-# env:
-#   AWS_REGION: ${{ inputs.AWS_REGION }}
-#   IAM_ROLE_ARN: ${{ inputs.IAM_ROLE_ARN }}
-
 permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read    # This is required for actions/checkout
