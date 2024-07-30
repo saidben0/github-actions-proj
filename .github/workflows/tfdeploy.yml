@@ -3,10 +3,10 @@ name: Deploy Infra to AWS Env
 on:
   push:
     branches:
-      - state
+      - dev
   pull_request:
     branches:
-      - state
+      - dev
 
 # env:
 #   AWS_ENV: dev-use1 # the dir where the tf code of the env, to be deployed into, resides
