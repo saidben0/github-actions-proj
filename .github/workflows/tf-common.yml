@@ -84,7 +84,7 @@ jobs:
         # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         run: |
           cd ${{ inputs.aws-env }}/
-          terraform plan -var 'IAM_ROLE_ARN = ${{ env.IAM_ROLE_ARN }}' -out tfplan
+          terraform plan -var 'IAM_ROLE_ARN=${{ env.IAM_ROLE_ARN }}' -out tfplan
           # terraform plan -out=tfplan
 
       - name: Terraform Apply (Run only on merged PR to main)
