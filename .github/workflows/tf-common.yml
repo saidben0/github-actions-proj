@@ -34,7 +34,9 @@ jobs:
       - name: Print Workflow Inputs
         run: |
           echo ${{ inputs.aws-env }}
-      
+          echo ${{ inputs.AWS_REGION }}
+          echo ${{ inputs.IAM_ROLE_ARN }}
+
       - name: Check out repository code
         uses: actions/checkout@v4
       
@@ -42,8 +44,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ inputs.IAM_ROLE_ARN }}
-          role-session-name: samplerolesession
           aws-region: ${{ inputs.AWS_REGION }}
+          # role-session-name: samplerolesession
       
       - name: check current IAM Role
         run: aws sts get-caller-identity
