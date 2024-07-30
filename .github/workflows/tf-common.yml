@@ -36,6 +36,8 @@ jobs:
         with:
           role-to-assume: ${{ inputs.IAM_ROLE_ARN }}
           aws-region: ${{ inputs.AWS_REGION }}
+          role-session-name: github-actions
+          role-duration-seconds: 3600
       
       - name: check current IAM Role
         run: aws sts get-caller-identity
