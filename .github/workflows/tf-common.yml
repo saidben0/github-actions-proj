@@ -42,6 +42,9 @@ jobs:
           role-to-assume: arn:aws:iam::155185327318:role/github-actions-role
           role-session-name: samplerolesession
           aws-region: ${{ env.AWS_REGION }}
+      
+      - name: check current IAM Role
+        run: aws sts get-caller-identity
 
       # Install Terraform CLI
       - name: Setup Terraform
