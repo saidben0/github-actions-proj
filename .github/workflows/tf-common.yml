@@ -6,14 +6,19 @@ on:
       aws-env:
         required: true
         type: string
+      AWS_REGION:
+        required: true
+        type: string
+      IAM_ROLE_ARN:
+        required: true
+        type: string
     # secrets:
     #   token:
     #     required: true
 
-env:
-  # BUCKET_NAME : "<example-bucket-name>"
-  AWS_REGION : "us-east-1"
-  IAM_ROLE_ARN: "arn:aws:iam::155185327318:role/github-actions-role"
+# env:
+#   AWS_REGION: ${{ inputs.AWS_REGION }}
+#   IAM_ROLE_ARN: ${{ inputs.IAM_ROLE_ARN }}
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -40,9 +45,9 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::155185327318:role/github-actions-role
+          role-to-assume: ${{ inputs.IAM_ROLE_ARN }}
           role-session-name: samplerolesession
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ inputs.AWS_REGION }}
       
       - name: check current IAM Role
         run: aws sts get-caller-identity
@@ -81,11 +86,9 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         run: |
           cd ${{ inputs.aws-env }}/
           terraform plan -out=tfplan
-          # terraform plan -var 'IAM_ROLE_ARN=${{ env.IAM_ROLE_ARN }}' -out tfplan
 
       - name: Terraform Apply (Run only on merged PR to main)
         if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
