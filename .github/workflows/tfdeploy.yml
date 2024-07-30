@@ -8,15 +8,18 @@ on:
     branches:
       - state
 
-env:
-  AWS-ENV: dev-use1 # the dir where the tf code of the env, to be deployed into, resides
-  AWS_REGION: us-east-1
-  IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
+# env:
+#   AWS_ENV: dev-use1 # the dir where the tf code of the env, to be deployed into, resides
+#   AWS_REGION: us-east-1
+#   IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
 
 jobs:
   dev-use1:
     uses: ./.github/workflows/tf-common.yml
     with:
-      aws-env: ${{ env.AWS-ENV }}
-      AWS_REGION: ${{ env.AWS_REGION }}
-      IAM_ROLE_ARN: ${{ env.IAM_ROLE_ARN }}
+      # aws-env: ${{ env.AWS_ENV }}
+      aws-env: dev-use1
+      # AWS_REGION: ${{ env.AWS_REGION }}
+      AWS_REGION: us-east-1
+      # IAM_ROLE_ARN: ${{ env.IAM_ROLE_ARN }}
+      IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
