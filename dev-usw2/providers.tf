@@ -1,7 +1,7 @@
 provider "aws" {
-  alias = "use1"
+  alias = "usw2"
   # assume_role {
   #   role_arn = var.IAM_ROLE_ARN
   # }
-  region = "us-east-1"
+  region = "us-west-2"
 }
