@@ -34,15 +34,16 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       
-      - name: configure aws credentials
+      - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ inputs.iam-role-arn }}
           aws-region: ${{ inputs.aws-region }}
           role-session-name: github-actions
           role-duration-seconds: 3600
+          audience: sts.amazonaws.com
       
-      - name: check current IAM Role
+      - name: Check Current IAM Role
         run: aws sts get-caller-identity
 
       - name: Setup Terraform
