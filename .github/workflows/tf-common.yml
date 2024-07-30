@@ -12,9 +12,6 @@ on:
       IAM_ROLE_ARN:
         required: true
         type: string
-    # secrets:
-    #   token:
-    #     required: true
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -31,12 +28,6 @@ jobs:
         shell: bash
     
     steps:
-      - name: Print Workflow Inputs
-        run: |
-          echo ${{ inputs.aws-env }}
-          echo ${{ inputs.AWS_REGION }}
-          echo ${{ inputs.IAM_ROLE_ARN }}
-
       - name: Check out repository code
         uses: actions/checkout@v4
       
@@ -45,7 +36,6 @@ jobs:
         with:
           role-to-assume: ${{ inputs.IAM_ROLE_ARN }}
           aws-region: ${{ inputs.AWS_REGION }}
-          # role-session-name: samplerolesession
       
       - name: check current IAM Role
         run: aws sts get-caller-identity
@@ -89,7 +79,7 @@ jobs:
           terraform plan -out=tfplan
 
       - name: Terraform Apply (Run only on merged PR to main)
-        # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         # if: github.event_name == 'pull_request' && github.base_ref == 'main'
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
