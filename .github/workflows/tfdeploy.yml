@@ -3,23 +3,16 @@ name: Deploy Infra to AWS Env
 on:
   push:
     branches:
-      - dev
+      - env-dir
   pull_request:
     branches:
       - dev
-
-# env:
-#   AWS_ENV: dev-use1 # the dir where the tf code of the env, to be deployed into, resides
-#   AWS_REGION: us-east-1
-#   IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
 
 jobs:
   dev-use1:
     uses: ./.github/workflows/tf-common.yml
     with:
-      # aws-env: ${{ env.AWS_ENV }}
-      aws-env: dev-use1
-      # AWS_REGION: ${{ env.AWS_REGION }}
-      AWS_REGION: us-east-1
-      # IAM_ROLE_ARN: ${{ env.IAM_ROLE_ARN }}
-      IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
+      aws-env: development
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
+      iam-role-arn: arn:aws:iam::155185327318:role/github-actions-role
