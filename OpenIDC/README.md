@@ -2,8 +2,8 @@
 
 ### 1- Add the identity provider into your AWS account
 1- In AWS console, go to `IAM` > `Identity Providers` then click on `Add Provider`
-    >> For the provider URL: Use `https://token.actions.githubusercontent.com`
-    >> For the "Audience": Use `sts.amazonaws.com` if you are using the official action.
+    > For the provider URL: Use `https://token.actions.githubusercontent.com`
+    > For the "Audience": Use `sts.amazonaws.com` if you are using the official action.
 
 ### 2- Add the IAM role which uses OpenID Connect `github-actions-role`
 1- Attach this `Trust Relationship` to the role 
@@ -29,7 +29,13 @@
 ```
 
 2- Add this `AdministratorAccess` policy to the role for `TESTING` purposes
-    > You need to restrict the access as best practices
+    > You need to `RESTRICT` the access of this role as a best practice
+
+
+## GitHub repo Workflow permissions
+In your GitHub repo, make sure you grant `read and write permissions` to your github actions permissions.
+  > `Settings` > Expand `Actions` on the left > `General` > Under `Workflow Permissions`, tick `Read and Write permissions`
+
 
 ## Use OpenID Connect in your github actions pipeline
 ```yaml
@@ -63,3 +69,7 @@ jobs:
       - name: Check Current IAM Role
         run: aws sts get-caller-identity
 ```
+
+References:
+  - [Configuring OpenID Connect in Amazon Web Services](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
+  - 
