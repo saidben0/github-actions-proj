@@ -1,4 +1,4 @@
-## OpenID Connect config
+# [Configuring OpenID Connect in Amazon Web Services](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
 
 ### 1- Add the identity provider into your AWS account
 1- In AWS console, go to `IAM` > `Identity Providers` then click on `Add Provider`
@@ -69,7 +69,3 @@ jobs:
       - name: Check Current IAM Role
         run: aws sts get-caller-identity
 ```
-
-References:
-  - [Configuring OpenID Connect in Amazon Web Services](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
-  - 
