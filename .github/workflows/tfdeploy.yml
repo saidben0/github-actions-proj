@@ -9,7 +9,8 @@ on:
       - dev
 
 env:
-  AWS_ENV: development # env variable
+  # AWS_ENV: development # env variable
+  AWS_ENV: staging # env variable
   AWS_ENV_DIR: dev-use1 # env variable: the dir where the tf code of the env, to be deployed into, resides
   AWS_REGION: us-east-1 # env variable
   IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role # env variable
