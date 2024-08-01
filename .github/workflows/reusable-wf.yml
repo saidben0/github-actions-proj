@@ -12,9 +12,6 @@ on:
       aws-region:
         required: true
         type: string
-      iam-role-arn:
-        required: true
-        type: string
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -37,7 +34,8 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ inputs.iam-role-arn }}
+          # role-to-assume: ${{ vars.IAM_ROLE_ARN }} # ensure this var is added under `development` env in github
+          role-to-assume: arn:aws:iam::155185327318:role/github-actions-role
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
