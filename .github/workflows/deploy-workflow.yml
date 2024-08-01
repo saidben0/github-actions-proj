@@ -14,28 +14,30 @@ on:
 jobs:
   Staging:
     if: ${{ inputs.environment == 'staging' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Deploy to Staging
-        run: echo "Deploying to Staging Environment"
+    uses: ./.github/workflows/reusable-wf.yml
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy to Staging
+    #     run: echo "Deploying to Staging Environment"
 
   Review:
     if: ${{ inputs.environment == 'review' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Deploy for Review
-        run: echo "Deploying for Review Environment"
+    uses: ./.github/workflows/reusable-wf.yml
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy for Review
+    #     run: echo "Deploying for Review Environment"
 
   Production:
     if: ${{ inputs.environment == 'production' }}
     needs: Staging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Deploy to Production
-        run: echo "Deploying to Production Environment"
+    uses: ./.github/workflows/reusable-wf.yml
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy to Production
+    #     run: echo "Deploying to Production Environment"
