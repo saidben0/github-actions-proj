@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - refactor
+      - dev
 
 env:
   AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
