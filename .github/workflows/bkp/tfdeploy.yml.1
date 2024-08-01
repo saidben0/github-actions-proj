@@ -12,7 +12,7 @@ env:
   AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
   AWS_ENV_DIR: dev-use1 # set as env var the dir where the tf code of the env, to be deployed into, resides
   AWS_REGION: us-east-1 # set as env var (Settings > Environments > Environment variables > Add variable)
-  IAM_ROLE_ARN: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
+  IAM_ROLE_ARN_DEV: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
 
 jobs:
   vars:
@@ -21,7 +21,7 @@ jobs:
       aws-env-out: ${{ env.AWS_ENV }}
       aws-env-dir-out: ${{ env.AWS_ENV_DIR }}
       aws-region-out: ${{ env.AWS_REGION }}
-      iam-role-arn-out: ${{ env.IAM_ROLE_ARN }}
+      iam-role-arn-out: ${{ env.IAM_ROLE_ARN_DEV }}
     steps:
       - run: echo "Exposing env vars"
 

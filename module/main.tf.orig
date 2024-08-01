@@ -185,7 +185,7 @@ resource "aws_security_group" "allow_lambda_traffic" {
 # Setup LOGGING VPC
 resource "aws_flow_log" "vpclogs" {
   provider        = aws.acc
-  iam_role_arn    = aws_iam_role.vpclogs.arn
+  IAM_ROLE_ARN_DEV    = aws_iam_role.vpclogs.arn
   log_destination = aws_cloudwatch_log_group.vpclogs.arn
   traffic_type    = "ALL"
   vpc_id          = aws_vpc.vpc.id
