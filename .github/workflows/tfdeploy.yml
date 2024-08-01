@@ -15,21 +15,36 @@ env:
   IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
 
 jobs:
-  vars:
-    runs-on: ubuntu-22.04
-    outputs:
-      aws-env-out: ${{ env.AWS_ENV }}
-      aws-env-dir-out: ${{ env.AWS_ENV_DIR }}
-      aws-region-out: ${{ env.AWS_REGION }}
-      iam-role-arn-out: ${{ env.IAM_ROLE_ARN }}
-    steps:
-      - run: echo "Exposing env vars"
+  # vars:
+  #   runs-on: ubuntu-22.04
+  #   outputs:
+  #     aws-env-out: ${{ env.AWS_ENV }}
+  #     aws-env-dir-out: ${{ env.AWS_ENV_DIR }}
+  #     aws-region-out: ${{ env.AWS_REGION }}
+  #     iam-role-arn-out: ${{ env.IAM_ROLE_ARN }}
+  #   steps:
+  #     - run: echo "Exposing env vars"
 
+  # dev-use1:
+  #   needs: vars
+  #   uses: ./.github/workflows/tf-common.yml
+  #   with:
+  #     aws-env: ${{ needs.vars.outputs.aws-env-out }}
+  #     aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
+  #     aws-region: ${{ needs.vars.outputs.aws-region-out }}
+  #     iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
   dev-use1:
-    needs: vars
-    uses: ./.github/workflows/tf-common.yml
-    with:
-      aws-env: ${{ needs.vars.outputs.aws-env-out }}
-      aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
-      aws-region: ${{ needs.vars.outputs.aws-region-out }}
-      iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_ENV: development
+      AWS_ENV_DIR: dev-use1
+      AWS_REGION: us-east-1
+      IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
+
+    steps:
+      - uses: ./.github/workflows/tf-common.yml
+        with:
+          aws-env: ${{ env.AWS_ENV }}
+          aws-env-dir: ${{ env.AWS_ENV_DIR }}
+          aws-region: ${{ env.AWS_REGION }}
+          iam-role-arn: ${{ env.IAM_ROLE_ARN }}
