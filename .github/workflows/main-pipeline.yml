@@ -24,6 +24,6 @@ jobs:
     needs: build
     uses: ./.github/workflows/deploy-workflow.yml
     with:
-      environment: 'production' # Change this to 'review' or 'production' as needed
+      environment: 'staging' # Change this to 'review' or 'production' as needed
     # secrets:
     #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
