@@ -14,7 +14,7 @@ output "lambda_role_name" {
   value = aws_iam_role.image_extraction_lambda_role.name
 }
 
-output "lambda_iam_role_arn" {
+output "lambda_IAM_ROLE_ARN_DEV" {
   value = aws_iam_role.image_extraction_lambda_role.arn
 }
 

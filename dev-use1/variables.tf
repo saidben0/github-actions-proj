@@ -1,3 +1,3 @@
-# variable "IAM_ROLE_ARN" {
+# variable "IAM_ROLE_ARN_DEV" {
 #   type = string
 # }
