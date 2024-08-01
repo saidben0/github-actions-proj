@@ -1,0 +1,14 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  Deploy:
+    uses: ./.github/workflows/deploy-workflow.yml
+    with:
+      environment: 'staging' # Change this to 'review' or 'production' as needed
+    # secrets:
+    #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
