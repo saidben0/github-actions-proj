@@ -1,1 +1,1 @@
-# first-genai-proj
+# github-actions-proj
