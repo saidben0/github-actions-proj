@@ -3,7 +3,7 @@ name: Deploy Infra to AWS Env
 on:
   push:
     branches:
-      - env
+      - env2
   pull_request:
     branches:
       - dev
