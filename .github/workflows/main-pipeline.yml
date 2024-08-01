@@ -5,53 +5,40 @@ on:
     branches:
       - dev
 
-# env:
-#   AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
-#   AWS_ENV_DIR: dev-use1 # set as env var the dir where the tf code of the env, to be deployed into, resides
-#   AWS_REGION: us-east-1 # set as env var (Settings > Environments > Environment variables > Add variable)
-#   IAM_ROLE_ARN: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
+env:
+  AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
+  AWS_ENV_DIR: dev-use1 # set as env var the dir where the tf code of the env, to be deployed into, resides
+  AWS_REGION: us-east-1 # set as env var (Settings > Environments > Environment variables > Add variable)
+  IAM_ROLE_ARN: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
 
-
-# jobs:
-#   vars:
-#     runs-on: ubuntu-22.04
-#     outputs:
-#       aws-env-out: ${{ env.AWS_ENV }}
-#       aws-env-dir-out: ${{ env.AWS_ENV_DIR }}
-#       aws-region-out: ${{ env.AWS_REGION }}
-#       iam-role-arn-out: ${{ env.IAM_ROLE_ARN }}
-#     steps:
-#       - run: echo "Exposing env vars"
-
-#   dev-use1:
-#     needs: vars
-#     uses: ./.github/workflows/reusable-wf.yml
-#     with:
-#       environment: ${{ needs.vars.outputs.aws-env-out }} # Change this to 'review' or 'production' as needed
-#       aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
-#       aws-region: ${{ needs.vars.outputs.aws-region-out }}
-#       iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
-#     # secrets:
-#     #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#   dev-usw2:
-#     # needs: vars
-#     uses: ./.github/workflows/reusable-wf.yml
-#     with:
-#       environment: development # Change this to 'review' or 'production' as needed
-#       aws-env-dir: dev-use1
-#       aws-region: us-east-1
-#       iam-role-arn: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: development # Specify the environment to access its variables
+  vars:
+    runs-on: ubuntu-22.04
+    outputs:
+      aws-env-out: ${{ env.AWS_ENV }}
+      aws-env-dir-out: ${{ env.AWS_ENV_DIR }}
+      aws-region-out: ${{ env.AWS_REGION }}
+      iam-role-arn-out: ${{ env.IAM_ROLE_ARN }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Deploy to Production
-        run: |
-          echo "Deploying to Production"
-          echo "API_KEY is ${{ secrets.IAM_ROLE_ARN }}"
-          echo "ENV_VARIABLE is ${{ vars.AWS_REGION }}"
+      - run: echo "Exposing env vars"
+
+  dev-use1:
+    needs: vars
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      environment: ${{ needs.vars.outputs.aws-env-out }} # Change this to 'review' or 'production' as needed
+      aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
+      aws-region: ${{ needs.vars.outputs.aws-region-out }}
+      iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
+    # secrets:
+    #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dev-usw2:
+    # needs: vars
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      environment: development # Change this to 'review' or 'production' as needed
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
+      iam-role-arn: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role
