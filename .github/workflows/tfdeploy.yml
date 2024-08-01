@@ -33,3 +33,12 @@ jobs:
       aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
       aws-region: ${{ needs.vars.outputs.aws-region-out }}
       iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
+  
+  dev-usw2:
+    needs: vars
+    uses: ./.github/workflows/tf-common.yml
+    with:
+      aws-env: dev-usw2
+      aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
+      aws-region: us-west-2
+      iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
