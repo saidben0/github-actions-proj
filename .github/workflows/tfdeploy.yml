@@ -42,9 +42,6 @@ jobs:
       IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
       - uses: ./.github/workflows/tf-common.yml
         with:
           aws-env: ${{ env.AWS_ENV }}
