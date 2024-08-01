@@ -16,9 +16,9 @@ jobs:
         with:
           node-version: '14' # Adjust as needed
       - name: Install dependencies
-        run: echo "Installing dependencies ..."" # Adjust if using another package manager
+        run: echo "Installing dependencies ..." # Adjust if using another package manager
       - name: Run build
-        run: echo "Running the build ..."" # Adjust if using a different build command
+        run: echo "Running the build ..." # Adjust if using a different build command
 
   Deploy:
     needs: build
