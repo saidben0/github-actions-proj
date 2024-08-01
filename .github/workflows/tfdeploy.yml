@@ -9,10 +9,10 @@ on:
       - dev
 
 env:
-  AWS_ENV: development # env variable
-  AWS_ENV_DIR: dev-use1 # env variable: the dir where the tf code of the env, to be deployed into, resides
-  AWS_REGION: us-east-1 # env variable
-  IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role # env variable
+  AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
+  AWS_ENV_DIR: dev-use1 # set as env var the dir where the tf code of the env, to be deployed into, resides
+  AWS_REGION: us-east-1 # set as env var (Settings > Environments > Environment variables > Add variable)
+  IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
 
 jobs:
   vars:
@@ -30,10 +30,6 @@ jobs:
     uses: ./.github/workflows/tf-common.yml
     with:
       aws-env: ${{ needs.vars.outputs.aws-env-out }}
-      # aws-env: development
       aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
-      # aws-env-dir: dev-use1
       aws-region: ${{ needs.vars.outputs.aws-region-out }}
-      # aws-region: us-east-1
       iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
-      # iam-role-arn: arn:aws:iam::155185327318:role/github-actions-role
