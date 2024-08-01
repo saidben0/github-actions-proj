@@ -1,0 +1,49 @@
+name: Deploy Workflow
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        type: string
+    # secrets:
+    #   GITHUB_TOKEN:
+    #     required: true
+
+jobs:
+  Staging:
+    # if: ${{ inputs.environment == 'staging' }}
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Staging
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy to Staging
+    #     run: echo "Deploying to Staging Environment"
+
+  Review:
+    # if: ${{ inputs.environment == 'review' }}
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Review
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy for Review
+    #     run: echo "Deploying for Review Environment"
+
+  Production:
+    # if: ${{ inputs.environment == 'production' }}
+    needs: Staging
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Production
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+    #   - name: Deploy to Production
+    #     run: echo "Deploying to Production Environment"
