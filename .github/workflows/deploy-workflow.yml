@@ -5,7 +5,7 @@ on:
     inputs:
       environment:
         description: 'Environment to deploy to'
-        required: true
+        required: false
         type: string
     # secrets:
     #   GITHUB_TOKEN:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   Staging:
-    if: ${{ inputs.environment == 'staging' }}
+    # if: ${{ inputs.environment == 'staging' }}
     uses: ./.github/workflows/reusable-wf.yml
     with:
       aws-env: Staging
@@ -24,7 +24,7 @@ jobs:
     #     run: echo "Deploying to Staging Environment"
 
   Review:
-    if: ${{ inputs.environment == 'review' }}
+    # if: ${{ inputs.environment == 'review' }}
     uses: ./.github/workflows/reusable-wf.yml
     with:
       aws-env: Review
@@ -36,7 +36,7 @@ jobs:
     #     run: echo "Deploying for Review Environment"
 
   Production:
-    if: ${{ inputs.environment == 'production' }}
+    # if: ${{ inputs.environment == 'production' }}
     needs: Staging
     uses: ./.github/workflows/reusable-wf.yml
     with:
