@@ -1,18 +1,16 @@
-name: Deploy Infra to AWS Env
+name: Main Pipeline
 
 on:
   push:
     branches:
-      - dev
-  pull_request:
-    branches:
-      - dev
+      - refactor
 
 env:
   AWS_ENV: development # set as env var (Settings > Environments > Environment variables > Add variable)
   AWS_ENV_DIR: dev-use1 # set as env var the dir where the tf code of the env, to be deployed into, resides
   AWS_REGION: us-east-1 # set as env var (Settings > Environments > Environment variables > Add variable)
-  IAM_ROLE_ARN: arn:aws:iam::155185327318:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
+  IAM_ROLE_ARN: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role # set as env var (Settings > Environments > Environment variables > Add variable)
+
 
 jobs:
   vars:
@@ -25,11 +23,13 @@ jobs:
     steps:
       - run: echo "Exposing env vars"
 
-  dev-use1:
+  Deploy:
     needs: vars
-    uses: ./.github/workflows/tf-common.yml
+    uses: ./.github/workflows/deploy-workflow.yml
     with:
-      aws-env: ${{ needs.vars.outputs.aws-env-out }}
+      environment: ${{ needs.vars.outputs.aws-env-out }} # Change this to 'review' or 'production' as needed
       aws-env-dir: ${{ needs.vars.outputs.aws-env-dir-out }}
       aws-region: ${{ needs.vars.outputs.aws-region-out }}
       iam-role-arn: ${{ needs.vars.outputs.iam-role-arn-out }}
+    # secrets:
+    #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

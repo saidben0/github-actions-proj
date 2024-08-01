@@ -41,7 +41,7 @@ jobs:
       environment: development # Change this to 'review' or 'production' as needed
       aws-env-dir: dev-use1
       aws-region: us-east-1
-      iam-role-arn: arn:aws:iam::155185327318:role/github-actions-role
+      iam-role-arn: arn:aws:iam::${{ ACCOUNT_ID }}:role/github-actions-role
     # secrets:
     #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
