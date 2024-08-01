@@ -30,14 +30,14 @@ jobs:
       aws-region: ${{ inputs.aws-region }}
       iam-role-arn: ${{ inputs.iam-role-arn }}
 
-  # dev-usw2:
-  #   # if: ${{ inputs.environment == 'development' }}
-  #   uses: ./.github/workflows/reusable-wf.yml
-  #   with:
-  #     environment: ${{ inputs.environment }}
-  #     aws-env-dir: ${{ inputs.aws-env-dir }}
-  #     aws-region: ${{ inputs.aws-region }}
-  #     iam-role-arn: ${{ inputs.iam-role-arn }}
+  dev-usw2:
+    # if: ${{ inputs.environment == 'development' }}
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      environment: ${{ inputs.environment }}
+      aws-env-dir: ${{ inputs.aws-env-dir }}
+      aws-region: ${{ inputs.aws-region }}
+      iam-role-arn: ${{ inputs.iam-role-arn }}
 
   # Production:
   #   # if: ${{ inputs.environment == 'production' }}
