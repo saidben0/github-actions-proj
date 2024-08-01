@@ -6,7 +6,22 @@ on:
       - test
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Node.js (or another environment, if needed)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14' # Adjust as needed
+      - name: Install dependencies
+        run: echo "Installing dependencies ..."" # Adjust if using another package manager
+      - name: Run build
+        run: echo "Running the build ..."" # Adjust if using a different build command
+
   Deploy:
+    needs: build
     uses: ./.github/workflows/deploy-workflow.yml
     with:
       environment: 'staging' # Change this to 'review' or 'production' as needed
