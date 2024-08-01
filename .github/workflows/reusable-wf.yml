@@ -1,9 +1,11 @@
 name: Main Pipeline
 
 on:
-  push:
-    branches:
-      - test
+  workflow_call:
+    inputs:
+      aws-env:
+        required: true
+        type: string
 
 jobs:
   build:

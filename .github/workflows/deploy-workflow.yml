@@ -15,6 +15,8 @@ jobs:
   Staging:
     if: ${{ inputs.environment == 'staging' }}
     uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Staging
     # steps:
     #   - name: Checkout code
     #     uses: actions/checkout@v3
@@ -24,6 +26,8 @@ jobs:
   Review:
     if: ${{ inputs.environment == 'review' }}
     uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Review
     # runs-on: ubuntu-latest
     # steps:
     #   - name: Checkout code
@@ -35,6 +39,8 @@ jobs:
     if: ${{ inputs.environment == 'production' }}
     needs: Staging
     uses: ./.github/workflows/reusable-wf.yml
+    with:
+      aws-env: Production
     # runs-on: ubuntu-latest
     # steps:
     #   - name: Checkout code
