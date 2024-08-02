@@ -1,0 +1,21 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  dev-use1:
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      environment: development
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
+
+  dev-usw2:
+    uses: ./.github/workflows/reusable-wf.yml
+    with:
+      environment: development
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
