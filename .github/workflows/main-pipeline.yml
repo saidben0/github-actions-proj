@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - gatedv2
+      - dev
 
 jobs:
   dev-use1:
