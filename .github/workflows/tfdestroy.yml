@@ -101,8 +101,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
-          # role-to-assume: ${{ vars.iam-role-arn }}
-
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
