@@ -4,17 +4,27 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
     inputs:
       environment:
+        description: 'deployment environment'
         required: true
-        default: development
-        type: string
-      aws-region:
-        required: true
-        default: us-east-1
-        type: string
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
       aws-env-dir:
         required: true
-        default: dev-use1
-        type: string
+        default: 'dev-use1'
+        type: choice
+        options:
+          - 'dev-use1'
+          - 'dev-usw2'
+      aws-region:
+        required: true
+        default: 'us-east-1'
+        type: choice
+        options:
+          - 'us-east-1'
+          - 'us-west-2'
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -91,8 +101,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
-          # role-to-assume: ${{ vars.iam-role-arn }}
-
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600

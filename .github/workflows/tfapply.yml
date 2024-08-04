@@ -27,11 +27,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    
-    # Map a step output to a job output
-    outputs:
-      iam-role-arn-out: ${{ vars.IAM_ROLE_ARN_DEV }}
-    
+  
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -86,6 +82,7 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
+    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -96,8 +93,7 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          # role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
-          role-to-assume: ${{ needs.terraform-plan.outputs.iam-role-arn-out }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
