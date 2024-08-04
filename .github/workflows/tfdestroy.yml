@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   terraform-plan:
-    name: Terraform Plan
+    name: Terraform Destroy Plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     

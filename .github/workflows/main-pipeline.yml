@@ -3,8 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      # - dev
-      - approval
+      - dev
 
 jobs:
   dev-use1:
