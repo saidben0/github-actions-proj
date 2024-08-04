@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   terraform-plan:
-    name: Terraform Plan
+    name: Terraform Destroy Plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     
@@ -86,6 +86,12 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform plan -destroy -out=tfplan
+      
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan
+          path: ${{ inputs.aws-env-dir }}/tfplan
   
   terraform-destroy:
     name: Terraform Destroy
@@ -117,9 +123,14 @@ jobs:
           rm -rf .terraform*
           terraform init
 
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-plan
+
       - name: Terraform Destroy
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform state list
-          terraform destroy -auto-approve
+          terraform apply -destroy ../tfplan
           terraform state list
