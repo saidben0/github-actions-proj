@@ -132,5 +132,5 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform state list
-          terraform destroy -auto-approve ../tfplan
+          terraform apply -destroy ../tfplan
           terraform state list
