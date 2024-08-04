@@ -8,14 +8,16 @@ on:
 
 jobs:
   dev-use1:
-    uses: ./.github/workflows/tfdeploy.yml
+    uses: ./.github/workflows/tfapply.yml
     with:
       environment: development
       aws-env-dir: dev-use1
       aws-region: us-east-1
 
   dev-usw2:
-    uses: ./.github/workflows/tfdeploy.yml
+    # base_ref is the target branch
+    if: github.event_name == 'pull_request' && github.event.base_ref == 'main'
+    uses: ./.github/workflows/tfapply.yml
     with:
       environment: production # Change this to 'review' or 'production' as needed
       aws-env-dir: dev-usw2

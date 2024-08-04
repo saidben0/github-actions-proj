@@ -13,29 +13,18 @@ on:
           - production
       aws-env-dir:
         required: true
+        default: 'dev-use1'
         type: choice
         options:
           - 'dev-use1'
           - 'dev-usw2'
       aws-region:
         required: true
+        default: 'us-east-1'
         type: choice
         options:
           - 'us-east-1'
           - 'us-west-2'
-    # inputs:
-    #   environment:
-    #     required: true
-    #     default: development
-    #     type: string
-    #   aws-region:
-    #     required: true
-    #     default: us-east-1
-    #     type: string
-    #   aws-env-dir:
-    #     required: true
-    #     default: dev-use1
-    #     type: string
 
 permissions:
   id-token: write   # This is required for requesting the JWT
