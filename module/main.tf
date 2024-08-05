@@ -135,6 +135,7 @@ resource "aws_s3_object" "outputs" {
 resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
   name                      = "document-processing-sqs"
+  policy = data.aws_iam_policy_document.queue.json
   visibility_timeout_seconds = 120
   delay_seconds             = 90
   max_message_size          = 2048
