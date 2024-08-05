@@ -222,8 +222,10 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   queue {
     queue_arn     = aws_sqs_queue.this.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_suffix = ".log"
+    # filter_suffix = ".log"
   }
+
+  depends_on = [aws_lambda_permission.allow_bucket]
 }
 
 
