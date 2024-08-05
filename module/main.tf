@@ -35,6 +35,9 @@ resource "aws_sqs_queue" "dlq" {
   kms_master_key_id = aws_kms_alias.this.name
 }
 
+
+########################################################################
+######### AWS S3 Inputs Bucket config ##################################
 resource "aws_s3_bucket" "this" {
   provider      = aws.acc
   bucket        = "sfn-bucket-${random_id.this.hex}"
@@ -131,6 +134,9 @@ resource "aws_s3_object" "outputs" {
   key    = "outputs/dir1/dir2/"
   source = "/dev/null"
 }
+########################################################################
+########################################################################
+
 
 resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
@@ -223,7 +229,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   queue {
     queue_arn     = aws_sqs_queue.this.arn
     events        = ["s3:ObjectCreated:*"]
-    # filter_suffix = ".log"
+    # filter_suffix = ".pdf"
   }
 
   # depends_on = [aws_lambda_permission.allow_bucket]
