@@ -132,6 +132,23 @@ resource "aws_s3_object" "outputs" {
   source = "/dev/null"
 }
 
+resource "aws_sqs_queue" "this" {
+  provider                  = aws.acc
+  name                      = "this"
+  delay_seconds             = 90
+  max_message_size          = 2048
+  message_retention_seconds = 86400
+  receive_wait_time_seconds = 10
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn
+    maxReceiveCount     = 4
+  })
+
+  tags = {
+    Environment = "production"
+  }
+}
+
 
 data "archive_file" "this" {
   type        = "zip"
@@ -156,6 +173,12 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
   dead_letter_config {
     target_arn = aws_sqs_queue.dlq.arn
   }
+}
+
+resource "aws_lambda_event_source_mapping" "this" {
+  provider                  = aws.acc
+  event_source_arn = aws_sqs_queue.this.arn
+  function_name    = aws_lambda_function.image_extraction_lambda_function.arn
 }
 
 resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
