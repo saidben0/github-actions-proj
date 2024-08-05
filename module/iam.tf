@@ -77,6 +77,7 @@ resource "aws_iam_role_policy" "lambda_sqs_permissions" {
       "Action": [
           "sqs:ReceiveMessage",
           "sqs:SendMessage",
+          "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
       ],
       "Effect": "Allow",
