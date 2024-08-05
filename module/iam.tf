@@ -169,7 +169,8 @@ data "aws_iam_policy_document" "queue" {
       identifiers = ["*"]
     }
 
-    actions   = ["sqs:SendMessage"]
+    actions   = ["sqs:*"]
+    # actions   = ["sqs:SendMessage"]
     resources = ["arn:aws:sqs:*:*:docs-processing-sqs"]
     # resources = [aws_sqs_queue.this.arn]
 
