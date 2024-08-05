@@ -184,7 +184,7 @@ resource "aws_iam_role_policy" "sfn_role_policy" {
 
 # Define an S3 bucket policy to allow S3 to send messages to the SQS queue
 resource "aws_sqs_queue_policy" "this" {
-  queue_url = aws_sqs_queue.my_queue.url
+  queue_url = aws_sqs_queue.this.url
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -198,7 +198,7 @@ resource "aws_sqs_queue_policy" "this" {
         Resource = aws_sqs_queue.this.arn,
         Condition = {
           ArnEquals = {
-            "aws:SourceArn" = aws_s3_bucket.my_bucket.arn
+            "aws:SourceArn" = aws_s3_bucket.this.arn
           }
         }
       }
