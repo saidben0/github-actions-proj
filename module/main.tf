@@ -29,15 +29,9 @@ resource "random_id" "this" {
   prefix      = "terraform-aws-"
 }
 
-resource "aws_sqs_queue" "dlq" {
-  provider          = aws.acc
-  name              = random_id.this.hex
-  kms_master_key_id = aws_kms_alias.this.name
-}
-
 
 ########################################################################
-######### AWS S3 Inputs Bucket config ##################################
+######### `Inputs` S3 Bucket config ##################################
 resource "aws_s3_bucket" "this" {
   provider      = aws.acc
   bucket        = "sfn-bucket-${random_id.this.hex}"
@@ -137,24 +131,10 @@ resource "aws_s3_object" "outputs" {
 ########################################################################
 ########################################################################
 
-
-resource "aws_sqs_queue" "this" {
-  provider                  = aws.acc
-  name                      = "docs-processing-sqs"
-  # policy = data.aws_iam_policy_document.queue.json
-  visibility_timeout_seconds = 120
-  delay_seconds             = 90
-  max_message_size          = 2048
-  message_retention_seconds = 86400
-  receive_wait_time_seconds = 10
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.dlq.arn
-    maxReceiveCount     = 4
-  })
-
-  tags = {
-    Environment = "production"
-  }
+resource "aws_sqs_queue" "dlq" {
+  provider          = aws.acc
+  name              = random_id.this.hex
+  kms_master_key_id = aws_kms_alias.this.name
 }
 
 
@@ -183,30 +163,26 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
   }
 }
 
-resource "aws_lambda_event_source_mapping" "this" {
+
+resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
-  event_source_arn = aws_sqs_queue.this.arn
-  function_name    = aws_lambda_function.image_extraction_lambda_function.arn
+  name                      = "docs-processing-sqs"
+  visibility_timeout_seconds = 120
+  delay_seconds             = 90
+  max_message_size          = 2048
+  message_retention_seconds = 86400
+  receive_wait_time_seconds = 10
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn
+    maxReceiveCount     = 4
+  })
+
+  tags = {
+    Environment = "development"
+  }
 }
 
-resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
-  provider          = aws.acc
-  name_prefix       = "/aws/vendedlogs/states/"
-  kms_key_id        = aws_kms_key.this.arn
-  retention_in_days = 365
-}
-
-
-resource "aws_lambda_permission" "allow_bucket" {
-  provider      = aws.acc
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.image_extraction_lambda_function.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.this.arn
-}
-
-
+# send an s3 event to sqs when new s3 object is created/uploaded
 resource "aws_s3_bucket_notification" "sqs_notification" {
   provider      = aws.acc
   bucket = aws_s3_bucket.this.id
@@ -217,23 +193,22 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
     # filter_suffix = ".pdf"
   }
 
-  # depends_on = [aws_lambda_permission.allow_bucket]
   depends_on = [aws_sqs_queue_policy.this]
 }
 
+# map sqs queue to trigger the lambda function when an 3 event is received
+resource "aws_lambda_event_source_mapping" "this" {
+  provider                  = aws.acc
+  event_source_arn = aws_sqs_queue.this.arn
+  function_name    = aws_lambda_function.image_extraction_lambda_function.arn
+}
 
-resource "aws_s3_bucket_notification" "lambda_notification" {
-  provider    = aws.acc
-  bucket      = aws_s3_bucket.this.id
-  eventbridge = true
 
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = aws_s3_object.inputs.key
-  }
-
-  depends_on = [aws_lambda_permission.allow_bucket]
+resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
+  provider          = aws.acc
+  name_prefix       = "/aws/vendedlogs/states/"
+  kms_key_id        = aws_kms_key.this.arn
+  retention_in_days = 365
 }
 
 
@@ -262,6 +237,34 @@ resource "aws_dynamodb_table" "images_metadata" {
     Environment = "dev"
   }
 }
+
+
+########################################################################
+######### AWS S3 notification of lambda fx##############################
+resource "aws_lambda_permission" "allow_bucket" {
+  provider      = aws.acc
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.image_extraction_lambda_function.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.this.arn
+}
+
+resource "aws_s3_bucket_notification" "lambda_notification" {
+  provider    = aws.acc
+  bucket      = aws_s3_bucket.this.id
+  eventbridge = true
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = aws_s3_object.inputs.key
+  }
+
+  depends_on = [aws_lambda_permission.allow_bucket]
+}
+########################################################################
+########################################################################
 
 
 ####################################################
