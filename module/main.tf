@@ -225,24 +225,22 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
     events        = ["s3:ObjectCreated:*"]
     # filter_suffix = ".log"
   }
-
-  depends_on = [aws_lambda_permission.allow_bucket]
 }
 
 
-resource "aws_s3_bucket_notification" "lambda_notification" {
-  provider    = aws.acc
-  bucket      = aws_s3_bucket.this.id
-  eventbridge = true
+# resource "aws_s3_bucket_notification" "lambda_notification" {
+#   provider    = aws.acc
+#   bucket      = aws_s3_bucket.this.id
+#   eventbridge = true
 
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = aws_s3_object.inputs.key
-  }
+#   lambda_function {
+#     lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
+#     events              = ["s3:ObjectCreated:*"]
+#     filter_prefix       = aws_s3_object.inputs.key
+#   }
 
-  depends_on = [aws_lambda_permission.allow_bucket]
-}
+#   depends_on = [aws_lambda_permission.allow_bucket]
+# }
 
 
 resource "aws_dynamodb_table" "images_metadata" {
