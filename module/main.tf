@@ -216,18 +216,18 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 
-resource "aws_s3_bucket_notification" "sqs_notification" {
-  provider      = aws.acc
-  bucket = aws_s3_bucket.this.id
+# resource "aws_s3_bucket_notification" "sqs_notification" {
+#   provider      = aws.acc
+#   bucket = aws_s3_bucket.this.id
 
-  queue {
-    queue_arn     = aws_sqs_queue.this.arn
-    events        = ["s3:ObjectCreated:*"]
-    # filter_suffix = ".log"
-  }
+#   queue {
+#     queue_arn     = aws_sqs_queue.this.arn
+#     events        = ["s3:ObjectCreated:*"]
+#     # filter_suffix = ".log"
+#   }
 
-  depends_on = [aws_lambda_permission.allow_bucket]
-}
+#   depends_on = [aws_lambda_permission.allow_bucket]
+# }
 
 
 resource "aws_s3_bucket_notification" "lambda_notification" {
