@@ -107,8 +107,8 @@ jobs:
       - name: Terraform Init
         run: |
           pwd
-          ls module/
           ls module/lambda
+          ls module/output
           cd ${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
