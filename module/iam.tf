@@ -169,8 +169,8 @@ data "aws_iam_policy_document" "queue" {
     }
 
     actions   = ["sqs:SendMessage"]
-    # resources = ["arn:aws:sqs:*:*:s3-event-notification-queue"]
-    resources = [aws_sqs_queue.this.arn]
+    resources = ["arn:aws:sqs:*:*:docs-processing-sqs"]
+    # resources = [aws_sqs_queue.this.arn]
 
     condition {
       test     = "ArnEquals"
