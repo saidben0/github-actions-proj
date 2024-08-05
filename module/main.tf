@@ -225,7 +225,8 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
     # filter_suffix = ".log"
   }
 
-  depends_on = [aws_lambda_permission.allow_bucket]
+  # depends_on = [aws_lambda_permission.allow_bucket]
+  depends_on = [aws_s3_bucket_notification.lambda_notification]
 }
 
 
