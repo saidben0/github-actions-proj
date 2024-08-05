@@ -134,7 +134,8 @@ resource "aws_s3_object" "outputs" {
 
 resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
-  name                      = "this"
+  name                      = "document-processing-sqs"
+  visibility_timeout_seconds = 120
   delay_seconds             = 90
   max_message_size          = 2048
   message_retention_seconds = 86400
