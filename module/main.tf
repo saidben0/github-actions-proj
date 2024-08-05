@@ -196,21 +196,6 @@ resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
   retention_in_days = 365
 }
 
-resource "aws_sfn_state_machine" "sfn_state_machine" {
-  provider   = aws.acc
-  name       = var.sfn_name
-  role_arn   = aws_iam_role.sfn_role.arn
-  definition = file("${path.module}/templates/statemachine.asl.json")
-  logging_configuration {
-    log_destination        = "${aws_cloudwatch_log_group.EnverusSFNLogGroup.arn}:*"
-    include_execution_data = true
-    level                  = "ALL"
-  }
-
-  tracing_configuration {
-    enabled = true
-  }
-}
 
 resource "aws_lambda_permission" "allow_bucket" {
   provider      = aws.acc
@@ -281,6 +266,22 @@ resource "aws_dynamodb_table" "images_metadata" {
 
 ####################################################
 ########### triggering the step function ###########
+resource "aws_sfn_state_machine" "sfn_state_machine" {
+  provider   = aws.acc
+  name       = var.sfn_name
+  role_arn   = aws_iam_role.sfn_role.arn
+  definition = file("${path.module}/templates/statemachine.asl.json")
+  logging_configuration {
+    log_destination        = "${aws_cloudwatch_log_group.EnverusSFNLogGroup.arn}:*"
+    include_execution_data = true
+    level                  = "ALL"
+  }
+
+  tracing_configuration {
+    enabled = true
+  }
+}
+
 # create an eventbridge role
 resource "aws_iam_role" "sfn_event_role" {
   provider    = aws.acc
