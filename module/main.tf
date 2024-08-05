@@ -190,6 +190,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   queue {
     queue_arn     = aws_sqs_queue.this.arn
     events        = ["s3:ObjectCreated:*"]
+    filter_prefix       = aws_s3_object.inputs.key
     # filter_suffix = ".pdf"
   }
 
@@ -239,32 +240,32 @@ resource "aws_dynamodb_table" "images_metadata" {
 }
 
 
-########################################################################
-######### trigger lambda fx using S3 event notifications ###############
-resource "aws_lambda_permission" "allow_bucket" {
-  provider      = aws.acc
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.image_extraction_lambda_function.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.this.arn
-}
+# ########################################################################
+# ######### trigger lambda fx using S3 event notifications ###############
+# resource "aws_lambda_permission" "allow_bucket" {
+#   provider      = aws.acc
+#   statement_id  = "AllowExecutionFromS3Bucket"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.image_extraction_lambda_function.arn
+#   principal     = "s3.amazonaws.com"
+#   source_arn    = aws_s3_bucket.this.arn
+# }
 
-resource "aws_s3_bucket_notification" "lambda_notification" {
-  provider    = aws.acc
-  bucket      = aws_s3_bucket.this.id
-  eventbridge = true
+# resource "aws_s3_bucket_notification" "lambda_notification" {
+#   provider    = aws.acc
+#   bucket      = aws_s3_bucket.this.id
+#   eventbridge = true
 
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = aws_s3_object.inputs.key
-  }
+#   lambda_function {
+#     lambda_function_arn = aws_lambda_function.image_extraction_lambda_function.arn
+#     events              = ["s3:ObjectCreated:*"]
+#     filter_prefix       = aws_s3_object.inputs.key
+#   }
 
-  depends_on = [aws_lambda_permission.allow_bucket]
-}
-########################################################################
-########################################################################
+#   depends_on = [aws_lambda_permission.allow_bucket]
+# }
+# ########################################################################
+# ########################################################################
 
 
 ####################################################
