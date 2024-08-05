@@ -215,7 +215,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 
 
 resource "aws_s3_bucket_notification" "sqs_notification" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.this.id
 
   queue {
     queue_arn     = aws_sqs_queue.this.arn
