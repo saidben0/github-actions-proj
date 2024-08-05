@@ -73,7 +73,10 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform plan -out=tfplan
-          cd ../
+
+      - name: Check Lambda Output Zip
+        run: |
+          ls
           ls module/
           ld module/output
       
