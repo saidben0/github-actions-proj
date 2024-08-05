@@ -214,7 +214,18 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
+resource "aws_s3_bucket_notification" "sqs_notification" {
+  bucket = aws_s3_bucket.bucket.id
+
+  queue {
+    queue_arn     = aws_sqs_queue.this.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_suffix = ".log"
+  }
+}
+
+
+resource "aws_s3_bucket_notification" "lambda_notification" {
   provider    = aws.acc
   bucket      = aws_s3_bucket.this.id
   eventbridge = true
