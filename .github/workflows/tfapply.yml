@@ -73,12 +73,6 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform plan -out=tfplan
-
-      - name: Check Lambda Output Zip
-        run: |
-          ls
-          ls module/
-          ld module/output
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
