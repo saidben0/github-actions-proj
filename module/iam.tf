@@ -160,6 +160,7 @@ resource "aws_iam_role_policy" "sfn_role_policy" {
 
 # Allow s3 bucket arn to use s3 notification to trigger sqs queue
 data "aws_iam_policy_document" "queue" {
+  provider = aws.acc
   statement {
     effect = "Allow"
 
