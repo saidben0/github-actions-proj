@@ -240,7 +240,7 @@ resource "aws_dynamodb_table" "images_metadata" {
 
 
 ########################################################################
-######### AWS S3 notification of lambda fx##############################
+######### trigger lambda fx using S3 event notifications ###############
 resource "aws_lambda_permission" "allow_bucket" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromS3Bucket"
