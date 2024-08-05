@@ -133,7 +133,7 @@ resource "aws_s3_object" "outputs" {
 
 resource "aws_sqs_queue" "dlq" {
   provider          = aws.acc
-  name              = random_id.this.hex
+  name              = "dlq-${random_id.this.hex}"
   kms_master_key_id = aws_kms_alias.this.name
 }
 
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
   role                           = aws_iam_role.image_extraction_lambda_role.arn
   handler                        = "image-extraction.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
-  runtime                        = "python3.8"
+  runtime                        = "python3.12"
   timeout                        = "120"
   reserved_concurrent_executions = 100
 
