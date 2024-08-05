@@ -216,6 +216,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 
 
 resource "aws_s3_bucket_notification" "sqs_notification" {
+  provider      = aws.acc
   bucket = aws_s3_bucket.this.id
 
   queue {
