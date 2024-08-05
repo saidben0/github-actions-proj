@@ -159,27 +159,51 @@ resource "aws_iam_role_policy" "sfn_role_policy" {
 
 
 # Allow s3 bucket arn to use s3 notification to trigger sqs queue
-data "aws_iam_policy_document" "queue" {
-  provider = aws.acc
-  statement {
-    effect = "Allow"
+# data "aws_iam_policy_document" "queue" {
+#   provider = aws.acc
+#   statement {
+#     effect = "Allow"
 
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
+#     principals {
+#       type        = "*"
+#       identifiers = ["*"]
+#     }
 
-    actions   = ["sqs:*"]
-    # actions   = ["sqs:SendMessage"]
-    resources = ["arn:aws:sqs:*:*:docs-processing-sqs"]
-    # resources = [aws_sqs_queue.this.arn]
+#     actions   = ["sqs:*"]
+#     # actions   = ["sqs:SendMessage"]
+#     resources = ["arn:aws:sqs:*:*:docs-processing-sqs"]
+#     # resources = [aws_sqs_queue.this.arn]
 
-    condition {
-      test     = "ArnEquals"
-      variable = "aws:SourceArn"
-      values   = [aws_s3_bucket.this.arn]
-    }
-  }
+#     condition {
+#       test     = "ArnEquals"
+#       variable = "aws:SourceArn"
+#       values   = [aws_s3_bucket.this.arn]
+#     }
+#   }
+# }
+
+# Define an S3 bucket policy to allow S3 to send messages to the SQS queue
+resource "aws_sqs_queue_policy" "this" {
+  queue_url = aws_sqs_queue.my_queue.url
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "s3.amazonaws.com"
+        },
+        Action = "SQS:SendMessage",
+        Resource = aws_sqs_queue.this.arn,
+        Condition = {
+          ArnEquals = {
+            "aws:SourceArn" = aws_s3_bucket.my_bucket.arn
+          }
+        }
+      }
+    ]
+  })
 }
 
 # resource "aws_sqs_queue" "queue" {

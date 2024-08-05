@@ -227,6 +227,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   }
 
   # depends_on = [aws_lambda_permission.allow_bucket]
+  depends_on = [aws_sqs_queue_policy.this]
 }
 
 
