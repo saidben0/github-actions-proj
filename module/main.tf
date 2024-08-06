@@ -176,10 +176,6 @@ resource "aws_sqs_queue" "this" {
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = 4
   })
-
-  tags = {
-    Environment = "development"
-  }
 }
 
 # send an s3 event to sqs when new s3 object is created/uploaded
@@ -231,11 +227,6 @@ resource "aws_dynamodb_table" "images_metadata" {
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.this.arn
-  }
-
-  tags = {
-    Name        = "images-metadata-ddb-table"
-    Environment = "dev"
   }
 }
 
