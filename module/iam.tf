@@ -170,7 +170,11 @@ resource "aws_sqs_queue_policy" "this" {
         Principal = {
           Service = "s3.amazonaws.com"
         },
-        Action = "sqs:SendMessage",
+        # Action = "sqs:SendMessage",
+        Action = [ 
+          "sqs:SendMessage",
+          "kms:*"
+        ],
         Resource = aws_sqs_queue.this.arn,
         Condition = {
           ArnEquals = {
