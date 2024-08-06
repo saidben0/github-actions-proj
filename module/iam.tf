@@ -26,18 +26,6 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": [
-        "sqs:DeleteMessage",     
-        "sqs:GetQueueAttributes",
-        "sqs:ReceiveMessage"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
-        "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
-      ]
-    },
-    {
       "Effect": "Allow",
       "Action": [
         "kms:Encrypt*",
@@ -46,7 +34,7 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
         "kms:GenerateDataKey*",
         "kms:Describe*"
       ],
-      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/${aws_kms_alias.this.name}"
+      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_kms_alias.this.name}"
     },
     {
       "Action": [

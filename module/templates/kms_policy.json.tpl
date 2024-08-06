@@ -12,6 +12,15 @@
           "Resource": "*"
         },
         {
+          "Sid": "Enable Lambda Role",
+          "Effect": "Allow",
+          "Principal": {
+              "AWS": "arn:aws:iam::${account_id}:role/${lambda_iam_role_name}"
+          },
+          "Action": "kms:*",
+          "Resource": "*"
+        },
+        {
           "Sid": "Allow S3",
           "Effect": "Allow",
           "Principal": {
