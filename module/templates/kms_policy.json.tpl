@@ -17,7 +17,10 @@
           "Principal": {
               "AWS": "arn:aws:iam::${account_id}:role/${lambda_iam_role_name}"
           },
-          "Action": "kms:*",
+          "Action": [
+            "kms:Decrypt",
+            "kms:GenerateDataKey*"
+          ],
           "Resource": "*"
         },
         {
