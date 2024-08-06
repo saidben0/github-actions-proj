@@ -20,7 +20,7 @@ resource "aws_kms_key" "this" {
 
 resource "aws_kms_alias" "this" {
   provider      = aws.acc
-  name          = "alias/${var.kms_alias_name}"
+  name          = "alias/${var.stack_name}"
   target_key_id = aws_kms_key.this.id
 }
 
@@ -34,7 +34,7 @@ resource "random_id" "this" {
 ######### `Inputs` S3 Bucket config ##################################
 resource "aws_s3_bucket" "this" {
   provider      = aws.acc
-  bucket        = "sfn-bucket-${random_id.this.hex}"
+  bucket        = "${var.stack_name}-${random_id.this.hex}"
   force_destroy = true
 }
 
@@ -133,7 +133,7 @@ resource "aws_s3_object" "outputs" {
 
 resource "aws_sqs_queue" "dlq" {
   provider          = aws.acc
-  name              = "dlq-${random_id.this.hex}"
+  name              = "${var.stack_name}-dlq-${random_id.this.hex}"
   kms_master_key_id = aws_kms_alias.this.name
 }
 
@@ -147,7 +147,7 @@ data "archive_file" "this" {
 resource "aws_lambda_function" "image_extraction_lambda_function" {
   provider                       = aws.acc
   filename                       = data.archive_file.this.output_path
-  function_name                  = "image-extraction"
+  function_name                  = var.lambda_function_name
   role                           = aws_iam_role.image_extraction_lambda_role.arn
   handler                        = "image-extraction.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -166,7 +166,7 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
-  name                      = "docs-processing-sqs"
+  name                      = "${var.stack_name}-sqs-${random_id.this.hex}"
   visibility_timeout_seconds = 120
   delay_seconds             = 90
   max_message_size          = 2048
@@ -215,7 +215,7 @@ resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
 
 resource "aws_dynamodb_table" "images_metadata" {
   provider     = aws.acc
-  name         = "ImagesMetadata"
+  name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "ImageId"
 
@@ -270,9 +270,9 @@ resource "aws_dynamodb_table" "images_metadata" {
 
 ####################################################
 ########### triggering the step function ###########
-resource "aws_sfn_state_machine" "sfn_state_machine" {
+resource "aws_sfn_state_machine" "this" {
   provider   = aws.acc
-  name       = var.sfn_name
+  name       = "${var.stack_name}-sfn"
   role_arn   = aws_iam_role.sfn_role.arn
   definition = file("${path.module}/templates/statemachine.asl.json")
   logging_configuration {
@@ -311,7 +311,7 @@ resource "aws_iam_role" "sfn_event_role" {
         {
           Action   = "states:StartExecution"
           Effect   = "Allow"
-          Resource = aws_sfn_state_machine.sfn_state_machine.arn
+          Resource = aws_sfn_state_machine.this.arn
         }
       ]
     })
@@ -319,7 +319,7 @@ resource "aws_iam_role" "sfn_event_role" {
 }
 
 # create an event rule
-resource "aws_cloudwatch_event_rule" "sfn_rule" {
+resource "aws_cloudwatch_event_rule" "this" {
   provider    = aws.acc
   name        = "sfn-rule"
   description = "Trigger Step Function"
@@ -343,8 +343,8 @@ EOF
 # define the step function as the target for the eventbridge rule
 resource "aws_cloudwatch_event_target" "sfn_target" {
   provider = aws.acc
-  rule     = aws_cloudwatch_event_rule.sfn_rule.name
-  arn      = aws_sfn_state_machine.sfn_state_machine.arn
+  rule     = aws_cloudwatch_event_rule.this.name
+  arn      = aws_sfn_state_machine.this.arn
   role_arn = aws_iam_role.sfn_event_role.arn
 }
 ####################################################
