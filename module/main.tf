@@ -289,7 +289,7 @@ resource "aws_sfn_state_machine" "this" {
 # create an eventbridge role
 resource "aws_iam_role" "sfn_event_role" {
   provider    = aws.acc
-  name_prefix = "event-role"
+  name_prefix = "sfn-event-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
