@@ -26,6 +26,17 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt*",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:Describe*"
+      ],
+      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_kms_alias.this.name}"
+    },
+    {
       "Action": [
         "logs:CreateLogGroup",     
         "logs:CreateLogStream",

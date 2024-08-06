@@ -13,7 +13,8 @@ resource "aws_kms_key" "this" {
   key_usage   = "ENCRYPT_DECRYPT"
   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
     account_id = data.aws_caller_identity.current.account_id,
-    aws_region = data.aws_region.current.name
+    aws_region = data.aws_region.current.name,
+    lambda_iam_role_name = aws_iam_role.image_extraction_lambda_role.name
   })
   enable_key_rotation = true
 }
@@ -167,6 +168,7 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
 resource "aws_sqs_queue" "this" {
   provider                  = aws.acc
   name                      = "${var.stack_name}-sqs-${random_id.this.hex}"
+  kms_master_key_id = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds             = 90
   max_message_size          = 2048
