@@ -125,5 +125,6 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform state list
+          tree -L 2 ../module
           terraform apply ../tfplan
           terraform state list
