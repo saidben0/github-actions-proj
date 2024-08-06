@@ -14,7 +14,7 @@ resource "aws_kms_key" "this" {
   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
     account_id = data.aws_caller_identity.current.account_id,
     aws_region = data.aws_region.current.name,
-    lambda_iam_role_name = aws_iam_role,image_extraction_lambda_role.name
+    lambda_iam_role_name = aws_iam_role.image_extraction_lambda_role.name
   })
   enable_key_rotation = true
 }
