@@ -36,3 +36,6 @@ tfplan
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore lambda zip output of archive_file tf resource
+*.zip
