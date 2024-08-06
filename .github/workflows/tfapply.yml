@@ -82,7 +82,7 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
-    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
+    # if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -110,6 +110,12 @@ jobs:
           rm -rf .terraform*
           terraform init
 
+      - name: Generate Lambda Archive Zip
+        run: |
+          cd ${{ inputs.aws-env-dir }}/
+          terraform plan &> /dev/null
+          tree -L 2 ../module
+
       - name: Download Terraform Plan
         uses: actions/download-artifact@v3
         with:
@@ -119,5 +125,6 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform state list
+          tree -L 2 ../module
           terraform apply ../tfplan
           terraform state list
