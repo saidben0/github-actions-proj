@@ -3,9 +3,16 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - kms-pol
+      - utest
 
 jobs:
+  terraform-unit-tests:
+    uses: ./.github/workflows/tftest.yml
+    with:
+      environment: development
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
+
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
     with:
