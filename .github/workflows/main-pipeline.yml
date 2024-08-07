@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - network
+      - vpc
 
 jobs:
   dev-use1:

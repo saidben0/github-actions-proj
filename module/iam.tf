@@ -46,30 +46,15 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
       "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.image_extraction_lambda_function.function_name}:*"
     },
     {
-      "Action": [
-        "ec2:DescribeInstances",     
-        "ec2:DescribeVolumes",
-        "ec2:CreateTags"
-      ],
       "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ],
       "Resource": "*"
-    },
-    {
-      "Action": [
-        "rds:ListTagsForResource",     
-        "rds:AddTagsToResource"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "elasticloadbalancing:AddTags",
-        "elasticloadbalancing:DescribeTags"
-
-      ],
-      "Effect": "Allow",
-      "Resource": "arn:aws:elasticloadbalancing:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:loadbalancer/*"
     }
   ]
 }
