@@ -1,5 +1,5 @@
 provider "aws" {
-  alias = "usw2"
+  alias  = "usw2"
   region = "us-west-2"
 
   default_tags {
