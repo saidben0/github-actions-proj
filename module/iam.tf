@@ -26,6 +26,19 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Action": [
+          "sqs:ReceiveMessage",
+          "sqs:SendMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+      ]
+    },
+    {
       "Effect": "Allow",
       "Action": [
         "kms:Encrypt*",
@@ -61,31 +74,31 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy" "lambda_sqs_permissions" {
-  provider = aws.acc
-  name     = "${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
-  role     = aws_iam_role.image_extraction_lambda_role.id
-  policy   = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-          "sqs:ReceiveMessage",
-          "sqs:SendMessage",
-          "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
-      ]
-    }
-  ]
-}
-EOF
-}
+# resource "aws_iam_role_policy" "lambda_sqs_permissions" {
+#   provider = aws.acc
+#   name     = "${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
+#   role     = aws_iam_role.image_extraction_lambda_role.id
+#   policy   = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": [
+#           "sqs:ReceiveMessage",
+#           "sqs:SendMessage",
+#           "sqs:DeleteMessage",
+#           "sqs:GetQueueAttributes"
+#       ],
+#       "Effect": "Allow",
+#       "Resource": [
+#           "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
+#           "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+#       ]
+#     }
+#   ]
+# }
+# EOF
+# }
 
 resource "aws_iam_role" "sfn_role" {
   provider           = aws.acc
