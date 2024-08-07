@@ -169,6 +169,7 @@ resource "aws_iam_role_policy" "sfn_role_policy" {
 
 # Define an sqs policy to allow S3 to send messages to the SQS queue
 resource "aws_sqs_queue_policy" "this" {
+  provider   = aws.acc
   queue_url = aws_sqs_queue.this.url
 
   policy = jsonencode({
