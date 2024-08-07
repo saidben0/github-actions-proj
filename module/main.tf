@@ -106,7 +106,7 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   provider = aws.acc
   bucket   = aws_s3_bucket.this.id
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
