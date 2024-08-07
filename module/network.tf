@@ -31,46 +31,74 @@ module "vpc" {
   }
 }
 
-# Creating Security Group 
-resource "aws_security_group" "this" {
+resource "aws_security_group" "allow_tls" {
   provider = aws.acc
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id = module.vpc.vpc_id
-  # Inbound Rules
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # from anywhere
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
-  # HTTPS access from anywhere
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # SSH access from anywhere
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # Outbound Rules
-  # Internet access to anywhere
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  tags = {
+    Name = "allow_tls"
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+  provider = aws.acc
+  security_group_id = aws_security_group.allow_tls.id
+  cidr_ipv4         = module.vpc.vpc_id.cidr_block
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  provider = aws.acc
+  security_group_id = aws_security_group.allow_tls.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+
+# # Creating Security Group 
+# resource "aws_security_group" "this" {
+#   provider = aws.acc
+#   vpc_id = module.vpc.vpc_id
+#   # Inbound Rules
+#   # HTTP access from anywhere
+#   ingress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+#   # from anywhere
+#   ingress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   # HTTPS access from anywhere
+#   ingress {
+#     from_port   = 443
+#     to_port     = 443
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+#   # SSH access from anywhere
+#   ingress {
+#     from_port   = 22
+#     to_port     = 22
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+#   # Outbound Rules
+#   # Internet access to anywhere
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
