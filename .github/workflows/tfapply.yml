@@ -82,7 +82,7 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
-    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
+    # if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
