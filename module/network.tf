@@ -1,7 +1,7 @@
 # Declare the data source
 data "aws_availability_zones" "available" {
   provider = aws.acc
-  state = "available"
+  state    = "available"
 }
 
 module "vpc" {
@@ -25,17 +25,17 @@ module "vpc" {
   enable_dhcp_options  = false
 
   map_public_ip_on_launch = true
-  
+
   providers = {
     aws = aws.acc
   }
 }
 
 resource "aws_security_group" "allow_tls" {
-  provider = aws.acc
+  provider    = aws.acc
   name        = "allow_tls"
   description = "Allow TLS inbound traffic and all outbound traffic"
-  vpc_id = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   tags = {
     Name = "allow_tls"
@@ -43,7 +43,7 @@ resource "aws_security_group" "allow_tls" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
-  provider = aws.acc
+  provider          = aws.acc
   security_group_id = aws_security_group.allow_tls.id
   cidr_ipv4         = module.vpc.vpc_cidr_block
   from_port         = 443
@@ -52,7 +52,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
-  provider = aws.acc
+  provider          = aws.acc
   security_group_id = aws_security_group.allow_tls.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
