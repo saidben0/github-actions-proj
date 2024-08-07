@@ -1,5 +1,6 @@
 # Declare the data source
 data "aws_availability_zones" "available" {
+  provider = aws.acc
   state = "available"
 }
 
@@ -7,7 +8,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.5.1"
 
-  name = "aws-backup-poc"
+  name = "docs-processing-vpc"
   cidr = "10.0.0.0/16"
 
   azs = data.aws_availability_zones.available.names
@@ -24,10 +25,15 @@ module "vpc" {
   enable_dhcp_options  = false
 
   map_public_ip_on_launch = true
+  
+  providers = {
+    aws = aws.acc
+  }
 }
 
 # Creating Security Group 
 resource "aws_security_group" "this" {
+  provider = aws.acc
   vpc_id = module.vpc.vpc_id
   # Inbound Rules
   # HTTP access from anywhere
