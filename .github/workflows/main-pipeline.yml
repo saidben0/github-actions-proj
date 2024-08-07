@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - iam
+      - sqs-pol
 
 jobs:
   dev-use1:
