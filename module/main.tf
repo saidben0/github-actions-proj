@@ -12,8 +12,8 @@ resource "aws_kms_key" "this" {
   description = "Key used for sqs encryption"
   key_usage   = "ENCRYPT_DECRYPT"
   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
-    account_id = data.aws_caller_identity.current.account_id,
-    aws_region = data.aws_region.current.name,
+    account_id           = data.aws_caller_identity.current.account_id,
+    aws_region           = data.aws_region.current.name,
     lambda_iam_role_name = aws_iam_role.image_extraction_lambda_role.name
   })
   enable_key_rotation = true
@@ -166,14 +166,14 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
 
 
 resource "aws_sqs_queue" "this" {
-  provider                  = aws.acc
-  name                      = "${var.stack_name}-sqs-${random_id.this.hex}"
-  kms_master_key_id = aws_kms_alias.this.name
+  provider                   = aws.acc
+  name                       = "${var.stack_name}-sqs-${random_id.this.hex}"
+  kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
-  delay_seconds             = 90
-  max_message_size          = 2048
-  message_retention_seconds = 86400
-  receive_wait_time_seconds = 10
+  delay_seconds              = 90
+  max_message_size           = 2048
+  message_retention_seconds  = 86400
+  receive_wait_time_seconds  = 10
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = 4
@@ -182,13 +182,13 @@ resource "aws_sqs_queue" "this" {
 
 # send an s3 event to sqs when new s3 object is created/uploaded
 resource "aws_s3_bucket_notification" "sqs_notification" {
-  provider      = aws.acc
-  bucket = aws_s3_bucket.this.id
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
 
   queue {
     queue_arn     = aws_sqs_queue.this.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_prefix       = aws_s3_object.inputs.key
+    filter_prefix = aws_s3_object.inputs.key
     # filter_suffix = ".pdf"
   }
 
@@ -197,7 +197,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
-  provider                  = aws.acc
+  provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = aws_lambda_function.image_extraction_lambda_function.arn
 }

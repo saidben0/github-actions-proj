@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - kms-pol
+      - fmt
 
 jobs:
   dev-use1:
