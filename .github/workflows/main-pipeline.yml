@@ -25,8 +25,8 @@ jobs:
     uses: ./.github/workflows/tftests.yml
     with:
       environment: development
-      aws-env-dir: dev-use1
-      aws-region: us-east-1
+      aws-env-dir: dev-usw2
+      aws-region: us-west-2
 
   dev-usw2:
     needs: dev-usw2_tf-unit-tests
