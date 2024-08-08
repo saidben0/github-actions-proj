@@ -54,7 +54,7 @@ permissions:
 
 jobs:
   terraform:
-    runs-on: ${{ env.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
+    runs-on: ${{ vars.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
     
     steps:
       - name: Configure AWS Creds
