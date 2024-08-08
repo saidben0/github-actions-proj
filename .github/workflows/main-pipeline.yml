@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - tf-unit-tests
+      - tftest
 
 jobs:
   dev-use1_tf-unit-tests:
