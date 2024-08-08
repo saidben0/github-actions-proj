@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - runson-var
+      - vars
 
 jobs:
   ########################################

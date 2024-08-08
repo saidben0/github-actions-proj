@@ -48,7 +48,7 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as a repo variable
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
@@ -106,7 +106,7 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # ensure this var is added under `development` env in github
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as a repo variable
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600

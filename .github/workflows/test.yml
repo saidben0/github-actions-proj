@@ -3,13 +3,14 @@ name: Vars Testing
 on:
   push:
     branches:
-      - vars
+      - varss
 
 jobs:
   display-variables:
     name: display-variables
     runs-on: ${{ vars.GH_RUNNER_TAG }}
-    environment: development
+    environment:
+      name: development
     steps:
     - name: Use variables
       run: |
