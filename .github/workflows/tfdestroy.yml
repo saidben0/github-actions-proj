@@ -33,7 +33,7 @@ permissions:
 jobs:
   terraform-plan:
     name: Terraform Destroy Plan
-    runs-on: ubuntu-22.04
+    runs-on: ${{ vars.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
     environment: ${{ inputs.environment }}
     
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -96,7 +96,7 @@ jobs:
   terraform-destroy:
     name: Terraform Destroy
     needs: terraform-plan
-    runs-on: ubuntu-22.04
+    runs-on: ${{ vars.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
     environment: ${{ inputs.environment }}
 
     steps:
