@@ -14,4 +14,4 @@ jobs:
     steps:
     - name: Use variables
       run: |
-        echo "Repository variable : ${{ vars.GH_RUNNER_TAG }}"
+        echo "Repository variable : "
