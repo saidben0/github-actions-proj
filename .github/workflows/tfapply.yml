@@ -20,7 +20,7 @@ permissions:
 jobs:
   terraform-plan:
     name: Terraform Plan
-    runs-on: ${{ vars.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
+    runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
     
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -35,7 +35,7 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as a repo variable
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as an env variable for corresponding environment
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
@@ -84,7 +84,7 @@ jobs:
     name: Terraform Apply
     # if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
-    runs-on: ${{ vars.GH_RUNNER_TAG }} # define as an env var from UI for corresponding environment
+    runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout code
@@ -93,7 +93,7 @@ jobs:
       - name: Configure AWS Creds
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as a repo variable
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as an env variable for corresponding environment
           aws-region: ${{ inputs.aws-region }}
           role-session-name: gh-actions-session
           role-duration-seconds: 3600
