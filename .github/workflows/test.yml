@@ -1,4 +1,4 @@
-name: Main Pipeline
+name: Vars Testing
 
 on:
   push:
@@ -8,7 +8,8 @@ on:
 jobs:
   display-variables:
     name: display-variables
-    runs-on: ${{ vars.GH_RUNNER_TAG }}
+    runs-on: ubuntu-22.04
+    # runs-on: ${{ vars.GH_RUNNER_TAG }}
     environment: development
     steps:
     - name: Use variables
