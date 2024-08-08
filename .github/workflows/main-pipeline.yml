@@ -6,6 +6,8 @@ on:
       - tftest
 
 jobs:
+  ########################################
+  ############### DEV-USE1 ###############
   dev-use1_tf-unit-tests:
     uses: ./.github/workflows/tftests.yml
     with:
@@ -21,6 +23,9 @@ jobs:
       aws-env-dir: dev-use1
       aws-region: us-east-1
 
+  
+  ########################################
+  ############### DEV-USW2 ###############
   dev-usw2_tf-unit-tests:
     uses: ./.github/workflows/tftests.yml
     with:
