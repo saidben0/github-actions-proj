@@ -3,10 +3,12 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - tf-unit-tests
+      - tftest
 
 jobs:
-  terraform-unit-tests:
+  ########################################
+  ############### DEV-USE1 ###############
+  dev-use1_tf-unit-tests:
     uses: ./.github/workflows/tftests.yml
     with:
       environment: development
@@ -14,15 +16,25 @@ jobs:
       aws-region: us-east-1
 
   dev-use1:
-    needs: terraform-unit-tests
+    needs: dev-use1_tf-unit-tests
     uses: ./.github/workflows/tfapply.yml
     with:
       environment: development
       aws-env-dir: dev-use1
       aws-region: us-east-1
 
+  
+  ########################################
+  ############### DEV-USW2 ###############
+  dev-usw2_tf-unit-tests:
+    uses: ./.github/workflows/tftests.yml
+    with:
+      environment: development
+      aws-env-dir: dev-usw2
+      aws-region: us-west-2
+
   dev-usw2:
-    needs: terraform-unit-tests
+    needs: dev-usw2_tf-unit-tests
     # base_ref is the target branch
     if: github.event_name == 'pull_request' && github.event.base_ref == 'main'
     uses: ./.github/workflows/tfapply.yml
