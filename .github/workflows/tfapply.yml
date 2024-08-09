@@ -13,6 +13,10 @@ on:
         required: true
         type: string
 
+defaults:
+  run:
+    shell: bash
+
 permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read    # This is required for actions/checkout
@@ -23,9 +27,9 @@ jobs:
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
 
-    defaults:
-      run:
-        shell: bash
+    # defaults:
+    #   run:
+    #     shell: bash
     
     steps:
     - name: Checkout
@@ -79,10 +83,10 @@ jobs:
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
     
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
+    # # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # defaults:
+    #   run:
+    #     shell: bash
   
     steps:
       - name: Check out repository code
