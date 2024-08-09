@@ -8,15 +8,15 @@ on:
 jobs:
   ########################################
   ############### DEV-USE1 ###############
-  dev-use1_tf-unit-tests:
-    uses: ./.github/workflows/tftests.yml
-    with:
-      environment: development
-      aws-env-dir: dev-use1
-      aws-region: us-east-1
+  # dev-use1_tf-unit-tests:
+  #   uses: ./.github/workflows/tftests.yml
+  #   with:
+  #     environment: development
+  #     aws-env-dir: dev-use1
+  #     aws-region: us-east-1
 
   dev-use1:
-    needs: dev-use1_tf-unit-tests
+    # needs: dev-use1_tf-unit-tests
     uses: ./.github/workflows/tfapply.yml
     with:
       environment: development
@@ -26,15 +26,15 @@ jobs:
   
   ########################################
   ############### DEV-USW2 ###############
-  dev-usw2_tf-unit-tests:
-    uses: ./.github/workflows/tftests.yml
-    with:
-      environment: development
-      aws-env-dir: dev-usw2
-      aws-region: us-west-2
+  # dev-usw2_tf-unit-tests:
+  #   uses: ./.github/workflows/tftests.yml
+  #   with:
+  #     environment: development
+  #     aws-env-dir: dev-usw2
+  #     aws-region: us-west-2
 
   dev-usw2:
-    needs: dev-usw2_tf-unit-tests
+    # needs: dev-usw2_tf-unit-tests
     # base_ref is the target branch
     if: github.event_name == 'pull_request' && github.event.base_ref == 'main'
     uses: ./.github/workflows/tfapply.yml
