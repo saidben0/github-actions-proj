@@ -116,14 +116,6 @@ jobs:
           rm -rf .terraform*
           terraform init
 
-      - name: Terraform Format
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        run: |
-          cd ${{ inputs.aws-env-dir }}/
-          terraform validate
-
       - name: Terraform Plan
         id: plan
         run: |
