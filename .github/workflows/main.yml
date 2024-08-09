@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - shell
+      - recursive
 
 jobs:
   dev-use1:
