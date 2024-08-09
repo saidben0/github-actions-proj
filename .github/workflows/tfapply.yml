@@ -13,6 +13,7 @@ on:
         required: true
         type: string
 
+# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 defaults:
   run:
     shell: bash
@@ -26,11 +27,7 @@ jobs:
     name: 'Terraform Unit Tests'
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
-
-    # defaults:
-    #   run:
-    #     shell: bash
-    
+   
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -82,12 +79,7 @@ jobs:
     needs: terraform-unit-tests
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
-    
-    # # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    # defaults:
-    #   run:
-    #     shell: bash
-  
+ 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
