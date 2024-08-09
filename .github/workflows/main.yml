@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - refactor
+      - shell
 
 jobs:
   dev-use1:
