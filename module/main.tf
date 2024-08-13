@@ -110,13 +110,13 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   }
 }
 
-resource "aws_s3_bucket_acl" "this" {
-  provider = aws.acc
-  bucket   = aws_s3_bucket.this.id
-  acl      = "private"
+# resource "aws_s3_bucket_acl" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.this.id
+#   acl      = "private"
 
-  depends_on = [aws_s3_bucket_ownership_controls.this]
-}
+#   depends_on = [aws_s3_bucket_ownership_controls.this]
+# }
 
 resource "aws_s3_object" "inputs" {
   bucket = aws_s3_bucket.this.id

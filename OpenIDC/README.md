@@ -39,7 +39,7 @@ In your GitHub repo, make sure you grant `read and write permissions` to your gi
 
 ## Use OpenID Connect in your github actions pipeline
 ```yaml
-name: Terraform Deploy
+name: Terraform Apply
 
 on:
   workflow_call:
