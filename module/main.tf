@@ -168,7 +168,7 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
     security_group_ids = [aws_security_group.allow_tls.id]
   }
 
-  depends_on = [ aws_iam_role.image_extraction_lambda_role ]
+  depends_on = [aws_iam_role.image_extraction_lambda_role]
 }
 
 
