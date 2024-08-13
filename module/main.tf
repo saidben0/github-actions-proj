@@ -163,10 +163,10 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
     target_arn = aws_sqs_queue.dlq.arn
   }
 
-  vpc_config {
-    subnet_ids         = [module.vpc.private_subnets[0]]
-    security_group_ids = [aws_security_group.allow_tls.id]
-  }
+  # vpc_config {
+  #   subnet_ids         = [module.vpc.private_subnets[0]]
+  #   security_group_ids = [aws_security_group.allow_tls.id]
+  # }
 
   depends_on = [aws_iam_role.image_extraction_lambda_role]
 }
@@ -207,14 +207,6 @@ resource "aws_lambda_event_source_mapping" "this" {
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = aws_lambda_function.image_extraction_lambda_function.arn
-}
-
-
-resource "aws_cloudwatch_log_group" "EnverusSFNLogGroup" {
-  provider          = aws.acc
-  name_prefix       = "/aws/vendedlogs/states/"
-  kms_key_id        = aws_kms_key.this.arn
-  retention_in_days = 365
 }
 
 
@@ -266,86 +258,3 @@ resource "aws_dynamodb_table" "images_metadata" {
 # }
 # ########################################################################
 # ########################################################################
-
-
-####################################################
-########### triggering the step function ###########
-resource "aws_sfn_state_machine" "this" {
-  provider   = aws.acc
-  name       = "${var.stack_name}-sfn"
-  role_arn   = aws_iam_role.sfn_role.arn
-  definition = file("${path.module}/templates/statemachine.asl.json")
-  logging_configuration {
-    log_destination        = "${aws_cloudwatch_log_group.EnverusSFNLogGroup.arn}:*"
-    include_execution_data = true
-    level                  = "ALL"
-  }
-
-  tracing_configuration {
-    enabled = true
-  }
-}
-
-# create an eventbridge role
-resource "aws_iam_role" "sfn_event_role" {
-  provider    = aws.acc
-  name_prefix = "sfn-event-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "events.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  inline_policy {
-    name = "invoke-step-function"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action   = "states:StartExecution"
-          Effect   = "Allow"
-          Resource = aws_sfn_state_machine.this.arn
-        }
-      ]
-    })
-  }
-}
-
-# create an event rule
-resource "aws_cloudwatch_event_rule" "this" {
-  provider    = aws.acc
-  name        = "sfn-rule"
-  description = "Trigger Step Function"
-
-  event_pattern = <<EOF
-{
-  "source": ["aws.s3"],
-  "detail-type": ["Object Created"],
-  "detail": {
-    "bucket": {
-      "name": ["${aws_s3_bucket.this.id}"]
-    },
-    "object": {
-      "key": [{"prefix": "${aws_s3_object.inputs.key}"}]
-    }
-  }
-}
-EOF
-}
-
-# define the step function as the target for the eventbridge rule
-resource "aws_cloudwatch_event_target" "sfn_target" {
-  provider = aws.acc
-  rule     = aws_cloudwatch_event_rule.this.name
-  arn      = aws_sfn_state_machine.this.arn
-  role_arn = aws_iam_role.sfn_event_role.arn
-}
-####################################################
-####################################################
