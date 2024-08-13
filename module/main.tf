@@ -163,10 +163,10 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
     target_arn = aws_sqs_queue.dlq.arn
   }
 
-  # vpc_config {
-  #   subnet_ids         = [module.vpc.private_subnets[0]]
-  #   security_group_ids = [aws_security_group.allow_tls.id]
-  # }
+  vpc_config {
+    subnet_ids         = [module.vpc.private_subnets[0]]
+    security_group_ids = [aws_security_group.allow_tls.id]
+  }
 }
 
 
