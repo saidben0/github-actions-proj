@@ -110,13 +110,13 @@ resource "aws_s3_bucket_ownership_controls" "this" {
   }
 }
 
-resource "aws_s3_bucket_acl" "this" {
-  provider = aws.acc
-  bucket   = aws_s3_bucket.this.id
-  acl      = "private"
+# resource "aws_s3_bucket_acl" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.this.id
+#   acl      = "private"
 
-  depends_on = [aws_s3_bucket_ownership_controls.this]
-}
+#   depends_on = [aws_s3_bucket_ownership_controls.this]
+# }
 
 resource "aws_s3_object" "inputs" {
   bucket = aws_s3_bucket.this.id
@@ -167,6 +167,8 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
     subnet_ids         = [module.vpc.private_subnets[0]]
     security_group_ids = [aws_security_group.allow_tls.id]
   }
+
+  depends_on = [aws_iam_role.image_extraction_lambda_role]
 }
 
 

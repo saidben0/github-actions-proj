@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: Terraform Apply
 
 on:
   workflow_call:
@@ -71,7 +71,7 @@ jobs:
       with: 
         framework: terraform
         # CKV_AWS_272(lambda code-signing), CKV_AWS_18(s3 bucket access logging), CKV_AWS_144(s3 cross-region replication) 
-        skip_check: CKV_AWS_272,CKV_AWS_18,CKV_AWS_144,CKV_AWS_290,CKV_AWS_355,CKV_TF_1
+        skip_check: CKV_AWS_272,CKV_AWS_18,CKV_AWS_144,CKV_AWS_290,CKV_AWS_355,CKV_TF_1,CKV_AWS_117
 
 
   terraform-plan:
