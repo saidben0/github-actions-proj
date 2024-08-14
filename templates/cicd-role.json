@@ -24,7 +24,8 @@
                 "iam:UntagRole",
 				"iam:TagRole",
                 "iam:ListInstanceProfilesForRole",
-                "iam:GetRolePolicy"
+                "iam:GetRolePolicy",
+                "iam:PassRole"
             ],
             "Resource": [
                 "arn:aws:iam::155185327318:role/*"
