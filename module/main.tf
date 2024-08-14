@@ -214,10 +214,16 @@ resource "aws_dynamodb_table" "images_metadata" {
   provider     = aws.acc
   name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "ImageId"
+  hash_key     = "document_id"
+  range_key    = "chunk"
 
   attribute {
-    name = "ImageId"
+    name = "document_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "chunk"
     type = "S"
   }
 
@@ -258,3 +264,7 @@ resource "aws_dynamodb_table" "images_metadata" {
 # }
 # ########################################################################
 # ########################################################################
+
+# create a dynamodb table using terraform
+
+
