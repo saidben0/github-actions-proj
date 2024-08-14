@@ -93,7 +93,9 @@
                 "kms:CreateGrant",
                 "kms:EnableKeyRotation",
                 "kms:CreateAlias",
-                "kms:DeleteAlias"
+                "kms:DeleteAlias",
+                "kms:TagResource",
+                "kms:UntagResource"
             ],
             "Resource": [
                 "arn:aws:kms:*:155185327318:alias/*",
