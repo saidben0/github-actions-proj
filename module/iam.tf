@@ -102,11 +102,11 @@ resource "aws_sqs_queue_policy" "this" {
         },
         Action   = "sqs:SendMessage",
         Resource = aws_sqs_queue.this.arn,
-        Condition = {
-          ArnEquals = {
-            "aws:SourceArn" = aws_s3_bucket.this.arn
-          }
-        }
+        # Condition = {
+        #   ArnEquals = {
+        #     "aws:SourceArn" = aws_s3_bucket.this.arn
+        #   }
+        # }
       }
     ]
   })

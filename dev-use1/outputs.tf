@@ -22,6 +22,6 @@ output "lambda_policy_name" {
   value = module.dev-use1.lambda_policy_name
 }
 
-output "bucket_name" {
-  value = module.dev-use1.bucket_name
-}
+# output "bucket_name" {
+#   value = module.dev-use1.bucket_name
+# }

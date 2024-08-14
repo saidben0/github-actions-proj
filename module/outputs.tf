@@ -22,6 +22,6 @@ output "lambda_policy_name" {
   value = aws_iam_role_policy.image_extraction_lambda_policy.name
 }
 
-output "bucket_name" {
-  value = aws_s3_bucket.this.id
-}
+# output "bucket_name" {
+#   value = aws_s3_bucket.this.id
+# }
