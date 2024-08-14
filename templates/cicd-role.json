@@ -23,7 +23,8 @@
                 "iam:DeleteRole",
                 "iam:UntagRole",
 				"iam:TagRole",
-                "iam:ListInstanceProfilesForRole"
+                "iam:ListInstanceProfilesForRole",
+                "iam:GetRolePolicy"
             ],
             "Resource": [
                 "arn:aws:iam::155185327318:role/*"
@@ -90,7 +91,7 @@
                 "dynamodb:DescribeTable",
                 "dynamodb:DescribeContinuousBackups",
                 "dynamodb:DescribeTimeToLive",
-                 "dynamodb:ListTagsOfResource"
+                "dynamodb:ListTagsOfResource"
                 
             ],
             "Resource": [
