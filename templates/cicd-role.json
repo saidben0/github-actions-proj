@@ -37,6 +37,8 @@
                 "lambda:PutFunctionConcurrency",
                 "lambda:DeleteFunction",
                 "lambda:DeleteEventSourceMapping",
+                "lambda:TagResource",
+                "lambda:UntagResource"
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
@@ -56,8 +58,11 @@
                 "s3:PutBucketOwnershipControls",
                 "s3:DeleteBucketPolicy",
                 "s3:PutBucketNotification",
-                "ListBuckets",
-                "GetBucketVersioning"
+                "s3:ListBuckets",
+                "s3:GetBucketVersioning",
+                "s3:TagResource",
+                "s3:UntagResource"
+                
             ],
             "Resource": [
                 "arn:aws:s3:::*"
@@ -79,7 +84,10 @@
             "Action": [
                 "dynamodb:DeleteTable",
                 "dynamodb:UpdateContinuousBackups",
-                "dynamodb:CreateTable"
+                "dynamodb:CreateTable",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource"
+                
             ],
             "Resource": [
                 "arn:aws:dynamodb:*:155185327318:table/*",
