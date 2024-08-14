@@ -62,7 +62,7 @@ jobs:
         with:
           role-to-assume: ${{ inputs.iam-role-arn }}
           aws-region: ${{ inputs.aws-region }}
-          role-session-name: gh-actions-session
+          role-session-name: enverus-role-session
           role-duration-seconds: 3600
           audience: sts.amazonaws.com
       
