@@ -1,0 +1,58 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreateKey",
+                "lambda:CreateEventSourceMapping"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "iam:CreateRole",
+                "s3:CreateBucket",
+                "iam:PutRolePolicy",
+                "dynamodb:DeleteTable",
+                "dynamodb:UpdateContinuousBackups",
+                "lambda:PutFunctionConcurrency",
+                "s3:PutEncryptionConfiguration",
+                "s3:PutBucketTagging",
+                "iam:DeleteRolePolicy",
+                "kms:ScheduleKeyDeletion",
+                "s3:PutLifecycleConfiguration",
+                "lambda:DeleteFunction",
+                "kms:CreateGrant",
+                "s3:PutBucketVersioning",
+                "sqs:SetQueueAttributes",
+                "kms:EnableKeyRotation",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketOwnershipControls",
+                "iam:DeleteRole",
+                "s3:DeleteBucketPolicy",
+                "dynamodb:CreateTable",
+                "s3:PutBucketNotification",
+                "sqs:DeleteQueue",
+                "kms:CreateAlias",
+                "sqs:CreateQueue",
+                "lambda:DeleteEventSourceMapping",
+                "kms:DeleteAlias"
+            ],
+            "Resource": [
+                "arn:aws:sqs:*:155185327318:*",
+                "arn:aws:dynamodb:*:155185327318:table/*",
+                "arn:aws:iam::155185327318:role/*",
+                "arn:aws:s3:::*",
+                "arn:aws:lambda:*:155185327318:function:*",
+                "arn:aws:lambda:*:155185327318:event-source-mapping:*",
+                "arn:aws:kms:*:155185327318:alias/*",
+                "arn:aws:kms:*:155185327318:key/*"
+            ]
+        }
+    ]
+}
