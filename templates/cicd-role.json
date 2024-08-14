@@ -97,6 +97,7 @@
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "kms:*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CreateGrant",
                 "kms:EnableKeyRotation",
