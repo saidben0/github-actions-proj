@@ -44,7 +44,8 @@
                 "lambda:GetFunction",
                 "lambda:GetFunctionConfiguration",
                 "lambda:ListVersionsByFunction",
-                "lambda:GetFunctionCodeSigningConfig"
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:GetEventSourceMapping"
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
