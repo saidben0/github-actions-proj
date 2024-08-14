@@ -34,7 +34,7 @@
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
-                "arn:aws:lambda:*:155185327318:event-source-mapping:*",
+                "arn:aws:lambda:*:155185327318:event-source-mapping:*"
             ]
         },
         {
@@ -50,10 +50,22 @@
                 "s3:PutBucketOwnershipControls",
                 "s3:DeleteBucketPolicy",
                 "s3:PutBucketNotification",
+                "ListBuckets",
+                "GetBucketVersioning"
             ],
             "Resource": [
                 "arn:aws:s3:::*"
             ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject"
+            ],
+            "Resource": "arn:aws:s3:::*/*"
         },
         {
             "Sid": "VisualEditor1",
