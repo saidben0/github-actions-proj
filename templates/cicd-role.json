@@ -42,7 +42,8 @@
                 "lambda:TagResource",
                 "lambda:UntagResource",
                 "lambda:GetFunction",
-                "lambda:GetFunctionConfiguration"
+                "lambda:GetFunctionConfiguration",
+                "lambda:ListVersionsByFunction"
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
