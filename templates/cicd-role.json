@@ -17,7 +17,9 @@
                 "iam:CreateRole",
                 "iam:PutRolePolicy",
                 "iam:DeleteRolePolicy",
-                "iam:DeleteRole"
+                "iam:DeleteRole",
+                "iam:UntagRole",
+				"iam:TagRole"
             ],
             "Resource": [
                 "arn:aws:iam::155185327318:role/*"
