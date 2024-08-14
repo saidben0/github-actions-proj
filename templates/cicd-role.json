@@ -43,7 +43,8 @@
                 "lambda:UntagResource",
                 "lambda:GetFunction",
                 "lambda:GetFunctionConfiguration",
-                "lambda:ListVersionsByFunction"
+                "lambda:ListVersionsByFunction",
+                "lambda:GetFunctionCodeSigningConfig"
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
