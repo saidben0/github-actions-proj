@@ -118,7 +118,8 @@
             "Action": [
                 "sqs:SetQueueAttributes",
                 "sqs:DeleteQueue",
-                "sqs:CreateQueue"
+                "sqs:CreateQueue",
+                "sqs:ListQueueTags"
             ],
             "Resource": [
                 "arn:aws:sqs:*:155185327318:*"
