@@ -16,6 +16,7 @@
             "Action": [
                 "iam:TagRole",
                 "iam:CreateRole",
+                "iam:ListRolePolicies",
                 "iam:PutRolePolicy",
                 "iam:DeleteRolePolicy",
                 "iam:DeleteRole",
