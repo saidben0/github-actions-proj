@@ -89,7 +89,8 @@
                 "dynamodb:UntagResource",
                 "dynamodb:DescribeTable",
                 "dynamodb:DescribeContinuousBackups",
-                "dynamodb:DescribeTimeToLive"
+                "dynamodb:DescribeTimeToLive",
+                 "dynamodb:ListTagsOfResource"
                 
             ],
             "Resource": [
