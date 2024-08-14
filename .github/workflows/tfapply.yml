@@ -170,3 +170,5 @@ jobs:
         run: |
           cd ${{ inputs.aws-env-dir }}/
           terraform apply ../tfplan
+          TF_LOG=trace terraform apply ../tfplan --auto-approve &> log.log
+          cat log.log | grep "DEBUG: Request"
