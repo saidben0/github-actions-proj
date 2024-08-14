@@ -40,7 +40,9 @@
                 "lambda:DeleteFunction",
                 "lambda:DeleteEventSourceMapping",
                 "lambda:TagResource",
-                "lambda:UntagResource"
+                "lambda:UntagResource",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration"
             ],
             "Resource": [
                 "arn:aws:lambda:*:155185327318:function:*",
