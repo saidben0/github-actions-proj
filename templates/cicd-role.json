@@ -87,7 +87,8 @@
                 "dynamodb:CreateTable",
                 "dynamodb:TagResource",
                 "dynamodb:UntagResource",
-                "dynamodb:DescribeTable"
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups"
                 
             ],
             "Resource": [
