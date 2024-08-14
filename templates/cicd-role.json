@@ -14,6 +14,7 @@
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "iam:TagRole",
                 "iam:CreateRole",
                 "iam:PutRolePolicy",
                 "iam:DeleteRolePolicy",
