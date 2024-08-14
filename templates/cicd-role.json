@@ -22,7 +22,8 @@
                 "iam:DeleteRolePolicy",
                 "iam:DeleteRole",
                 "iam:UntagRole",
-				"iam:TagRole"
+				"iam:TagRole",
+                "iam:ListInstanceProfilesForRole"
             ],
             "Resource": [
                 "arn:aws:iam::155185327318:role/*"
