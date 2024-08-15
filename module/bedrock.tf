@@ -117,8 +117,18 @@ resource "aws_lambda_function" "bedrock_api" {
   filename      = data.archive_file.bedrock_api_zip.output_path
   handler       = "index.lambda_handler"
   runtime       = "python3.12"
+  timeout                        = "120"
+  reserved_concurrent_executions = 100
+
   # source_code_hash is required to detect changes to Lambda code/zip
   source_code_hash = data.archive_file.bedrock_api_zip.output_base64sha256
+
+  tracing_config {
+    mode = "Active"
+  }
+  dead_letter_config {
+    target_arn = aws_sqs_queue.dlq.arn
+  }
 }
 
 resource "aws_lambda_permission" "bedrock_api" {
