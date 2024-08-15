@@ -44,8 +44,8 @@
                 "kms:GetKeyRotationStatus"
             ],
             "Resource": [
-                "arn:aws:kms:*:155185327318:alias/*",
-                "arn:aws:kms:*:155185327318:key/*"
+                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -64,7 +64,7 @@
                 "lambda:UntagResource"
             ],
             "Resource": [
-                "arn:aws:lambda:*:155185327318:function:*"
+                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*"
             ]
         },
         {
@@ -73,7 +73,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Sid": "VisualEditor3",
@@ -89,7 +89,7 @@
                 "dynamodb:UntagResource",
                 "dynamodb:DescribeContinuousBackups"
             ],
-            "Resource": "arn:aws:dynamodb:*:155185327318:table/*"
+            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
             "Sid": "VisualEditor4",
@@ -109,7 +109,7 @@
                 "iam:PassRole",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": "arn:aws:iam::155185327318:role/*"
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/*"
         },
         {
             "Sid": "VisualEditor5",
@@ -145,7 +145,7 @@
                 "sqs:SetQueueAttributes",
                 "sqs:ListQueueTags"
             ],
-            "Resource": "arn:aws:sqs:*:155185327318:*"
+            "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
         },
         {
             "Sid": "VisualEditor7",

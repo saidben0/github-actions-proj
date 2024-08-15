@@ -28,7 +28,7 @@
                 "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::155185327318:role/*"
+                "arn:aws:iam::${ACCOUNT_ID}:role/*"
             ]
         },
         {
@@ -48,8 +48,8 @@
                 "lambda:GetEventSourceMapping"
             ],
             "Resource": [
-                "arn:aws:lambda:*:155185327318:function:*",
-                "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*",
+                "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
             ]
         },
         {
@@ -101,7 +101,7 @@
                 
             ],
             "Resource": [
-                "arn:aws:dynamodb:*:155185327318:table/*",
+                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*",
             ]
         },
         {
@@ -118,8 +118,8 @@
                 "kms:UntagResource"
             ],
             "Resource": [
-                "arn:aws:kms:*:155185327318:alias/*",
-                "arn:aws:kms:*:155185327318:key/*"
+                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         
@@ -133,7 +133,7 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": [
-                "arn:aws:sqs:*:155185327318:*"
+                "arn:aws:sqs:*:${ACCOUNT_ID}:*"
             ]
         }
     ]

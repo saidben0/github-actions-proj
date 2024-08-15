@@ -19,6 +19,8 @@
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "kms:GenerateDataKey",
+                "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:UpdateKeyDescription",
                 "kms:GetKeyPolicy",
@@ -36,8 +38,8 @@
                 "kms:GetKeyRotationStatus"
             ],
             "Resource": [
-                "arn:aws:kms:*:155185327318:alias/*",
-                "arn:aws:kms:*:155185327318:key/*"
+                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -56,7 +58,7 @@
                 "lambda:UntagResource"
             ],
             "Resource": [
-                "arn:aws:lambda:*:155185327318:function:*"
+                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*"
             ]
         },
         {
@@ -65,7 +67,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Sid": "VisualEditor3",
@@ -81,7 +83,7 @@
                 "dynamodb:UntagResource",
                 "dynamodb:DescribeContinuousBackups"
             ],
-            "Resource": "arn:aws:dynamodb:*:155185327318:table/*"
+            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
             "Sid": "VisualEditor4",
@@ -101,13 +103,19 @@
                 "iam:PassRole",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": "arn:aws:iam::155185327318:role/*"
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/*"
         },
         {
             "Effect": "Allow",
             "Action": [
                 "s3:GetObject",
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObjectTagging",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectVersionAcl"
             ],
             "Resource": [
                 "arn:aws:s3:::*",
@@ -121,19 +129,39 @@
                 "s3:DeleteBucket",
                 "s3:ListBucket",
                 "s3:GetBucketLocation",
+                "s3:GetBucketVersioning",
+                "s3:GetBucketPolicy",
                 "s3:PutBucketPolicy",
                 "s3:DeleteBucketPolicy",
+                "s3:GetBucketAcl",
                 "s3:PutBucketAcl",
+                "s3:GetBucketCors",
                 "s3:PutBucketCors",
                 "s3:PutBucketLogging",
                 "s3:PutBucketNotification",
                 "s3:PutBucketTagging",
+                "s3:GetBucketWebsite",
                 "s3:PutBucketWebsite",
                 "s3:DeleteBucketWebsite",
                 "s3:ListTagsForResource",
                 "s3:GetBucketTagging",
                 "s3:TagResource",
-                "s3:UntagResource"
+                "s3:UntagResource",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketLogging",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetReplicationConfiguration",
+                "s3:GetEncryptionConfiguration",
+                "s3:PutEncryptionConfiguration",
+                "s3:PutBucketVersioning",
+                "s3:PutLifecycleConfiguration",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:GetBucketOwnershipControls",
+                "s3:PutBucketOwnershipControls",
+                "s3:ListBucketVersions",
+                "s3:GetBucketNotification"
             ],
             "Resource": "arn:aws:s3:::*"
         },
@@ -149,7 +177,7 @@
                 "sqs:SetQueueAttributes",
                 "sqs:ListQueueTags"
             ],
-            "Resource": "arn:aws:sqs:*:155185327318:*"
+            "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
         }
     ]
 }

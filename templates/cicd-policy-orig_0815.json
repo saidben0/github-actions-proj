@@ -92,14 +92,14 @@
                 "sqs:CreateQueue"
             ],
             "Resource": [
-                "arn:aws:iam::155185327318:role/*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/*",
                 "arn:aws:s3:::*",
-                "arn:aws:sqs:*:155185327318:*",
-                "arn:aws:dynamodb:*:155185327318:table/*",
-                "arn:aws:kms:*:155185327318:alias/*",
-                "arn:aws:kms:*:155185327318:key/*",
-                "arn:aws:lambda:*:155185327318:function:*",
-                "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+                "arn:aws:sqs:*:${ACCOUNT_ID}:*",
+                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:key/*",
+                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*",
+                "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
             ]
         },
         {
