@@ -110,13 +110,13 @@ data "archive_file" "bedrock_api_zip" {
 }
 
 resource "aws_lambda_function" "bedrock_api" {
-  provider      = aws.acc
-  function_name = "BedrockAPI"
-  role          = aws_iam_role.lambda_bedrock_api.arn
-  description   = "A Lambda function for the forex API action group"
-  filename      = data.archive_file.bedrock_api_zip.output_path
-  handler       = "index.lambda_handler"
-  runtime       = "python3.12"
+  provider                       = aws.acc
+  function_name                  = "BedrockAPI"
+  role                           = aws_iam_role.lambda_bedrock_api.arn
+  description                    = "A Lambda function for the forex API action group"
+  filename                       = data.archive_file.bedrock_api_zip.output_path
+  handler                        = "index.lambda_handler"
+  runtime                        = "python3.12"
   timeout                        = "120"
   reserved_concurrent_executions = 100
 
