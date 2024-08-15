@@ -25,7 +25,7 @@ data "aws_bedrock_foundation_model" "this" {
 
 resource "aws_iam_role" "bedrock_agent_role" {
   provider = aws.acc
-  name = "AmazonBedrockExecutionRoleForAgents_ForexAssistant"
+  name     = "AmazonBedrockExecutionRoleForAgents_ForexAssistant"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -50,8 +50,8 @@ resource "aws_iam_role" "bedrock_agent_role" {
 
 resource "aws_iam_role_policy" "bedrock_agent_policy" {
   provider = aws.acc
-  name = "AmazonBedrockAgentBedrockFoundationModelPolicy_ForexAssistant"
-  role = aws_iam_role.bedrock_agent_role.name
+  name     = "AmazonBedrockAgentBedrockFoundationModelPolicy_ForexAssistant"
+  role     = aws_iam_role.bedrock_agent_role.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -69,13 +69,13 @@ resource "aws_iam_role_policy" "bedrock_agent_policy" {
 ###############
 data "aws_iam_policy" "lambda_basic_execution" {
   provider = aws.acc
-  name = "AWSLambdaBasicExecutionRole"
+  name     = "AWSLambdaBasicExecutionRole"
 }
 
 # Action group Lambda execution role
 resource "aws_iam_role" "lambda_bedrock_api" {
   provider = aws.acc
-  name = "FunctionExecutionRoleForLambda_BedrockAPI"
+  name     = "FunctionExecutionRoleForLambda_BedrockAPI"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -110,7 +110,7 @@ data "archive_file" "bedrock_api_zip" {
 }
 
 resource "aws_lambda_function" "bedrock_api" {
-  provider = aws.acc
+  provider      = aws.acc
   function_name = "BedrockAPI"
   role          = aws_iam_role.lambda_bedrock_api.arn
   description   = "A Lambda function for the forex API action group"
@@ -122,7 +122,7 @@ resource "aws_lambda_function" "bedrock_api" {
 }
 
 resource "aws_lambda_permission" "bedrock_api" {
-  provider = aws.acc
+  provider       = aws.acc
   action         = "lambda:invokeFunction"
   function_name  = aws_lambda_function.bedrock_api.function_name
   principal      = "bedrock.amazonaws.com"
@@ -135,7 +135,7 @@ resource "aws_lambda_permission" "bedrock_api" {
 ######### Defining the agent and action group resources #########
 #################################################################
 resource "aws_bedrockagent_agent" "bedrock_asst" {
-  provider = aws.acc
+  provider                = aws.acc
   agent_name              = "ForexAssistant"
   agent_resource_role_arn = aws_iam_role.bedrock_agent_role.arn
   description             = "An assisant that provides forex rate information."
@@ -144,7 +144,7 @@ resource "aws_bedrockagent_agent" "bedrock_asst" {
 }
 
 resource "aws_bedrockagent_agent_action_group" "forex_api" {
-  provider = aws.acc
+  provider                   = aws.acc
   action_group_name          = "ForexAPI"
   agent_id                   = aws_bedrockagent_agent.bedrock_asst.id
   agent_version              = "DRAFT"
