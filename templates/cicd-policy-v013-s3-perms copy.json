@@ -95,7 +95,9 @@
                 "iam:GetRolePolicy",
                 "iam:ListInstanceProfilesForRole",
                 "iam:PassRole",
-                "iam:DeleteRolePolicy"
+                "iam:DeleteRolePolicy",
+                "iam:ListPolicies"
+
             ],
             "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/*"
         },
@@ -171,6 +173,13 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:GetFoundationModel"
+            ],
+            "Resource": "arn:aws:bedrock:*::foundation-model/*"
         }
     ]
 }
