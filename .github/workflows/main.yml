@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - enverus
+      - s3
 
 jobs:
   dev-use1:

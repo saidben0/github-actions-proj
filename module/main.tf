@@ -31,104 +31,104 @@ resource "random_id" "this" {
 }
 
 
-# ########################################################################
-# ######### `Inputs` S3 Bucket config ##################################
-# resource "aws_s3_bucket" "this" {
-#   provider      = aws.acc
-#   bucket        = "${var.stack_name}-${random_id.this.hex}"
-#   force_destroy = true
-# }
+########################################################################
+######### `Inputs` S3 Bucket config ##################################
+resource "aws_s3_bucket" "this" {
+  provider      = aws.acc
+  bucket        = "${var.stack_name}-${random_id.this.hex}"
+  force_destroy = true
+}
 
-# resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.this.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
 
-#   rule {
-#     apply_server_side_encryption_by_default {
-#       kms_master_key_id = aws_kms_key.this.arn
-#       sse_algorithm     = "aws:kms"
-#     }
-#   }
-# }
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.this.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
 
-# resource "aws_s3_bucket_versioning" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.this.id
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
+resource "aws_s3_bucket_versioning" "this" {
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
-# resource "aws_s3_bucket_lifecycle_configuration" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.this.id
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
 
-#   rule {
-#     abort_incomplete_multipart_upload {
-#       days_after_initiation = 7
-#     }
-#     id     = "log"
-#     status = "Enabled"
+  rule {
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+    id     = "log"
+    status = "Enabled"
 
-#     transition {
-#       days          = 30
-#       storage_class = "STANDARD_IA"
-#     }
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
 
-#     transition {
-#       days          = 60
-#       storage_class = "GLACIER"
-#     }
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
 
-#     expiration {
-#       days = 90
-#     }
-#   }
-# }
+    expiration {
+      days = 90
+    }
+  }
+}
 
-# resource "aws_s3_bucket_public_access_block" "this" {
-#   provider                = aws.acc
-#   bucket                  = aws_s3_bucket.this.id
-#   block_public_acls       = true
-#   block_public_policy     = true
-#   ignore_public_acls      = true
-#   restrict_public_buckets = true
-# }
+resource "aws_s3_bucket_public_access_block" "this" {
+  provider                = aws.acc
+  bucket                  = aws_s3_bucket.this.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
-# # resource "aws_s3_bucket_logging" "this" {
-# #   bucket = aws_s3_bucket.this.id
-
-# #   target_bucket = aws_s3_bucket.log_bucket.id
-# #   target_prefix = "log/"
-# # }
-
-# resource "aws_s3_bucket_ownership_controls" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.this.id
-#   rule {
-#     object_ownership = "BucketOwnerEnforced"
-#   }
-# }
-
-# # resource "aws_s3_bucket_acl" "this" {
-# #   provider = aws.acc
-# #   bucket   = aws_s3_bucket.this.id
-# #   acl      = "private"
-
-# #   depends_on = [aws_s3_bucket_ownership_controls.this]
-# # }
-
-# resource "aws_s3_object" "inputs" {
+# resource "aws_s3_bucket_logging" "this" {
 #   bucket = aws_s3_bucket.this.id
-#   key    = "inputs/dir1/dir2/"
-#   source = "/dev/null"
+
+#   target_bucket = aws_s3_bucket.log_bucket.id
+#   target_prefix = "log/"
 # }
 
-# resource "aws_s3_object" "outputs" {
-#   bucket = aws_s3_bucket.this.id
-#   key    = "outputs/dir1/dir2/"
-#   source = "/dev/null"
+resource "aws_s3_bucket_ownership_controls" "this" {
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+# resource "aws_s3_bucket_acl" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.this.id
+#   acl      = "private"
+
+#   depends_on = [aws_s3_bucket_ownership_controls.this]
 # }
+
+resource "aws_s3_object" "inputs" {
+  bucket = aws_s3_bucket.this.id
+  key    = "inputs/dir1/dir2/"
+  source = "/dev/null"
+}
+
+resource "aws_s3_object" "outputs" {
+  bucket = aws_s3_bucket.this.id
+  key    = "outputs/dir1/dir2/"
+  source = "/dev/null"
+}
 # ########################################################################
 # ########################################################################
 
@@ -187,20 +187,20 @@ resource "aws_sqs_queue" "this" {
   })
 }
 
-# # send an s3 event to sqs when new s3 object is created/uploaded
-# resource "aws_s3_bucket_notification" "sqs_notification" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.this.id
+# send an s3 event to sqs when new s3 object is created/uploaded
+resource "aws_s3_bucket_notification" "sqs_notification" {
+  provider = aws.acc
+  bucket   = aws_s3_bucket.this.id
 
-#   queue {
-#     queue_arn     = aws_sqs_queue.this.arn
-#     events        = ["s3:ObjectCreated:*"]
-#     filter_prefix = aws_s3_object.inputs.key
-#     # filter_suffix = ".pdf"
-#   }
+  queue {
+    queue_arn     = aws_sqs_queue.this.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = aws_s3_object.inputs.key
+    # filter_suffix = ".pdf"
+  }
 
-#   depends_on = [aws_sqs_queue_policy.this]
-# }
+  depends_on = [aws_sqs_queue_policy.this]
+}
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
