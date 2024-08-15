@@ -25,7 +25,7 @@ data "aws_bedrock_foundation_model" "this" {
 
 resource "aws_iam_role" "bedrock_agent_role" {
   provider = aws.acc
-  name     = "AmazonBedrockExecutionRoleForAgents_ForexAssistant"
+  name     = "AmazonBedrockExecutionRoleForAgents_BedrockAssistant"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -50,7 +50,7 @@ resource "aws_iam_role" "bedrock_agent_role" {
 
 resource "aws_iam_role_policy" "bedrock_agent_policy" {
   provider = aws.acc
-  name     = "AmazonBedrockAgentBedrockFoundationModelPolicy_ForexAssistant"
+  name     = "AmazonBedrockAgentBedrockFoundationModelPolicy_BedrockAssistant"
   role     = aws_iam_role.bedrock_agent_role.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -136,7 +136,7 @@ resource "aws_lambda_permission" "bedrock_api" {
 #################################################################
 resource "aws_bedrockagent_agent" "bedrock_asst" {
   provider                = aws.acc
-  agent_name              = "ForexAssistant"
+  agent_name              = "BedrockAssistant"
   agent_resource_role_arn = aws_iam_role.bedrock_agent_role.arn
   description             = "An assisant that provides forex rate information."
   foundation_model        = data.aws_bedrock_foundation_model.this.model_id
