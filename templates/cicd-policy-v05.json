@@ -1,0 +1,170 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0Lambda",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:TagResource",
+                "lambda:ListVersionsByFunction",
+                "lambda:GetEventSourceMapping",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
+                "lambda:CreateEventSourceMapping",
+                "lambda:UntagResource",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:ListTags"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor11",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "kms:ListAliases"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "kms:*",
+                "kms:ListAliases",
+                "kms:ListResourceTags",
+                "kms:TagResource",
+                "kms:DeleteAlias",
+                "kms:UntagResource",
+                "kms:ListResourceTags",
+                "kms:ScheduleKeyDeletion",
+                "kms:CreateGrant",
+                "kms:EnableKeyRotation",
+                "kms:CreateAlias"
+            ],
+            "Resource": [
+                "arn:aws:kms:*:155185327318:alias/*",
+                "arn:aws:kms:*:155185327318:key/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:GetFunction",
+                "lambda:CreateFunction",
+                "lambda:TagResource",
+                "lambda:GetFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "lambda:GetEventSourceMapping",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:PutFunctionConcurrency",
+                "lambda:ListVersionsByFunction",
+                "lambda:ListTags",
+                "lambda:UntagResource",
+                "lambda:DeleteEventSourceMapping"
+            ],
+            "Resource": [
+                "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:CreateTable",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource",
+                "dynamodb:DescribeContinuousBackups"
+            ],
+            "Resource": "arn:aws:dynamodb:*:155185327318:table/*"
+        },
+        {
+            "Sid": "VisualEditor4",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListRoleTags",
+                "iam:PutRolePolicy",
+                "iam:ListAttachedRolePolicies",
+                "iam:CreateRole",
+                "iam:ListRolePolicies",
+                "iam:GetRole",
+                "iam:DeleteRole",
+                "iam:UntagRole",
+                "iam:TagRole",
+                "iam:GetRolePolicy",
+                "iam:ListInstanceProfilesForRole",
+                "iam:PassRole",
+                "iam:DeleteRolePolicy"
+            ],
+            "Resource": "arn:aws:iam::155185327318:role/*"
+        },
+        {
+            "Sid": "VisualEditor5",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObjectVersionTagging",
+                "s3:CreateBucket",
+                "s3:PutLifecycleConfiguration",
+                "s3:TagResource",
+                "s3:DeleteBucketPolicy",
+                "s3:PutBucketNotification",
+                "s3:UntagResource",
+                "s3:PutEncryptionConfiguration",
+                "s3:ListTagsForResource",
+                "s3:GetObjectTagging",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketOwnershipControls",
+                "s3:GetBucketVersioning",
+                "s3:PutBucketTagging",
+                "s3:PutBucketVersioning"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "VisualEditor6",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:UntagQueue",
+                "sqs:CreateQueue",
+                "sqs:TagQueue",
+                "sqs:GetQueueAttributes",
+                "sqs:DeleteQueue",
+                "sqs:SetQueueAttributes",
+                "sqs:ListQueueTags"
+            ],
+            "Resource": "arn:aws:sqs:*:155185327318:*"
+        },
+        {
+            "Sid": "VisualEditor7",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListTagsForResource",
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject",
+                "s3:GetBucketTagging",
+                "s3:UntagResource",
+                "s3:TagResource"
+            ],
+            "Resource": "arn:aws:s3:::*/*"
+        },
+        {
+            "Sid": "VisualEditor8",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "VisualEditor9",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::*/*"
+        }
+    ]
+}
