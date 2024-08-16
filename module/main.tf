@@ -8,7 +8,7 @@ data "aws_region" "current" {
 
 data "aws_s3_bucket" "inputs_bucket" {
   provider = aws.acc
-  bucket = var.inputs_bucket_name
+  bucket   = var.inputs_bucket_name
 }
 
 resource "aws_kms_key" "this" {
