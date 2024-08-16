@@ -21,7 +21,7 @@ resource "aws_kms_key" "this" {
 
 resource "aws_kms_alias" "this" {
   provider      = aws.acc
-  name          = "alias/${var.stack_name}"
+  name          = "alias/${var.kms_alias_name}"
   target_key_id = aws_kms_key.this.id
 }
 
@@ -35,7 +35,7 @@ resource "random_id" "this" {
 ######### `Inputs` S3 Bucket config ##################################
 resource "aws_s3_bucket" "this" {
   provider      = aws.acc
-  bucket        = "${var.stack_name}-${random_id.this.hex}"
+  bucket        = "${var.prefix}-${random_id.this.hex}"
   force_destroy = true
 }
 
@@ -134,7 +134,7 @@ resource "aws_s3_object" "outputs" {
 
 resource "aws_sqs_queue" "dlq" {
   provider          = aws.acc
-  name              = "${var.stack_name}-dlq-${random_id.this.hex}"
+  name              = "${var.prefix}-dlq-${random_id.this.hex}"
   kms_master_key_id = aws_kms_alias.this.name
 }
 
@@ -174,7 +174,7 @@ resource "aws_lambda_function" "image_extraction_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider                   = aws.acc
-  name                       = "${var.stack_name}-sqs-${random_id.this.hex}"
+  name                       = "${var.prefix}-sqs-${random_id.this.hex}"
   kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds              = 90

@@ -86,33 +86,6 @@
         {
             "Effect": "Allow",
             "Action": [
-                "iam:ListRoleTags",
-                "iam:PutRolePolicy",
-                "iam:ListAttachedRolePolicies",
-                "iam:CreateRole",
-                "iam:ListRolePolicies",
-                "iam:GetRole",
-                "iam:DeleteRole",
-                "iam:UntagRole",
-                "iam:TagRole",
-                "iam:GetRolePolicy",
-                "iam:ListInstanceProfilesForRole",
-                "iam:PassRole",
-                "iam:DeleteRolePolicy",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion",
-                "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy"
-            ],
-            "Resource": [ 
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*",
-                "arn:aws:iam::aws:policy/service-role/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
                 "s3:GetObject",
                 "s3:PutObject",
                 "s3:PutObjectAcl",

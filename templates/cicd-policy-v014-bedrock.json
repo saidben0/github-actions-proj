@@ -102,7 +102,8 @@
                 "iam:GetPolicy",
                 "iam:GetPolicyVersion",
                 "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy"
+                "iam:DetachRolePolicy",
+                "iam:ListPolicies"
             ],
             "Resource": [ 
                 "arn:aws:iam::${ACCOUNT_ID}:role/*",

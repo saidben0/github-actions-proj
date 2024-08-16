@@ -1,35 +1,41 @@
 variable "region" {}
 
-variable "stack_name" {
+variable "prefix" {
   type    = string
-  default = "docs-processing"
+  default = "llandman"
 }
 
 variable "lambda_function_name" {
   type    = string
-  default = "image-extraction"
+  default = "llandman-queue-processing"
 }
 
 variable "lambda_role_name" {
   type    = string
-  default = "image_extraction_lambda_role"
+  default = "llandman-queue-processing_lambda_role"
 }
 
 variable "lambda_policy_name" {
   type    = string
-  default = "image_extraction_lambda_policy"
+  default = "llandman-queue-processing_lambda_policy"
 }
 
 variable "dynamodb_table_name" {
   type    = string
-  default = "ImagesMetadata"
+  default = "llandman-model-outputs"
 }
 
 variable "kms_alias_name" {
   type    = string
-  default = "sqs-key-alias"
+  default = "llandman-key-alias"
 }
 
+
+
+
+################################
+################################
+################################
 variable "kms_alias_name2" {
   type    = string
   default = "cloudwatch-key-alias"
