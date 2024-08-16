@@ -16,119 +16,12 @@ data "aws_kms_alias" "this" {
   name     = "alias/${var.kms_alias_name}"
 }
 
-# resource "aws_kms_key" "this" {
-#   provider    = aws.acc
-#   is_enabled  = true
-#   description = "Key used for sqs encryption"
-#   key_usage   = "ENCRYPT_DECRYPT"
-#   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
-#     account_id           = data.aws_caller_identity.current.account_id,
-#     aws_region           = data.aws_region.current.name,
-#     lambda_iam_role_name = aws_iam_role.queue_processing_lambda_role.name
-#   })
-#   enable_key_rotation = true
-# }
-
-# resource "aws_kms_alias" "this" {
-#   provider      = aws.acc
-#   name          = "alias/${var.kms_alias_name}"
-#   target_key_id = aws_kms_key.this.id
-# }
 
 resource "random_id" "this" {
   byte_length = 6
   prefix      = "terraform-aws-"
 }
 
-
-# ########################################################################
-# ######### `Inputs` S3 Bucket config ##################################
-# resource "aws_s3_bucket" "this" {
-#   provider      = aws.acc
-#   bucket        = "${var.prefix}-${random_id.this.hex}"
-#   force_destroy = true
-# }
-
-# resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-
-#   rule {
-#     apply_server_side_encryption_by_default {
-#       kms_master_key_id = aws_kms_key.this.arn
-#       sse_algorithm     = "aws:kms"
-#     }
-#   }
-# }
-
-# resource "aws_s3_bucket_versioning" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
-
-# resource "aws_s3_bucket_lifecycle_configuration" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-
-#   rule {
-#     abort_incomplete_multipart_upload {
-#       days_after_initiation = 7
-#     }
-#     id     = "log"
-#     status = "Enabled"
-
-#     transition {
-#       days          = 30
-#       storage_class = "STANDARD_IA"
-#     }
-
-#     transition {
-#       days          = 60
-#       storage_class = "GLACIER"
-#     }
-
-#     expiration {
-#       days = 90
-#     }
-#   }
-# }
-
-# resource "aws_s3_bucket_public_access_block" "this" {
-#   provider                = aws.acc
-#   bucket                  = aws_s3_bucket.${var.inputs_bucket_name}.id
-#   block_public_acls       = true
-#   block_public_policy     = true
-#   ignore_public_acls      = true
-#   restrict_public_buckets = true
-# }
-
-# # resource "aws_s3_bucket_logging" "this" {
-# #   bucket = aws_s3_bucket.${var.inputs_bucket_name}.id
-
-# #   target_bucket = aws_s3_bucket.log_bucket.id
-# #   target_prefix = "log/"
-# # }
-
-# resource "aws_s3_bucket_ownership_controls" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-#   rule {
-#     object_ownership = "BucketOwnerEnforced"
-#   }
-# }
-
-# # resource "aws_s3_bucket_acl" "this" {
-# #   provider = aws.acc
-# #   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-# #   acl      = "private"
-
-# #   depends_on = [aws_s3_bucket_ownership_controls.this]
-# # }
-# ########################################################################
-# ########################################################################
 
 resource "aws_sqs_queue" "dlq" {
   provider = aws.acc
@@ -245,6 +138,123 @@ resource "aws_dynamodb_table" "images_metadata" {
 }
 
 
+
+
+
+
+
+
+
+# resource "aws_kms_key" "this" {
+#   provider    = aws.acc
+#   is_enabled  = true
+#   description = "Key used for sqs encryption"
+#   key_usage   = "ENCRYPT_DECRYPT"
+#   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
+#     account_id           = data.aws_caller_identity.current.account_id,
+#     aws_region           = data.aws_region.current.name,
+#     lambda_iam_role_name = aws_iam_role.queue_processing_lambda_role.name
+#   })
+#   enable_key_rotation = true
+# }
+
+# resource "aws_kms_alias" "this" {
+#   provider      = aws.acc
+#   name          = "alias/${var.kms_alias_name}"
+#   target_key_id = aws_kms_key.this.id
+# }
+
+
+# ########################################################################
+# ######### `Inputs` S3 Bucket config ##################################
+# resource "aws_s3_bucket" "this" {
+#   provider      = aws.acc
+#   bucket        = "${var.prefix}-${random_id.this.hex}"
+#   force_destroy = true
+# }
+
+# resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
+
+#   rule {
+#     apply_server_side_encryption_by_default {
+#       kms_master_key_id = aws_kms_key.this.arn
+#       sse_algorithm     = "aws:kms"
+#     }
+#   }
+# }
+
+# resource "aws_s3_bucket_versioning" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
+
+# resource "aws_s3_bucket_lifecycle_configuration" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
+
+#   rule {
+#     abort_incomplete_multipart_upload {
+#       days_after_initiation = 7
+#     }
+#     id     = "log"
+#     status = "Enabled"
+
+#     transition {
+#       days          = 30
+#       storage_class = "STANDARD_IA"
+#     }
+
+#     transition {
+#       days          = 60
+#       storage_class = "GLACIER"
+#     }
+
+#     expiration {
+#       days = 90
+#     }
+#   }
+# }
+
+# resource "aws_s3_bucket_public_access_block" "this" {
+#   provider                = aws.acc
+#   bucket                  = aws_s3_bucket.${var.inputs_bucket_name}.id
+#   block_public_acls       = true
+#   block_public_policy     = true
+#   ignore_public_acls      = true
+#   restrict_public_buckets = true
+# }
+
+# # resource "aws_s3_bucket_logging" "this" {
+# #   bucket = aws_s3_bucket.${var.inputs_bucket_name}.id
+
+# #   target_bucket = aws_s3_bucket.log_bucket.id
+# #   target_prefix = "log/"
+# # }
+
+# resource "aws_s3_bucket_ownership_controls" "this" {
+#   provider = aws.acc
+#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
+#   rule {
+#     object_ownership = "BucketOwnerEnforced"
+#   }
+# }
+
+# # resource "aws_s3_bucket_acl" "this" {
+# #   provider = aws.acc
+# #   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
+# #   acl      = "private"
+
+# #   depends_on = [aws_s3_bucket_ownership_controls.this]
+# # }
+# ########################################################################
+# ########################################################################
+
+
 # ########################################################################
 # ######### trigger lambda fx using S3 event notifications ###############
 # resource "aws_lambda_permission" "allow_bucket" {
@@ -271,7 +281,3 @@ resource "aws_dynamodb_table" "images_metadata" {
 # }
 # ########################################################################
 # ########################################################################
-
-# create a dynamodb table using terraform
-
-
