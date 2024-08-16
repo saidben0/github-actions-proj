@@ -11,6 +11,11 @@ data "aws_s3_bucket" "inputs_bucket" {
   bucket   = var.inputs_bucket_name
 }
 
+data "aws_kms_alias" "this" {
+  provider = aws.acc
+  name = "alias/aws/${var.kms_alias_name}"
+}
+
 resource "aws_kms_key" "this" {
   provider    = aws.acc
   is_enabled  = true
@@ -128,7 +133,8 @@ resource "random_id" "this" {
 resource "aws_sqs_queue" "dlq" {
   provider          = aws.acc
   name              = "${var.prefix}-dlq-${random_id.this.hex}"
-  kms_master_key_id = aws_kms_alias.this.name
+  # kms_master_key_id = aws_kms_alias.this.name
+  kms_master_key_id = data.aws_kms_alias.this.name
 }
 
 
@@ -168,7 +174,8 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 resource "aws_sqs_queue" "this" {
   provider                   = aws.acc
   name                       = "${var.prefix}-sqs-${random_id.this.hex}"
-  kms_master_key_id          = aws_kms_alias.this.name
+  kms_master_key_id          = data.aws_kms_alias.this.name
+  # kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds              = 90
   max_message_size           = 2048
@@ -180,12 +187,11 @@ resource "aws_sqs_queue" "this" {
   })
 }
 
-resource "aws_s3_object" "inputs" {
-  bucket = data.aws_s3_bucket.inputs_bucket.id
-  # bucket = aws_s3_bucket.${var.inputs_bucket_name}.id
-  key    = "inputs/dir1/dir2/"
-  source = "/dev/null"
-}
+# resource "aws_s3_object" "inputs" {
+#   bucket = data.aws_s3_bucket.inputs_bucket.id
+#   key    = "inputs/dir1/dir2/"
+#   source = "/dev/null"
+# }
 
 # send an s3 event to sqs when new s3 object is created/uploaded
 resource "aws_s3_bucket_notification" "sqs_notification" {
@@ -195,7 +201,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   queue {
     queue_arn     = aws_sqs_queue.this.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_prefix = aws_s3_object.inputs.key
+    # filter_prefix = aws_s3_object.inputs.key
     # filter_suffix = ".pdf"
   }
 
@@ -233,7 +239,8 @@ resource "aws_dynamodb_table" "images_metadata" {
 
   server_side_encryption {
     enabled     = true
-    kms_key_arn = aws_kms_key.this.arn
+    kms_key_arn = data.aws_kms_alias.this.arn
+    # kms_key_arn = aws_kms_key.this.arn
   }
 }
 
