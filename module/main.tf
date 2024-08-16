@@ -106,6 +106,8 @@ resource "aws_lambda_event_source_mapping" "this" {
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = aws_lambda_function.queue_processing_lambda_function.arn
+  enabled          = true
+  # batch_size       = 1
 }
 
 
