@@ -1,6 +1,6 @@
 resource "aws_iam_role" "queue_processing_lambda_role" {
   provider           = aws.acc
-  name               = "${var.lambda_role_name}-${data.aws_region.current.name}"
+  name               = "${var.prefix}-${var.lambda_role_name}-${data.aws_region.current.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -19,7 +19,7 @@ EOF
 
 resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   provider = aws.acc
-  name     = "${var.lambda_policy_name}-${data.aws_region.current.name}"
+  name     = "${var.prefix}-${var.lambda_policy_name}-${data.aws_region.current.name}"
   role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {
@@ -63,7 +63,7 @@ EOF
 
 resource "aws_iam_role_policy" "lambda_sqs_permissions" {
   provider = aws.acc
-  name     = "${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
+  name     = "${var.prefix}-${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
   role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {

@@ -12,27 +12,27 @@ variable "inputs_bucket_name" {
 
 variable "lambda_function_name" {
   type    = string
-  default = "llandman-queue-processing"
+  default = "queue-processing"
 }
 
 variable "lambda_role_name" {
   type    = string
-  default = "llandman-queue-processing_lambda_role"
+  default = "queue-processing_lambda_role"
 }
 
 variable "lambda_policy_name" {
   type    = string
-  default = "llandman-queue-processing_lambda_policy"
+  default = "queue-processing_lambda_policy"
 }
 
 variable "dynamodb_table_name" {
   type    = string
-  default = "llandman-model-outputs"
+  default = "model-outputs"
 }
 
 variable "kms_alias_name" {
   type    = string
-  default = "llandman-key-alias"
+  default = "key-alias"
 }
 
 

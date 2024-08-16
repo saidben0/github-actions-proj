@@ -79,7 +79,8 @@
                 "dynamodb:UpdateContinuousBackups",
                 "dynamodb:TagResource",
                 "dynamodb:UntagResource",
-                "dynamodb:DescribeContinuousBackups"
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:UpdateTable"
             ],
             "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
         },

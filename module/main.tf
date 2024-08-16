@@ -13,7 +13,7 @@ data "aws_s3_bucket" "inputs_bucket" {
 
 data "aws_kms_alias" "this" {
   provider = aws.acc
-  name     = "alias/${var.kms_alias_name}"
+  name     = "alias/${var.prefix}-${var.kms_alias_name}"
 }
 
 
@@ -40,7 +40,7 @@ data "archive_file" "this" {
 resource "aws_lambda_function" "queue_processing_lambda_function" {
   provider                       = aws.acc
   filename                       = data.archive_file.this.output_path
-  function_name                  = var.lambda_function_name
+  function_name                  = ${var.prefix}-${var.lambda_function_name}
   role                           = aws_iam_role.queue_processing_lambda_role.arn
   handler                        = "queue_processing.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -111,7 +111,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
 resource "aws_dynamodb_table" "images_metadata" {
   provider     = aws.acc
-  name         = var.dynamodb_table_name
+  name         = ${var.prefix}-${var.dynamodb_table_name}
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "document_id"
   range_key    = "chunk"
