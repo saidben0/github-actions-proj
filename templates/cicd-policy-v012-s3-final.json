@@ -2,6 +2,7 @@
     "Version": "2012-10-17",
     "Statement": [
         {
+            "Sid": "VisualEditor11",
             "Effect": "Allow",
             "Action": [
                 "kms:ListKeys",
@@ -15,6 +16,7 @@
             "Resource": "*"
         },
         {
+            "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
                 "kms:GenerateDataKey",
@@ -41,6 +43,7 @@
             ]
         },
         {
+            "Sid": "VisualEditor2",
             "Effect": "Allow",
             "Action": [
                 "lambda:GetFunction",
@@ -59,6 +62,7 @@
             ]
         },
         {
+            "Sid": "VisualEditor33",
             "Effect": "Allow",
             "Action": [
                 "lambda:DeleteEventSourceMapping"
@@ -66,6 +70,7 @@
             "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
+            "Sid": "VisualEditor3",
             "Effect": "Allow",
             "Action": [
                 "dynamodb:DescribeTimeToLive",
@@ -81,6 +86,7 @@
             "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
+            "Sid": "VisualEditor4",
             "Effect": "Allow",
             "Action": [
                 "iam:ListRoleTags",
@@ -95,9 +101,7 @@
                 "iam:GetRolePolicy",
                 "iam:ListInstanceProfilesForRole",
                 "iam:PassRole",
-                "iam:DeleteRolePolicy",
-                "iam:ListPolicies"
-
+                "iam:DeleteRolePolicy"
             ],
             "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/*"
         },
@@ -162,6 +166,7 @@
             "Resource": "arn:aws:s3:::*"
         },
         {
+            "Sid": "VisualEditor6",
             "Effect": "Allow",
             "Action": [
                 "sqs:UntagQueue",
@@ -173,13 +178,6 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "bedrock:GetFoundationModel"
-            ],
-            "Resource": "arn:aws:bedrock:*::foundation-model/*"
         }
     ]
 }

@@ -96,11 +96,14 @@
                 "iam:ListInstanceProfilesForRole",
                 "iam:PassRole",
                 "iam:DeleteRolePolicy",
-                "iam:GetPolicy"
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:AttachRolePolicy"
             ],
             "Resource": [ 
                 "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*"
+                "arn:aws:iam::${ACCOUNT_ID}:*",
+                "arn:aws:iam::aws:policy/service-role/*"
             ]
         },
         {
@@ -175,6 +178,17 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:GetFoundationModel",
+                "bedrock:CreateAgent"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
+                "arn:aws:bedrock:*::foundation-model/*"
+            ]
         }
     ]
 }

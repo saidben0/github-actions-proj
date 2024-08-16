@@ -167,3 +167,29 @@ resource "aws_bedrockagent_agent_action_group" "forex_api" {
     payload = file("${path.module}/lambda/bedrock_api/schema.yaml")
   }
 }
+
+resource "aws_iam_role_policy" "bedrock_lambda_sqs_permissions" {
+  provider = aws.acc
+  name     = "${aws_iam_role.lambda_bedrock_api.name}-sqs-access-${data.aws_region.current.name}"
+  role     = aws_iam_role.lambda_bedrock_api.id
+  policy   = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+          "sqs:ReceiveMessage",
+          "sqs:SendMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+      ]
+    }
+  ]
+}
+EOF
+}
