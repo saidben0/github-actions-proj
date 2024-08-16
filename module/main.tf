@@ -16,24 +16,24 @@ data "aws_kms_alias" "this" {
   name     = "alias/${var.kms_alias_name}"
 }
 
-resource "aws_kms_key" "this" {
-  provider    = aws.acc
-  is_enabled  = true
-  description = "Key used for sqs encryption"
-  key_usage   = "ENCRYPT_DECRYPT"
-  policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
-    account_id           = data.aws_caller_identity.current.account_id,
-    aws_region           = data.aws_region.current.name,
-    lambda_iam_role_name = aws_iam_role.queue_processing_lambda_role.name
-  })
-  enable_key_rotation = true
-}
+# resource "aws_kms_key" "this" {
+#   provider    = aws.acc
+#   is_enabled  = true
+#   description = "Key used for sqs encryption"
+#   key_usage   = "ENCRYPT_DECRYPT"
+#   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
+#     account_id           = data.aws_caller_identity.current.account_id,
+#     aws_region           = data.aws_region.current.name,
+#     lambda_iam_role_name = aws_iam_role.queue_processing_lambda_role.name
+#   })
+#   enable_key_rotation = true
+# }
 
-resource "aws_kms_alias" "this" {
-  provider      = aws.acc
-  name          = "alias/${var.kms_alias_name}"
-  target_key_id = aws_kms_key.this.id
-}
+# resource "aws_kms_alias" "this" {
+#   provider      = aws.acc
+#   name          = "alias/${var.kms_alias_name}"
+#   target_key_id = aws_kms_key.this.id
+# }
 
 resource "random_id" "this" {
   byte_length = 6
