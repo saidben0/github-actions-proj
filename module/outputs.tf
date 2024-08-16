@@ -11,15 +11,15 @@ output "current_caller_arn" {
 }
 
 output "lambda_role_name" {
-  value = aws_iam_role.image_extraction_lambda_role.name
+  value = aws_iam_role.queue_processing_lambda_role.name
 }
 
 output "lambda_IAM_ROLE_ARN_DEV" {
-  value = aws_iam_role.image_extraction_lambda_role.arn
+  value = aws_iam_role.queue_processing_lambda_role.arn
 }
 
 output "lambda_policy_name" {
-  value = aws_iam_role_policy.image_extraction_lambda_policy.name
+  value = aws_iam_role_policy.queue_processing_lambda_policy.name
 }
 
 # output "bucket_name" {

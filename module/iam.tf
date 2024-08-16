@@ -1,4 +1,4 @@
-resource "aws_iam_role" "image_extraction_lambda_role" {
+resource "aws_iam_role" "queue_processing_lambda_role" {
   provider           = aws.acc
   name               = "${var.lambda_role_name}-${data.aws_region.current.name}"
   assume_role_policy = <<EOF
@@ -17,10 +17,10 @@ resource "aws_iam_role" "image_extraction_lambda_role" {
 EOF
 }
 
-resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
+resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   provider = aws.acc
   name     = "${var.lambda_policy_name}-${data.aws_region.current.name}"
-  role     = aws_iam_role.image_extraction_lambda_role.id
+  role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {
   "Version": "2012-10-17",
@@ -43,7 +43,7 @@ resource "aws_iam_role_policy" "image_extraction_lambda_policy" {
         "logs:PutLogEvents"
       ],
       "Effect": "Allow",
-      "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.image_extraction_lambda_function.function_name}:*"
+      "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.queue_processing_lambda_function.function_name}:*"
     },
     {
       "Effect": "Allow",
@@ -64,7 +64,7 @@ EOF
 resource "aws_iam_role_policy" "lambda_sqs_permissions" {
   provider = aws.acc
   name     = "${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
-  role     = aws_iam_role.image_extraction_lambda_role.id
+  role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {
   "Version": "2012-10-17",
@@ -104,7 +104,8 @@ resource "aws_sqs_queue_policy" "this" {
         Resource = aws_sqs_queue.this.arn,
         Condition = {
           ArnEquals = {
-            "aws:SourceArn" = aws_s3_bucket.this.arn
+            # "aws:SourceArn" = aws_s3_bucket.this.arn
+            "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
           }
         }
       }

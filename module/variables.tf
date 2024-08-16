@@ -5,6 +5,11 @@ variable "prefix" {
   default = "llandman"
 }
 
+variable "inputs_bucket_name" {
+  type    = string
+  default = "enverus-courthouse-dev-chd-plants-0816"
+}
+
 variable "lambda_function_name" {
   type    = string
   default = "llandman-queue-processing"
