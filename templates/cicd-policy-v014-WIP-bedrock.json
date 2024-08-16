@@ -52,7 +52,10 @@
                 "lambda:PutFunctionConcurrency",
                 "lambda:ListVersionsByFunction",
                 "lambda:ListTags",
-                "lambda:UntagResource"
+                "lambda:UntagResource",
+                "lambda:AddPermission",
+                "lambda:GetPolicy",
+                "lambda:RemovePermission"
             ],
             "Resource": [
                 "arn:aws:lambda:*:${ACCOUNT_ID}:function:*"
@@ -98,7 +101,8 @@
                 "iam:DeleteRolePolicy",
                 "iam:GetPolicy",
                 "iam:GetPolicyVersion",
-                "iam:AttachRolePolicy"
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy"
             ],
             "Resource": [ 
                 "arn:aws:iam::${ACCOUNT_ID}:role/*",
@@ -182,11 +186,21 @@
         {
             "Effect": "Allow",
             "Action": [
+                "bedrock:GetAgent",
+                "bedrock:DeleteAgent",
+                "bedrock:CreateAgent",
+                "bedrock:TagResource",
+                "bedrock:UntagResource",
+                "bedrock:ListTagsForResource",
                 "bedrock:GetFoundationModel",
-                "bedrock:CreateAgent"
+                "bedrock:PrepareAgent",
+                "bedrock:CreateAgentActionGroup",
+                "bedrock:DeleteAgentActionGroup",
+                "bedrock:GetAgentActionGroup"
             ],
             "Resource": [
                 "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent/*",
                 "arn:aws:bedrock:*::foundation-model/*"
             ]
         }
