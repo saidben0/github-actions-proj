@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - bedrock
+      - devv
 
 jobs:
   dev-use1:
