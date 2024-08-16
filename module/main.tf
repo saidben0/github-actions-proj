@@ -13,7 +13,7 @@ data "aws_s3_bucket" "inputs_bucket" {
 
 data "aws_kms_alias" "this" {
   provider = aws.acc
-  name = "alias/aws/${var.kms_alias_name}"
+  name     = "alias/aws/${var.kms_alias_name}"
 }
 
 resource "aws_kms_key" "this" {
@@ -131,8 +131,8 @@ resource "random_id" "this" {
 # ########################################################################
 
 resource "aws_sqs_queue" "dlq" {
-  provider          = aws.acc
-  name              = "${var.prefix}-dlq-${random_id.this.hex}"
+  provider = aws.acc
+  name     = "${var.prefix}-dlq-${random_id.this.hex}"
   # kms_master_key_id = aws_kms_alias.this.name
   kms_master_key_id = data.aws_kms_alias.this.name
 }
@@ -172,9 +172,9 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
 
 resource "aws_sqs_queue" "this" {
-  provider                   = aws.acc
-  name                       = "${var.prefix}-sqs-${random_id.this.hex}"
-  kms_master_key_id          = data.aws_kms_alias.this.name
+  provider          = aws.acc
+  name              = "${var.prefix}-sqs-${random_id.this.hex}"
+  kms_master_key_id = data.aws_kms_alias.this.name
   # kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds              = 90
@@ -199,8 +199,8 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
   bucket   = data.aws_s3_bucket.inputs_bucket.id
 
   queue {
-    queue_arn     = aws_sqs_queue.this.arn
-    events        = ["s3:ObjectCreated:*"]
+    queue_arn = aws_sqs_queue.this.arn
+    events    = ["s3:ObjectCreated:*"]
     # filter_prefix = aws_s3_object.inputs.key
     # filter_suffix = ".pdf"
   }
