@@ -13,7 +13,7 @@ data "aws_s3_bucket" "inputs_bucket" {
 
 data "aws_kms_alias" "this" {
   provider = aws.acc
-  name     = "alias/aws/${var.kms_alias_name}"
+  name     = "alias/${var.kms_alias_name}"
 }
 
 resource "aws_kms_key" "this" {
