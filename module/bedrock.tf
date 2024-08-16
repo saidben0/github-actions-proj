@@ -153,7 +153,7 @@ resource "aws_bedrockagent_agent" "bedrock_asst" {
   instruction             = "You are an assistant that looks up today's currency exchange rates. A user may ask you what the currency exchange rate is for one currency to another. They may provide either the currency name or the three-letter currency code. If they give you a name, you may first need to first look up the currency code by its name."
 }
 
-resource "aws_bedrockagent_agent_action_group" "forex_api" {
+resource "aws_bedrockagent_agent_action_group" "bedrock_api" {
   provider                   = aws.acc
   action_group_name          = "ForexAPI"
   agent_id                   = aws_bedrockagent_agent.bedrock_asst.id
