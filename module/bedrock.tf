@@ -4,7 +4,7 @@ resource "awscc_bedrock_prompt" "this" {
   description                 = "tf-bedrock-prompt-example"
   customer_encryption_key_arn = data.aws_kms_alias.this.arn
   # customer_encryption_key_arn = awscc_kms_key.this.arn
-  default_variant             = "variant-example"
+  default_variant = "variant-example"
 
   variants = [
     {
@@ -14,11 +14,11 @@ resource "awscc_bedrock_prompt" "this" {
       # model_id      = "amazon.titan-text-express-v1"
       inference_configuration = {
         text = {
-          temperature    = 1
-          top_p          = 0.9900000095367432
-          max_tokens     = 300
+          temperature = 1
+          top_p       = 0.9900000095367432
+          max_tokens  = 300
           # stop_sequences = ["\\n\\nHuman:"]
-          top_k          = 250
+          top_k = 250
         }
       }
       template_configuration = {
