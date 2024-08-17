@@ -25,10 +25,20 @@ resource "awscc_bedrock_prompt" "this" {
         text = {
           input_variables = [
             {
-              name = "topic"
+              name        = "topic"
+              description = "The subject or theme for the playlist"
+            },
+            {
+              name        = "number"
+              description = "The number of songs in the playlist"
+            },
+            {
+              name        = "genre"
+              description = "The genre of music for the playlist"
             }
           ]
-          text = "Make me a {{genre}} playlist consisting of the following number of songs: {{number}}."
+
+          text = "Create a {{genre}} playlist for {{topic}} consisting of {{number}} songs."
         }
       }
     }
