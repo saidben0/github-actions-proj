@@ -6,16 +6,20 @@ data "aws_region" "current" {
   provider = aws.acc
 }
 
+data "aws_kms_key" "this" {
+  provider = aws.acc
+  key_id   = "alias/${var.prefix}-${var.kms_alias_name}"
+}
+
+# data "aws_kms_alias" "this" {
+#   provider = aws.acc
+#   name     = "alias/${var.prefix}-${var.kms_alias_name}"
+# }
+
 data "aws_s3_bucket" "inputs_bucket" {
   provider = aws.acc
   bucket   = var.inputs_bucket_name
 }
-
-data "aws_kms_alias" "this" {
-  provider = aws.acc
-  name     = "alias/${var.prefix}-${var.kms_alias_name}"
-}
-
 
 resource "random_id" "this" {
   byte_length = 6
@@ -27,7 +31,7 @@ resource "aws_sqs_queue" "dlq" {
   provider = aws.acc
   name     = "${var.prefix}-dlq-${random_id.this.hex}"
   # kms_master_key_id = aws_kms_alias.this.name
-  kms_master_key_id = data.aws_kms_alias.this.name
+  kms_master_key_id = data.aws_kms_key.this.name
 }
 
 
@@ -67,7 +71,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 resource "aws_sqs_queue" "this" {
   provider          = aws.acc
   name              = "${var.prefix}-sqs-${random_id.this.hex}"
-  kms_master_key_id = data.aws_kms_alias.this.name
+  kms_master_key_id = data.aws_kms_key.this.name
   # kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds              = 90
@@ -134,7 +138,7 @@ resource "aws_dynamodb_table" "images_metadata" {
 
   server_side_encryption {
     enabled     = true
-    kms_key_arn = data.aws_kms_alias.this.arn
+    kms_key_arn = data.aws_kms_key.this.arn
     # kms_key_arn = aws_kms_key.this.arn
   }
 }
