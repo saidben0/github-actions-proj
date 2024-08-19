@@ -1,3 +1,4 @@
-# variable "IAM_ROLE_ARN_DEV" {
-#   type = string
-# }
+variable "prefix" {
+  type    = string
+  default = "llandman"
+}
