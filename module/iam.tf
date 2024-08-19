@@ -34,7 +34,7 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
         "kms:GenerateDataKey*",
         "kms:Describe*"
       ],
-      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${data.aws_kms_alias.this.name}"
+      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/${data.aws_kms_key.this.id}"
     },
     {
       "Action": [
