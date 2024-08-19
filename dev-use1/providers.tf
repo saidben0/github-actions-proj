@@ -4,7 +4,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      StackName   = "Documents-Processing"
+      StackName   = "Land.Llandman"
       Environment = "Development"
       Owner       = "Ops"
     }
