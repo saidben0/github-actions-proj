@@ -176,6 +176,13 @@
                 "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent/*",
                 "arn:aws:bedrock:*::foundation-model/*"
             ]
-        }
+        },
+        {
+		    "Effect": "Allow",
+		    "Action": [
+		    	"cloudformation:CreateResource"
+		    ],
+		    "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+		}
     ]
 }
