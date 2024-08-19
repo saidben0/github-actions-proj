@@ -31,7 +31,7 @@ resource "aws_sqs_queue" "dlq" {
   provider = aws.acc
   name     = "${var.prefix}-dlq-${random_id.this.hex}"
   # kms_master_key_id = aws_kms_alias.this.name
-  kms_master_key_id = data.aws_kms_key.this.name
+  kms_master_key_id = data.aws_kms_key.this.id
 }
 
 
@@ -71,7 +71,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 resource "aws_sqs_queue" "this" {
   provider          = aws.acc
   name              = "${var.prefix}-sqs-${random_id.this.hex}"
-  kms_master_key_id = data.aws_kms_key.this.name
+  kms_master_key_id = data.aws_kms_key.this.id
   # kms_master_key_id          = aws_kms_alias.this.name
   visibility_timeout_seconds = 120
   delay_seconds              = 90
