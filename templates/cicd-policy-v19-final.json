@@ -101,8 +101,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0816",
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0816/*"
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
             ]
         },
         {
@@ -119,8 +119,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-tfstates",
-                "arn:aws:s3:::enverus-tfstates/*"
+                "arn:aws:s3:::${TFSTATE_FILE_BUCKET}",
+                "arn:aws:s3:::${TFSTATE_FILE_BUCKET}/*"
             ]
         },
         {
