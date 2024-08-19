@@ -2,7 +2,8 @@ resource "awscc_bedrock_prompt" "this" {
   # provider                    = aws.acc
   name                        = "tf-bedrock-prompt-example"
   description                 = "tf-bedrock-prompt-example"
-  customer_encryption_key_arn = data.aws_kms_key.this.arn
+  customer_encryption_key_arn = module.dev-use1.kms_key_arn
+  # customer_encryption_key_arn = data.aws_kms_key.this.arn
   # customer_encryption_key_arn = awscc_kms_key.this.arn
   default_variant = "variant-example"
 
