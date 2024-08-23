@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - cicd-policy
+      - shared-env
 
 jobs:
   dev-use1:
