@@ -36,8 +36,8 @@
                 "kms:GetKeyRotationStatus"
             ],
             "Resource": [
-                "arn:aws:kms:*:155185327318:alias/*",
-                "arn:aws:kms:*:155185327318:key/*"
+                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -57,7 +57,7 @@
                 "lambda:RemovePermission"
             ],
             "Resource": [
-                "arn:aws:lambda:*:155185327318:function:tfstack-lambda"
+                "arn:aws:lambda:*:${ACCOUNT_ID}:function:tfstack-lambda"
             ]
         },
         {
@@ -65,7 +65,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:155185327318:event-source-mapping:*"
+            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Effect": "Allow",
@@ -81,7 +81,7 @@
                 "dynamodb:DescribeContinuousBackups",
                 "dynamodb:UpdateTable"
             ],
-            "Resource": "arn:aws:dynamodb:*:155185327318:table/*"
+            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
             "Effect": "Allow",
@@ -106,8 +106,8 @@
                 "iam:ListPolicies"
             ],
             "Resource": [
-                "arn:aws:iam::155185327318:role/*",
-                "arn:aws:iam::155185327318:*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/*",
+                "arn:aws:iam::${ACCOUNT_ID}:*",
                 "arn:aws:iam::aws:policy/service-role/*"
             ]
         },
@@ -182,7 +182,7 @@
                 "sqs:SetQueueAttributes",
                 "sqs:ListQueueTags"
             ],
-            "Resource": "arn:aws:sqs:*:155185327318:*"
+            "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
         },
         {
             "Effect": "Allow",
@@ -207,10 +207,10 @@
                 "bedrock:GetAgentActionGroup"
             ],
             "Resource": [
-                "arn:aws:bedrock:us-east-1:155185327318:prompt/*",
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
                 "arn:aws:bedrock:*::foundation-model/*",
-                "arn:aws:bedrock:us-east-1:155185327318:agent-alias/*",
-                "arn:aws:bedrock:us-east-1:155185327318:agent/*"
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent/*"
             ]
         },
         {
@@ -221,7 +221,7 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:us-east-1:155185327318:resource/*"
+            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
         }
     ]
 }
