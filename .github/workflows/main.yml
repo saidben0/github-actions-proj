@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - data_s3-kms_bedrock
+      - shared-envv
 
 jobs:
   dev-use1:
