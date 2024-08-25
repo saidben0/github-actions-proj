@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - shared-envv
+      - lambda-processor
 
 jobs:
   dev-use1:

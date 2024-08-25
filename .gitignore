@@ -1,3 +1,6 @@
+# python packages
+py_packages/
+
 # Local .terraform directories
 **/.terraform/*
 
@@ -38,4 +41,5 @@ tfplan
 terraform.rc
 
 # Ignore lambda zip output of archive_file tf resource
-*.zip
+image-extraction.zip
+queue-processing.zip
