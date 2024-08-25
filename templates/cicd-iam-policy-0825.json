@@ -47,6 +47,18 @@
         {
             "Effect": "Allow",
             "Action": [
+                "lambda:GetLayerVersion",
+                "lambda:PublishLayerVersion",
+                "lambda:DeleteLayerVersion"
+            ],
+            "Resource": [
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs",
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs:*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
             "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
