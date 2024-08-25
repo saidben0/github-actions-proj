@@ -1,5 +1,6 @@
 import boto3
 import json
+import fitz  # PyMuPDF
 
 def lambda_handler(event, context):
     # this is printed in the function's logs
