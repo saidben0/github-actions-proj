@@ -15,6 +15,7 @@
                 "kms:DescribeKey",
                 "kms:ListAliases",
                 "kms:GenerateDataKey",
+                "kms:Encrypt",
                 "kms:Decrypt"
             ],
             "Resource": [
