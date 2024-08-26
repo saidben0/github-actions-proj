@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - lambda-processor
+      - lambda-layer
 
 jobs:
   dev-use1:
