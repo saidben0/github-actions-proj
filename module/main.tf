@@ -62,7 +62,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   runtime                        = "python3.9"
   timeout                        = "120"
   reserved_concurrent_executions = 100
-  kms_key_arn = data.aws_kms_key.this.arn
+  kms_key_arn                    = data.aws_kms_key.this.arn
 
   environment {
     variables = {
