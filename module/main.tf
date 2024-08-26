@@ -40,7 +40,7 @@ resource "aws_sqs_queue" "dlq" {
 resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "python-libs"
   description         = "Layer containing pymupdf"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python3.9"]
   filename            = "${path.module}/lambda-layer/python-libs.zip"
 }
 
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
-  runtime                        = "python3.11"
+  runtime                        = "python3.9"
   timeout                        = "120"
   reserved_concurrent_executions = 100
   kms_key_arn                    = data.aws_kms_key.this.arn
