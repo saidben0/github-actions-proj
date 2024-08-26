@@ -1,5 +1,8 @@
-# python packages
-py_packages/
+# Ignore zip files
+image-extraction.zip
+queue-processing.zip
+lambda-layer.zip
+queue-processing.zip
 
 # Local .terraform directories
 **/.terraform/*
@@ -39,7 +42,3 @@ tfplan
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
-# Ignore lambda zip output of archive_file tf resource
-image-extraction.zip
-queue-processing.zip
