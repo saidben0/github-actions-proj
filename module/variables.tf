@@ -35,7 +35,30 @@ variable "kms_alias_name" {
   default = "key-alias"
 }
 
+variable "project_name" {
+  type    = string
+  default = "land-doc-processing"
+}
 
+variable "prompt_id" {
+  type    = string
+  default = "3DKW6HGLLD"
+}
+
+variable "prompt_ver" {
+  type    = string
+  default = "1"
+}
+
+variable "system_prompt_id" {
+  type    = string
+  default = "IB5O7AZE0G"
+}
+
+variable "system_prompt_ver" {
+  type    = string
+  default = "1"
+}
 
 
 ################################

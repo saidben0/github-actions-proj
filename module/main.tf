@@ -63,6 +63,18 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   timeout                        = "120"
   reserved_concurrent_executions = 100
 
+  environment {
+    variables = {
+      S3_URI = "s3://${var.inputs_bucket_name}/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf"
+      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      PROJECT_NAME = var.project_name
+      PROMPT_ID = var.prompt_id
+      PROMPT_VER = var.prompt_ver
+      SYSTEM_PROMPT_ID = var.system_prompt_id
+      SYSTEM_PROMPT_VER = var.system_prompt_ver
+    }
+  }
+
   tracing_config {
     mode = "Active"
   }
@@ -126,7 +138,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 
-resource "aws_dynamodb_table" "images_metadata" {
+resource "aws_dynamodb_table" "model_outputs" {
   provider     = aws.acc
   name         = "${var.prefix}-${var.dynamodb_table_name}"
   billing_mode = "PAY_PER_REQUEST"
