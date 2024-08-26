@@ -41,7 +41,7 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "python-libs"
   description         = "Layer containing pymupdf"
   compatible_runtimes = ["python3.9"]
-  filename            = "${path.module}/lambda-layer/lambda-layer.zip"
+  filename            = "${path.module}/lambda-layer/python-libs.zip"
 }
 
 data "archive_file" "this" {
