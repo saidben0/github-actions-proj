@@ -1,14 +1,12 @@
 # github-actions-proj
 
-### Use `Cloud9` to download python libraries
+### Use `Cloud9` to download python libraries `zip` file
 |------------------|
 | requirements.txt |
 |------------------|
 | pymupdf==1.24.9  |
 | joblib==1.4.2    |
 |------------------|
-
-#### Use `Cloud9` to create the `zip` file
 ```bash
 # download the libraries
 mkdir tmp && cd tmp
