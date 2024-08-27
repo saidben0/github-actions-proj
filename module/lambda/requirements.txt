@@ -1,3 +1,0 @@
-# Get link to "PyMuPDF-1.24.9-cp311-none-manylinux2014_x86_64.whl" from "https://pypi.org/project/PyMuPDF/#files"
-https://files.pythonhosted.org/packages/da/1e/80adebf57a61b270e54d2a626dfe33173d3779fca0b615833967f80ec6cd/PyMuPDF-1.24.9-cp311-none-manylinux2014_x86_64.whl
-joblib==1.4.2
