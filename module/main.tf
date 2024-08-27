@@ -46,7 +46,12 @@ resource "null_resource" "lambda_layer" {
 
   provisioner "local-exec" {
     command = <<EOT
-      cd ../module
+      python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+      PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER_MAJ || true
+      echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+      cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+      python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
+      cd ./module
       mkdir -p ./lambda-layer/python
       pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
       # rm ./lambda-layer/requirements.txt
