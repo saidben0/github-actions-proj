@@ -64,7 +64,7 @@ data "archive_file" "lambda_layer" {
   output_path = "${path.module}/lambda-layer.zip"
 
   source_dir = "${path.module}/lambda-layer/"
-  excludes   = ["requirements.txt","python-libs.unused.zip"]
+  excludes   = ["requirements.txt", "python-libs.unused.zip"]
 
   depends_on = [null_resource.lambda_layer]
 }
