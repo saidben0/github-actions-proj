@@ -55,6 +55,14 @@ jobs:
         rm -rf .terraform*
         terraform init
 
+    - name: Enable manyLinux
+      run: |
+        python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+        PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER_MAJ || true
+        echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+        cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+        python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
+  
     - name: Terraform Validate
       run: |
         cd ${{ inputs.aws-env-dir }}/
@@ -111,6 +119,14 @@ jobs:
           cd ${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
+      
+      - name: Enable manyLinux
+        run: |
+          python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+          PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER_MAJ || true
+          echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
 
       - name: Terraform Plan
         id: plan
@@ -154,6 +170,14 @@ jobs:
           cd ${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
+      
+      - name: Enable manyLinux
+        run: |
+          python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+          PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER_MAJ || true
+          echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
 
       - name: Generate Lambda Archive Zip
         run: |
