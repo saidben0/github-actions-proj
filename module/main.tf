@@ -47,7 +47,7 @@ resource "null_resource" "lambda_layer" {
   provisioner "local-exec" {
     command = <<EOT
       pwd && ls
-      cd ./module
+      cd ../module
       mkdir -p ./lambda-layer/python
       pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
       # rm ./lambda-layer/requirements.txt
