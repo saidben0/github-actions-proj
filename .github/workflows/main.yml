@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - manylinux
+      - unencrypt
 
 jobs:
   dev-use1:

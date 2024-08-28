@@ -2,9 +2,7 @@ resource "awscc_bedrock_prompt" "this" {
   # provider                    = aws.acc
   name                        = "${var.prefix}-prompt"
   description                 = "${var.prefix}-prompt"
-  customer_encryption_key_arn = module.dev-use1.kms_key_arn
-  # customer_encryption_key_arn = data.aws_kms_key.this.arn
-  # customer_encryption_key_arn = awscc_kms_key.this.arn
+  # customer_encryption_key_arn = module.dev-use1.kms_key_arn
   default_variant = "${var.prefix}-variant"
 
   variants = [

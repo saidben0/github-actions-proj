@@ -26,17 +26,6 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Effect": "Allow",
-      "Action": [
-        "kms:Encrypt*",
-        "kms:Decrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:Describe*"
-      ],
-      "Resource": "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/${data.aws_kms_key.this.id}"
-    },
-    {
       "Action": [
         "logs:CreateLogGroup",     
         "logs:CreateLogStream",
