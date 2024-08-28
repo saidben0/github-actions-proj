@@ -179,7 +179,7 @@ resource "aws_dynamodb_table" "model_outputs" {
   name         = "${var.prefix}-${var.dynamodb_table_name}"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "document_id"
-  range_key    = "chunk"
+  range_key    = "chunk_id"
 
   attribute {
     name = "document_id"
