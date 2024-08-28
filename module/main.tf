@@ -49,7 +49,7 @@ resource "null_resource" "lambda_layer" {
       cd ../module
       mkdir -p ./lambda-layer/python
       pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
-      rm ./lambda-layer/requirements.txt
+      # rm ./lambda-layer/requirements.txt
     EOT
   }
 }
@@ -60,7 +60,7 @@ data "archive_file" "lambda_layer" {
   output_path = "${path.module}/lambda-layer.zip"
 
   source_dir = "${path.module}/lambda-layer/"
-  excludes   = ["python-libs.unused.zip"]
+  excludes   = ["requirements.txt"]
 
   depends_on = [null_resource.lambda_layer]
 }
