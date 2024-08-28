@@ -49,7 +49,7 @@ resource "null_resource" "lambda_layer" {
     EOT
   }
 
-    triggers = {
+  triggers = {
     always_run = "${timestamp()}"
   }
   # triggers = {
