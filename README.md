@@ -23,6 +23,9 @@ deactivate
 aws lambda publish-layer-version --layer-name python_libs --zip-file fileb://python_libs.zip --compatible-runtimes python3.9
 ```
 
+
 ### Troubleshooting
-ERROR: error creating archive: error archiving directory: archive has not been created as it would be empty
-FIX: edit `requirements.txt` to trigger `null_resource.lambda_layer` to download python libraries then push code to trigger the pipeline
+
+#### Issue#1: publishing Lambda Layer (python-libs) Version: operation error Lambda: PublishLayerVersion, https response error StatusCode: 400, RequestID: 01a11772-c7b6-4739-bbdd-b3b2126b30d0, InvalidParameterValueException: Uploaded file must be a non-empty zip
+   >>> FIX: update `requirements.txt` to trigger `null_resource.lambda_layer` to download python libraries; push the code after that to trigger the pipeline to run.
+
