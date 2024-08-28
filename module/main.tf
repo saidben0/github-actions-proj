@@ -6,15 +6,6 @@ data "aws_region" "current" {
   provider = aws.acc
 }
 
-# data "aws_kms_key" "this" {
-#   provider = aws.acc
-#   key_id   = "alias/${var.prefix}-${var.kms_alias_name}"
-# }
-
-# data "aws_kms_alias" "this" {
-#   provider = aws.acc
-#   name     = "alias/${var.prefix}-${var.kms_alias_name}"
-# }
 
 data "aws_s3_bucket" "inputs_bucket" {
   provider = aws.acc
@@ -30,7 +21,6 @@ resource "random_id" "this" {
 resource "aws_sqs_queue" "dlq" {
   provider = aws.acc
   name     = "${var.prefix}-dlq"
-  # name     = "${var.prefix}-dlq-${random_id.this.hex}"
   # kms_master_key_id = data.aws_kms_key.this.id
 }
 
@@ -62,7 +52,7 @@ data "archive_file" "lambda_layer" {
   type        = "zip"
   output_path = "${path.module}/lambda-layer.zip"
 
-  source_dir = "${path.module}/lambda-layer/"
+  source_dir = "${path.module}/lambda-layer"
   excludes   = ["requirements.txt"]
 
   depends_on = [null_resource.lambda_layer]
@@ -146,12 +136,6 @@ resource "aws_sqs_queue" "this" {
   })
 }
 
-# resource "aws_s3_object" "inputs" {
-#   bucket = data.aws_s3_bucket.inputs_bucket.id
-#   key    = "inputs/dir1/dir2/"
-#   source = "/dev/null"
-# }
-
 # send an s3 event to sqs when new s3 object is created/uploaded
 resource "aws_s3_bucket_notification" "sqs_notification" {
   provider = aws.acc
@@ -209,6 +193,30 @@ resource "aws_dynamodb_table" "model_outputs" {
 
 
 
+
+
+# ########################################################################
+# ########################################################################
+# ########################################################################
+# ########################################################################
+# ########################################################################
+# ########################################################################
+
+# resource "aws_s3_object" "inputs" {
+#   bucket = data.aws_s3_bucket.inputs_bucket.id
+#   key    = "inputs/dir1/dir2/"
+#   source = "/dev/null"
+# }
+
+# data "aws_kms_key" "this" {
+#   provider = aws.acc
+#   key_id   = "alias/${var.prefix}-${var.kms_alias_name}"
+# }
+
+# data "aws_kms_alias" "this" {
+#   provider = aws.acc
+#   name     = "alias/${var.prefix}-${var.kms_alias_name}"
+# }
 
 
 
