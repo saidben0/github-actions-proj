@@ -27,5 +27,5 @@ aws lambda publish-layer-version --layer-name python_libs --zip-file fileb://pyt
 ### Troubleshooting
 
 #### Issue#1: publishing Lambda Layer (python-libs) Version: operation error Lambda: PublishLayerVersion, https response error StatusCode: 400, RequestID: 01a11772-c7b6-4739-bbdd-b3b2126b30d0, InvalidParameterValueException: Uploaded file must be a non-empty zip
-   >>> FIX: update `requirements.txt` to trigger `null_resource.lambda_layer` to download python libraries; push the code after that to trigger the pipeline to run.
+   >>> FIX: edit `requirements.txt` then add any comment in it to trigger `null_resource.lambda_layer` to download python libraries; push the code after that to trigger the pipeline to run.
 
