@@ -26,6 +26,48 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+        "Effect": "Allow",
+        "Action": [
+            "s3:Get*",
+            "s3:List*",
+            "s3:Describe*",
+            "s3-object-lambda:Get*",
+            "s3-object-lambda:List*"
+        ],
+        "Resource": [
+            "arn:aws:s3:::${var.inputs_bucket_name}",
+            "arn:aws:s3:::${var.inputs_bucket_name}/*"
+        ]
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+		        "bedrock:InvokeModel",
+            "bedrock:GetPrompt",
+            "bedrock:ListTagsForResource",
+            "bedrock:CreatePrompt",
+            "bedrock:UpdatePrompt",
+            "bedrock:ListPrompts",
+            "bedrock:GetFoundationModelAvailability",
+            "bedrock:ListFoundationModels",
+            "bedrock:DeletePrompt"
+        ],
+        "Resource": [
+            "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:prompt/*",
+            "arn:aws:bedrock:*::foundation-model/*"
+        ]
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "cloudformation:CreateResource",
+            "cloudformation:GetResource",
+            "cloudformation:DeleteResource",
+            "cloudformation:GetResourceRequestStatus"
+        ],
+        "Resource": "arn:aws:cloudformation:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:resource/*"
+    },
+    {
       "Action": [
         "logs:CreateLogGroup",     
         "logs:CreateLogStream",
