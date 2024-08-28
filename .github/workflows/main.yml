@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - lambda-pol
+      - layer
 
 jobs:
   dev-use1:
