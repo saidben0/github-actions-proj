@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - layer
+      - triggerv2
 
 jobs:
   dev-use1:
