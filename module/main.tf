@@ -39,9 +39,10 @@ resource "aws_sqs_queue" "dlq" {
 ############# LAMBDA LAYER ##############
 #########################################
 resource "null_resource" "lambda_layer" {
-  # triggers = {
-  #   filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
-  # }
+  triggers = {
+    # filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
+    filebasesha = "${base64sha256(file("${path.module}/lambda-layer"))}"
+  }
 
   provisioner "local-exec" {
     command = <<EOT
@@ -68,7 +69,7 @@ data "archive_file" "lambda_layer" {
 # Create Lambda Layer
 resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "python-libs"
-  description         = "Layer containing pymupdf"
+  description         = "Lambda layer for Land Llandman doc processing"
   compatible_runtimes = ["python3.11"]
   filename            = data.archive_file.lambda_layer.output_path
   # filename            = "${path.module}/lambda-layer/python-libs.zip"
