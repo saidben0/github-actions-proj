@@ -1,4 +1,4 @@
-# github-actions-proj
+# land.llandman 
 
 ### Use `Cloud9` to download python libraries `zip` file
 |------------------|
@@ -22,3 +22,7 @@ zip -r python_libs.zip python
 deactivate
 aws lambda publish-layer-version --layer-name python_libs --zip-file fileb://python_libs.zip --compatible-runtimes python3.9
 ```
+
+### Troubleshooting
+ERROR: error creating archive: error archiving directory: archive has not been created as it would be empty
+FIX: edit `requirements.txt` to trigger `null_resource.lambda_layer` to download python libraries then push code to trigger the pipeline
