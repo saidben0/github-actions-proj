@@ -39,14 +39,6 @@ resource "aws_sqs_queue" "dlq" {
 ############# LAMBDA LAYER ##############
 #########################################
 resource "null_resource" "lambda_layer" {
-  # triggers = {
-  #   filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
-  # }
-  # Use a trigger to force recreation, if needed
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-
   provisioner "local-exec" {
     command = <<EOT
       pwd && ls
@@ -56,6 +48,13 @@ resource "null_resource" "lambda_layer" {
       # rm ./lambda-layer/requirements.txt
     EOT
   }
+
+    triggers = {
+    always_run = "${timestamp()}"
+  }
+  # triggers = {
+  #   filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
+  # }
 }
 
 # Package the Lambda Layer
