@@ -8,14 +8,15 @@ terraform {
       version               = "~> 5.60.0"
     }
 
-    # archive = {
-    #   source  = "hashicorp/archive"
-    #   version = "2.4.0"
-    # }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "2.5.0"
+      # version = "2.4.0"
+    }
 
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6.2"
+      version = "3.6.2"
     }
   }
 }
