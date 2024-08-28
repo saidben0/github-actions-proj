@@ -1,3 +1,4 @@
+import os
 import logging
 #from .prompts import *
 import multiprocessing 
@@ -10,10 +11,10 @@ import pymupdf
 from datetime import datetime
 import re
 
-# bucket_name = os.environ['BUCKET_NAME']
+bucket_name = os.environ['BUCKET_NAME']
 # file_key = os.environ['FILE_PATH']
-bucket_name = 'enverus-courthouse-dev-chd-plants'
-file_key = 'tx/anderson/21c6/21c66649-d71e-4725-9c37-a99c64f53282.pdf'
+# bucket_name = 'enverus-courthouse-dev-chd-plants'
+file_key = 'tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf'
 
 model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
 
