@@ -39,9 +39,9 @@ resource "aws_sqs_queue" "dlq" {
 ############# LAMBDA LAYER ##############
 #########################################
 resource "null_resource" "lambda_layer" {
-  triggers = {
-    filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
-  }
+  # triggers = {
+  #   filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
+  # }
 
   provisioner "local-exec" {
     command = <<EOT
