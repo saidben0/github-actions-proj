@@ -16,6 +16,34 @@
             ]
         },
 		{
+            "Effect": "Allow",
+            "Action": [
+				"bedrock:InvokeModel",
+                "bedrock:GetPrompt",
+                "bedrock:ListTagsForResource",
+                "bedrock:CreatePrompt",
+                "bedrock:UpdatePrompt",
+                "bedrock:ListPrompts",
+                "bedrock:GetFoundationModelAvailability",
+                "bedrock:ListFoundationModels",
+                "bedrock:DeletePrompt"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+                "arn:aws:bedrock:*::foundation-model/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:CreateResource",
+                "cloudformation:GetResource",
+                "cloudformation:DeleteResource",
+                "cloudformation:GetResourceRequestStatus"
+            ],
+            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+        },
+		{
 			"Action": [
 				"logs:CreateLogGroup",
 				"logs:CreateLogStream",

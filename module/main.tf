@@ -187,7 +187,7 @@ resource "aws_dynamodb_table" "model_outputs" {
   }
 
   attribute {
-    name = "chunk"
+    name = "chunk_id"
     type = "S"
   }
 
