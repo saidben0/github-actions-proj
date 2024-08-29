@@ -1,3 +1,8 @@
+variable "prefix" {
+  type    = string
+  default = "llandman"
+}
+
 variable "inputs_bucket_name" {
   type    = string
   default = "enverus-courthouse-dev-chd-plants-0823"
