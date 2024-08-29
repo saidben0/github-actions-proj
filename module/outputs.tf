@@ -7,7 +7,7 @@ output "current_account_id" {
 }
 
 output "current_caller_arn" {
-  value = data.aws_caller_identity.current.arn
+  value = data.aws_caller_identity.this.arn
 }
 
 output "lambda_role_name" {
