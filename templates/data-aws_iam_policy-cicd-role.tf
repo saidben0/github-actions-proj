@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "dynamodb:DescribeContinuousBackups",
       "dynamodb:Update*"
     ]
-    resources =  "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
+    resources = "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
   }
 
   statement {
@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "s3:GetBucketNotification",
       "s3:PutBucketNotification"
     ]
-    resources =  [
+    resources = [
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
     ]
@@ -100,7 +100,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "s3:GetBucketNotification",
       "s3:PutBucketNotification"
     ]
-    resources =  [
+    resources = [
       "arn:aws:s3:::${TFSTATE_FILE_BUCKET}",
       "arn:aws:s3:::${TFSTATE_FILE_BUCKET}/*"
     ]
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "sqs:SetQueueAttributes",
       "sqs:ListQueueTags"
     ]
-    resources =  [
+    resources = [
       "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-queue",
       "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-dlq"
     ]
@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "bedrock:ListFoundationModels",
       "bedrock:DeletePrompt"
     ]
-    resources =  [
+    resources = [
       "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
       "arn:aws:bedrock:*::foundation-model/*"
     ]
@@ -152,6 +152,6 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "cloudformation:DeleteResource",
       "cloudformation:GetResourceRequestStatus"
     ]
-    resources =  "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+    resources = "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
   }
 }

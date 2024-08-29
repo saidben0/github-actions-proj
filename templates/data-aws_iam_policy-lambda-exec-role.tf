@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "s3-object-lambda:Get*",
       "s3-object-lambda:List*"
     ]
-    resources =  [
+    resources = [
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
     ]
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "dynamodb:PutItem",
       "dynamodb:Update*"
     ]
-    resources =  "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
+    resources = "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
   }
 
   statement {
@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "bedrock:GetPrompt",
       "bedrock:ListPrompts"
     ]
-    resources =  [
+    resources = [
       "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
       "arn:aws:bedrock:*::foundation-model/*"
     ]
@@ -61,8 +61,8 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
     effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
-			"logs:CreateLogStream",
-			"logs:PutLogEvents"
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
     resources = "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
   }
@@ -72,10 +72,10 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
     effect = "Allow"
     actions = [
       "ec2:DescribeNetworkInterfaces",
-			"ec2:CreateNetworkInterface",
-			"ec2:DeleteNetworkInterface",
-			"ec2:DescribeInstances",
-			"ec2:AttachNetworkInterface"
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeInstances",
+      "ec2:AttachNetworkInterface"
     ]
     resources = "*"
   }
