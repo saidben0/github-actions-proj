@@ -42,7 +42,7 @@
                 "bedrock:DeletePrompt"
             ],
             "Resource": [
-                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+                "arn:aws:bedrock:*:${ACCOUNT_ID}:prompt/*",
                 "arn:aws:bedrock:*::foundation-model/*"
             ]
         },
@@ -54,8 +54,18 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+            "Resource": "arn:aws:cloudformation:*:${ACCOUNT_ID}:resource/*"
         },
+        {
+			"Action": [
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:Update*"
+			],
+			"Effect": "Allow",
+			"Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
+		},
 		{
 			"Action": [
 				"logs:CreateLogGroup",
@@ -63,7 +73,7 @@
 				"logs:PutLogEvents"
 			],
 			"Effect": "Allow",
-			"Resource": "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
+			"Resource": "arn:aws:logs:*:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
 		},
 		{
 			"Action": [

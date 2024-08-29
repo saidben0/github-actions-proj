@@ -40,6 +40,16 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
         ]
     },
     {
+			"Action": [
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:Update*"
+			],
+			"Effect": "Allow",
+			"Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.dynamodb_table_name}"
+		},
+    {
         "Effect": "Allow",
         "Action": [
 		        "bedrock:InvokeModel",
