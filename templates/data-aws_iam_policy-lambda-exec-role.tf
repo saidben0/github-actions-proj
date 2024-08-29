@@ -9,8 +9,8 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "sqs:GetQueueAttributes"
     ]
     resources = [
-      "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-queue",
-      "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-dlq"
+      "arn:aws:sqs:us-east-1:${var.account_id}:llandman-queue",
+      "arn:aws:sqs:us-east-1:${var.account_id}:llandman-dlq"
     ]
   }
 
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "dynamodb:PutItem",
       "dynamodb:Update*"
     ]
-    resources = "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
+    resources = "arn:aws:dynamodb:us-east-1:${var.account_id}:table/llandman-model-outputs"
   }
 
   statement {
@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "bedrock:ListPrompts"
     ]
     resources = [
-      "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+      "arn:aws:bedrock:us-east-1:${var.account_id}:prompt/*",
       "arn:aws:bedrock:*::foundation-model/*"
     ]
   }
@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "queue-processing_lambda_policy" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
+    resources = "arn:aws:logs:us-east-1:${var.account_id}:log-group:/aws/lambda/llandman-queue-processing:*"
   }
 
   statement {
