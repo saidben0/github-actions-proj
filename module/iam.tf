@@ -67,13 +67,7 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
         "Action": [
 		        "bedrock:InvokeModel",
             "bedrock:GetPrompt",
-            "bedrock:ListTagsForResource",
-            "bedrock:CreatePrompt",
-            "bedrock:UpdatePrompt",
-            "bedrock:ListPrompts",
-            "bedrock:GetFoundationModelAvailability",
-            "bedrock:ListFoundationModels",
-            "bedrock:DeletePrompt"
+            "bedrock:ListPrompts"
         ],
         "Resource": [
             "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:prompt/*",
