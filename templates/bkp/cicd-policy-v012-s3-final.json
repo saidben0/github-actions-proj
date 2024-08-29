@@ -38,8 +38,8 @@
                 "kms:GetKeyRotationStatus"
             ],
             "Resource": [
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -58,7 +58,7 @@
                 "lambda:UntagResource"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*"
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:*"
             ]
         },
         {
@@ -67,7 +67,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+            "Resource": "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Sid": "VisualEditor3",
@@ -84,7 +84,7 @@
                 "dynamodb:DescribeContinuousBackups",
                 "dynamodb:UpdateTable"
             ],
-            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
+            "Resource": "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
             "Sid": "VisualEditor4",
@@ -104,7 +104,7 @@
                 "iam:PassRole",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/*"
+            "Resource": "arn:${local.partition}:iam::${ACCOUNT_ID}:role/*"
         },
         {
             "Effect": "Allow",
@@ -119,8 +119,8 @@
                 "s3:PutObjectVersionAcl"
             ],
             "Resource": [
-                "arn:aws:s3:::*",
-                "arn:aws:s3:::*/*"
+                "arn:${local.partition}:s3:::*",
+                "arn:${local.partition}:s3:::*/*"
             ]
         },
         {
@@ -164,7 +164,7 @@
                 "s3:ListBucketVersions",
                 "s3:GetBucketNotification"
             ],
-            "Resource": "arn:aws:s3:::*"
+            "Resource": "arn:${local.partition}:s3:::*"
         },
         {
             "Sid": "VisualEditor6",
@@ -178,7 +178,7 @@
                 "sqs:SetQueueAttributes",
                 "sqs:ListQueueTags"
             ],
-            "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
+            "Resource": "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:*"
         }
     ]
 }

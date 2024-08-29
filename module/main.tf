@@ -1,9 +1,19 @@
-data "aws_caller_identity" "current" {
+data "aws_caller_identity" "this" {
   provider = aws.acc
 }
 
-data "aws_region" "current" {
+data "aws_partition" "this" {
   provider = aws.acc
+}
+
+data "aws_region" "this" {
+  provider = aws.acc
+}
+
+locals {
+  account_id = data.aws_caller_identity.this.account_id
+  partition  = data.aws_partition.this.partition
+  region     = data.aws_region.this.name
 }
 
 
@@ -227,8 +237,9 @@ resource "aws_dynamodb_table" "model_outputs" {
 #   description = "Key used for sqs encryption"
 #   key_usage   = "ENCRYPT_DECRYPT"
 #   policy = templatefile("${path.module}/templates/kms_policy.json.tpl", {
-#     account_id           = data.aws_caller_identity.current.account_id,
-#     aws_region           = data.aws_region.current.name,
+#     account_id           = local.account_id,
+#     region               = local.region,
+#     partition            = local.partition,
 #     lambda_iam_role_name = aws_iam_role.queue_processing_lambda_role.name
 #   })
 #   enable_key_rotation = true

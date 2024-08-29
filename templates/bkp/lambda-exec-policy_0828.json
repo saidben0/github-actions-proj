@@ -10,8 +10,8 @@
             ],
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-queue",
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-dlq"
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:llandman-queue",
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:llandman-dlq"
             ]
         },
 		{
@@ -24,8 +24,8 @@
                 "s3-object-lambda:List*"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823",
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823/*"
+                "arn:${local.partition}:s3:::enverus-courthouse-dev-chd-plants-0823",
+                "arn:${local.partition}:s3:::enverus-courthouse-dev-chd-plants-0823/*"
             ]
         },
 		{
@@ -42,8 +42,8 @@
                 "bedrock:DeletePrompt"
             ],
             "Resource": [
-                "arn:aws:bedrock:*:${ACCOUNT_ID}:prompt/*",
-                "arn:aws:bedrock:*::foundation-model/*"
+                "arn:${local.partition}:bedrock:*:${ACCOUNT_ID}:prompt/*",
+                "arn:${local.partition}:bedrock:*::foundation-model/*"
             ]
         },
         {
@@ -54,7 +54,7 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:*:${ACCOUNT_ID}:resource/*"
+            "Resource": "arn:${local.partition}:cloudformation:*:${ACCOUNT_ID}:resource/*"
         },
         {
 			"Action": [
@@ -64,7 +64,7 @@
                 "dynamodb:Update*"
 			],
 			"Effect": "Allow",
-			"Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
+			"Resource": "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
 		},
 		{
 			"Action": [
@@ -73,7 +73,7 @@
 				"logs:PutLogEvents"
 			],
 			"Effect": "Allow",
-			"Resource": "arn:aws:logs:*:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
+			"Resource": "arn:${local.partition}:logs:*:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
 		},
 		{
 			"Action": [

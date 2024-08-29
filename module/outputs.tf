@@ -1,9 +1,9 @@
 output "current_region" {
-  value = data.aws_region.current.name
+  value = local.region
 }
 
 output "current_account_id" {
-  value = data.aws_caller_identity.current.account_id
+  value = local.account_id
 }
 
 output "current_caller_arn" {

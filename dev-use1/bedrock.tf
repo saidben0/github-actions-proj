@@ -186,7 +186,7 @@ resource "awscc_bedrock_prompt" "this" {
 #   function_name  = aws_lambda_function.bedrock_api.function_name
 #   principal      = "bedrock.amazonaws.com"
 #   source_account = local.account_id
-#   source_arn     = "arn:aws:bedrock:${local.region}:${local.account_id}:agent/*"
+#   source_arn     = "arn:${local.partition}:bedrock:${local.region}:${local.account_id}:agent/*"
 # }
 
 
@@ -219,7 +219,7 @@ resource "awscc_bedrock_prompt" "this" {
 
 # resource "aws_iam_role_policy" "bedrock_lambda_sqs_permissions" {
 #   provider = aws.acc
-#   name     = "${aws_iam_role.lambda_bedrock_api.name}-sqs-access-${data.aws_region.current.name}"
+#   name     = "${aws_iam_role.lambda_bedrock_api.name}-sqs-access-${local.region}"
 #   role     = aws_iam_role.lambda_bedrock_api.id
 #   policy   = <<EOF
 # {
@@ -234,8 +234,8 @@ resource "awscc_bedrock_prompt" "this" {
 #       ],
 #       "Effect": "Allow",
 #       "Resource": [
-#           "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
-#           "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+#           "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.this.name}",
+#           "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.dlq.name}"
 #       ]
 #     }
 #   ]

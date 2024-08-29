@@ -44,14 +44,14 @@
                 "kms:DeleteAlias"
             ],
             "Resource": [
-                "arn:aws:sqs:*:${ACCOUNT_ID}:*",
-                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:s3:::*",
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*",
-                "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:*",
+                "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/*",
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:role/*",
+                "arn:${local.partition}:s3:::*",
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:*",
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*"
             ]
         }
     ]

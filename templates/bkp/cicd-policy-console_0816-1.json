@@ -97,18 +97,18 @@
                 "dynamodb:UpdateTable"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*",
-                "arn:aws:s3:::*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*",
-                "arn:aws:sqs:*:${ACCOUNT_ID}:*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*",
-                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*",
-                "arn:aws:iam::aws:policy/service-role/*",
-                "arn:aws:bedrock:*::foundation-model/*",
-                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
-                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent/*"
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:*",
+                "arn:${local.partition}:s3:::*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*",
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:*",
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:role/*",
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:*",
+                "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/*",
+                "arn:${local.partition}:iam::aws:policy/service-role/*",
+                "arn:${local.partition}:bedrock:*::foundation-model/*",
+                "arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
+                "arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:agent/*"
             ]
         },
         {
@@ -125,8 +125,8 @@
                 "s3:PutObjectAcl"
             ],
             "Resource": [
-                "arn:aws:s3:::*/*",
-                "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+                "arn:${local.partition}:s3:::*/*",
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
             ]
         },
         {
@@ -171,7 +171,7 @@
                 "s3:PutBucketPolicy",
                 "s3:GetBucketLocation"
             ],
-            "Resource": "arn:aws:s3:::*"
+            "Resource": "arn:${local.partition}:s3:::*"
         }
     ]
 }

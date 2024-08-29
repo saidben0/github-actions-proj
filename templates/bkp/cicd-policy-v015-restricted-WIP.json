@@ -36,8 +36,8 @@
                 "kms:GetKeyRotationStatus"
             ],
             "Resource": [
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -57,7 +57,7 @@
                 "lambda:RemovePermission"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:*"
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:*"
             ]
         },
         {
@@ -65,7 +65,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+            "Resource": "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Effect": "Allow",
@@ -80,7 +80,7 @@
                 "dynamodb:UntagResource",
                 "dynamodb:DescribeContinuousBackups"
             ],
-            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/*"
+            "Resource": "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/*"
         },
         {
             "Effect": "Allow",
@@ -95,8 +95,8 @@
                 "s3:PutObjectVersionAcl"
             ],
             "Resource": [
-                "arn:aws:s3:::*",
-                "arn:aws:s3:::*/*"
+                "arn:${local.partition}:s3:::*",
+                "arn:${local.partition}:s3:::*/*"
             ]
         },
         {
@@ -140,7 +140,7 @@
                 "s3:ListBucketVersions",
                 "s3:GetBucketNotification"
             ],
-            "Resource": "arn:aws:s3:::*"
+            "Resource": "arn:${local.partition}:s3:::*"
         },
         {
             "Effect": "Allow",
@@ -153,7 +153,7 @@
                 "sqs:SetQueueAttributes",
                 "sqs:ListQueueTags"
             ],
-            "Resource": "arn:aws:sqs:*:${ACCOUNT_ID}:*"
+            "Resource": "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:*"
         },
         {
             "Effect": "Allow",
@@ -178,10 +178,10 @@
                 "bedrock:GetAgentActionGroup"
             ],
             "Resource": [
-                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
-				"arn:aws:bedrock:*::foundation-model/*",
-				"arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
-				"arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:agent/*"
+                "arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+				"arn:${local.partition}:bedrock:*::foundation-model/*",
+				"arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:agent-alias/*",
+				"arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:agent/*"
             ]
         },
         {
@@ -192,7 +192,7 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+            "Resource": "arn:${local.partition}:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
         }
     ]
 }

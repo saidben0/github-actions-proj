@@ -1,6 +1,6 @@
 resource "aws_iam_role" "queue_processing_lambda_role" {
   provider           = aws.acc
-  name               = "${var.prefix}-${var.lambda_role_name}-${data.aws_region.current.name}"
+  name               = "${var.prefix}-${var.lambda_role_name}-${local.region}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -19,7 +19,7 @@ EOF
 
 resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   provider = aws.acc
-  name     = "${var.prefix}-${var.lambda_policy_name}-${data.aws_region.current.name}"
+  name     = "${var.prefix}-${var.lambda_policy_name}-${local.region}"
   role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {
@@ -34,8 +34,8 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
       ],
       "Effect": "Allow",
       "Resource": [
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+          "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.this.name}",
+          "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.dlq.name}"
       ]
     },
     {
@@ -48,8 +48,8 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
             "s3-object-lambda:List*"
         ],
         "Resource": [
-            "arn:aws:s3:::${var.inputs_bucket_name}",
-            "arn:aws:s3:::${var.inputs_bucket_name}/*"
+            "arn:${local.partition}:s3:::${var.inputs_bucket_name}",
+            "arn:${local.partition}:s3:::${var.inputs_bucket_name}/*"
         ]
     },
     {
@@ -60,7 +60,7 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
                 "dynamodb:Update*"
 			],
 			"Effect": "Allow",
-			"Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.prefix}-${var.dynamodb_table_name}"
+			"Resource": "arn:${local.partition}:dynamodb:${local.region}:${local.account_id}:table/${var.prefix}-${var.dynamodb_table_name}"
 		},
     {
         "Effect": "Allow",
@@ -70,8 +70,8 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
             "bedrock:ListPrompts"
         ],
         "Resource": [
-            "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:prompt/*",
-            "arn:aws:bedrock:*::foundation-model/*"
+            "arn:${local.partition}:bedrock:${local.region}:${local.account_id}:prompt/*",
+            "arn:${local.partition}:bedrock:*::foundation-model/*"
         ]
     },
     {
@@ -81,7 +81,7 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
         "logs:PutLogEvents"
       ],
       "Effect": "Allow",
-      "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.queue_processing_lambda_function.function_name}:*"
+      "Resource": "arn:${local.partition}:logs:${local.region}:${local.account_id}:log-group:/aws/lambda/${aws_lambda_function.queue_processing_lambda_function.function_name}:*"
     },
     {
       "Effect": "Allow",
@@ -101,7 +101,7 @@ EOF
 
 resource "aws_iam_role_policy" "lambda_sqs_permissions" {
   provider = aws.acc
-  name     = "${var.prefix}-${var.lambda_policy_name}-sqs-access-${data.aws_region.current.name}"
+  name     = "${var.prefix}-${var.lambda_policy_name}-sqs-access-${local.region}"
   role     = aws_iam_role.queue_processing_lambda_role.id
   policy   = <<EOF
 {
@@ -116,8 +116,8 @@ resource "aws_iam_role_policy" "lambda_sqs_permissions" {
       ],
       "Effect": "Allow",
       "Resource": [
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
-          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+          "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.this.name}",
+          "arn:${local.partition}:sqs:${local.region}:${local.account_id}:${aws_sqs_queue.dlq.name}"
       ]
     }
   ]

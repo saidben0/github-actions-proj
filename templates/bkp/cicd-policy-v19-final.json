@@ -16,8 +16,8 @@
                 "kms:ListAliases"
             ],
             "Resource": [
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*"
             ]
         },
         {
@@ -39,7 +39,7 @@
                 "lambda:Update*"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:llandman-queue-processing"
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:llandman-queue-processing"
             ]
         },
         {
@@ -47,7 +47,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+            "Resource": "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Effect": "Allow",
@@ -63,7 +63,7 @@
                 "dynamodb:DescribeContinuousBackups",
                 "dynamodb:Update*"
             ],
-            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
+            "Resource": "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
         },
         {
             "Effect": "Allow",
@@ -88,9 +88,9 @@
                 "iam:ListPolicies"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*",
-                "arn:aws:iam::aws:policy/service-role/*"
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:role/*",
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:*",
+                "arn:${local.partition}:iam::aws:policy/service-role/*"
             ]
         },
         {
@@ -101,8 +101,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
+                "arn:${local.partition}:s3:::enverus-courthouse-dev-chd-plants",
+                "arn:${local.partition}:s3:::enverus-courthouse-dev-chd-plants/*"
             ]
         },
         {
@@ -119,8 +119,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::${TFSTATE_FILE_BUCKET}",
-                "arn:aws:s3:::${TFSTATE_FILE_BUCKET}/*"
+                "arn:${local.partition}:s3:::${TFSTATE_FILE_BUCKET}",
+                "arn:${local.partition}:s3:::${TFSTATE_FILE_BUCKET}/*"
             ]
         },
         {
@@ -135,8 +135,8 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": [
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-queue",
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-dlq"
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:llandman-queue",
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:llandman-dlq"
             ]
         },
         {
@@ -152,8 +152,8 @@
                 "bedrock:DeletePrompt"
             ],
             "Resource": [
-                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
-                "arn:aws:bedrock:*::foundation-model/*"
+                "arn:${local.partition}:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+                "arn:${local.partition}:bedrock:*::foundation-model/*"
             ]
         },
         {
@@ -164,7 +164,7 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+            "Resource": "arn:${local.partition}:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
         }
     ]
 }

@@ -6,7 +6,7 @@
           "Sid": "Enable IAM User Permissions",
           "Effect": "Allow",
           "Principal": {
-              "AWS": "arn:aws:iam::${account_id}:root"
+              "AWS": "arn:${partition}:iam::${account_id}:root"
           },
           "Action": "kms:*",
           "Resource": "*"
@@ -15,7 +15,7 @@
           "Sid": "Enable Lambda Role",
           "Effect": "Allow",
           "Principal": {
-              "AWS": "arn:aws:iam::${account_id}:role/${lambda_iam_role_name}"
+              "AWS": "arn:${partition}:iam::${account_id}:role/${lambda_iam_role_name}"
           },
           "Action": [
             "kms:Decrypt",
@@ -54,7 +54,7 @@
           "Effect": "Allow",
           "Principal": {
             "Service": [
-              "logs.${aws_region}.amazonaws.com",
+              "logs.${region}.amazonaws.com",
               "vpc-flow-logs.amazonaws.com"
             ]
           },
