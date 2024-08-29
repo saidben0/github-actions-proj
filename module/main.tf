@@ -73,7 +73,7 @@ data "archive_file" "this" {
   type        = "zip"
   source_dir  = "${path.module}/lambda/"
   excludes    = ["requirements.txt"]
-  output_path = "${path.module}/output/queue-processing.zip"
+  output_path = "${path.module}/outputs/queue-processing.zip"
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
