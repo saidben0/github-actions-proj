@@ -28,7 +28,7 @@
                 "lambda:Update*"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:function:llandman-queue-processing"
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:function:llandman-queue-processing"
             ]
         },
         {
@@ -39,8 +39,8 @@
                 "lambda:DeleteLayerVersion"
             ],
             "Resource": [
-                "arn:aws:lambda:*:${ACCOUNT_ID}:layer:python-libs",
-                "arn:aws:lambda:*:${ACCOUNT_ID}:layer:python-libs:*"
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs",
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs:*"
             ]
         },
         {
@@ -48,7 +48,7 @@
             "Action": [
                 "lambda:DeleteEventSourceMapping"
             ],
-            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+            "Resource": "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:event-source-mapping:*"
         },
         {
             "Effect": "Allow",
@@ -64,7 +64,7 @@
                 "dynamodb:DescribeContinuousBackups",
                 "dynamodb:Update*"
             ],
-            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
+            "Resource": "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
         },
         {
             "Effect": "Allow",
@@ -108,8 +108,8 @@
                 "sqs:ListQueueTags"
             ],
             "Resource": [
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-queue",
-                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-dlq"
+                "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-queue",
+                "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-dlq"
             ]
         },
         {
@@ -125,7 +125,7 @@
                 "bedrock:DeletePrompt"
             ],
             "Resource": [
-                "arn:aws:bedrock:*:${ACCOUNT_ID}:prompt/*",
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
                 "arn:aws:bedrock:*::foundation-model/*"
             ]
         },
@@ -137,7 +137,7 @@
                 "cloudformation:DeleteResource",
                 "cloudformation:GetResourceRequestStatus"
             ],
-            "Resource": "arn:aws:cloudformation:*:${ACCOUNT_ID}:resource/*"
+            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
         }
     ]
 }

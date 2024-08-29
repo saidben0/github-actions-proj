@@ -26,6 +26,19 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Action": [
+          "sqs:ReceiveMessage",
+          "sqs:SendMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.this.name}",
+          "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_sqs_queue.dlq.name}"
+      ]
+    },
+    {
         "Effect": "Allow",
         "Action": [
             "s3:Get*",
@@ -66,16 +79,6 @@ resource "aws_iam_role_policy" "queue_processing_lambda_policy" {
             "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:prompt/*",
             "arn:aws:bedrock:*::foundation-model/*"
         ]
-    },
-    {
-        "Effect": "Allow",
-        "Action": [
-            "cloudformation:CreateResource",
-            "cloudformation:GetResource",
-            "cloudformation:DeleteResource",
-            "cloudformation:GetResourceRequestStatus"
-        ],
-        "Resource": "arn:aws:cloudformation:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:resource/*"
     },
     {
       "Action": [
