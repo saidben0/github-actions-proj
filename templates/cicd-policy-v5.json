@@ -12,20 +12,6 @@
         {
             "Effect": "Allow",
             "Action": [
-                "kms:DescribeKey",
-                "kms:ListAliases",
-                "kms:GenerateDataKey",
-                "kms:Encrypt",
-                "kms:Decrypt"
-            ],
-            "Resource": [
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
                 "lambda:GetFunction",
                 "lambda:CreateFunction",
                 "lambda:TagResource",
@@ -79,34 +65,6 @@
                 "dynamodb:Update*"
             ],
             "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:ListRoleTags",
-                "iam:PutRolePolicy",
-                "iam:ListAttachedRolePolicies",
-                "iam:CreateRole",
-                "iam:ListRolePolicies",
-                "iam:GetRole",
-                "iam:DeleteRole",
-                "iam:UntagRole",
-                "iam:TagRole",
-                "iam:GetRolePolicy",
-                "iam:ListInstanceProfilesForRole",
-                "iam:PassRole",
-                "iam:DeleteRolePolicy",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion",
-                "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy",
-                "iam:ListPolicies"
-            ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*",
-                "arn:aws:iam::aws:policy/service-role/*"
-            ]
         },
         {
             "Effect": "Allow",
