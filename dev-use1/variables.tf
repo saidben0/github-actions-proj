@@ -28,11 +28,6 @@ variable "dynamodb_table_name" {
   default = "model-outputs"
 }
 
-variable "prompt_id" {
-  type    = string
-  default = "3DKW6HGLLD"
-}
-
 variable "prompt_ver" {
   type    = string
   default = "3"
