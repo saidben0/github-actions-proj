@@ -9,8 +9,8 @@ terraform {
     }
 
     awscc = {
-      source                = "hashicorp/awscc"
-      version               = "1.12.0"
+      source  = "hashicorp/awscc"
+      version = "1.12.0"
     }
 
     archive = {

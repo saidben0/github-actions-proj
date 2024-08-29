@@ -17,7 +17,7 @@
 #                         You will keep each tract together as an individual tract entity and combine the responses to the following questions into a JSON output, with each JSON object corresponding to a single tract entity. Return one JSON object per tract.
 #                         Example of one tract: {'tract': 1, 'county': 'Travis', 'abstract': 'A-546', 'survey': 'T&P RR CO SURVEY', 'subdivision': 'Flatrock Creek Phase 1', 'lot': '1', 'subdivision_block': '1', 'section': '5', 'township': 'T-4-S', 'range_block': '5', 'quarter': 'N/2 of N/2', 'acreage': '126.3'} 
 #                         If there are no specific tract descriptions, just return an empty JSON.
-                        
+
 #                         Step 2. For each distinct land description:
 #                         <instruction>
 #                         - Assign a sequential tract number.
@@ -34,7 +34,7 @@
 #                         - Extract the acreage of the tract.
 #                         - Note: Subdivision, lot, township, and acreage may not be present in all documents. Only include these if explicitly stated.
 #                         </instruction>
-                        
+
 #                         Step 3. For surveys: Ensure the full survey name is captured, even if it spans multiple lines.
 #                         Step 4. This step only applies to the quarter.
 #                         - If multiple quarters are separated by "and", create separate JSON objects for each.
@@ -45,7 +45,7 @@
 #                         - Example: "North One-Half (N/2)" becomes "N/2".
 #                         Step 6. If multiple abstracts apply to a single tract, join them with a semicolon.
 #                         Example: "abstract": "A-545; A-645" when document states 'A-545, Glasscock County, Texas, and A-645, Reagan County, Texas, containing 15 acres'.
-                        
+
 #                         Step 7. If multiple counties apply to a single tract, join them with a semicolon.
 #                         Example: "county": "Glasscock; Reagan"
 #                         Step 8. This step only applies to the section. If the both section and subdivision are present, then append the section to the end of subdivision. 
@@ -109,7 +109,7 @@
 #                         You will keep each tract together as an individual tract entity and combine the responses to the following questions into a JSON output, with each JSON object corresponding to a single tract entity. Return one JSON object per tract.
 #                         Example of one tract: {'tract': 1, 'county': 'Travis', 'abstract': 'A-546', 'survey': 'T&P RR CO SURVEY', 'subdivision': 'Flatrock Creek Phase 1', 'lot': '1', 'subdivision_block': '1', 'section': '5', 'township': 'T-4-S', 'range_block': '5', 'quarter': 'N/2 of N/2', 'acreage': '126.3'} 
 #                         If there are no specific tract descriptions, just return an empty JSON.
-                        
+
 #                         Step 2. For each distinct land description:
 #                         <instruction>
 #                         - Assign a sequential tract number.
@@ -126,7 +126,7 @@
 #                         - Extract the acreage of the tract.
 #                         - Note: Subdivision, lot, township, and acreage may not be present in all documents. Only include these if explicitly stated.
 #                         </instruction>
-                        
+
 #                         Step 3. For surveys: Ensure the full survey name is captured, even if it spans multiple lines.
 #                         Step 4. This step only applies to the quarter.
 #                         - If multiple quarters are separated by "and", create separate JSON objects for each.
@@ -137,7 +137,7 @@
 #                         - Example: "North One-Half (N/2)" becomes "N/2".
 #                         Step 6. If multiple abstracts apply to a single tract, join them with a semicolon.
 #                         Example: "abstract": "A-545; A-645" when document states 'A-545, Glasscock County, Texas, and A-645, Reagan County, Texas, containing 15 acres'.
-                        
+
 #                         Step 7. If multiple counties apply to a single tract, join them with a semicolon.
 #                         Example: "county": "Glasscock; Reagan"
 #                         Step 8. This step only applies to the section. If the both section and subdivision are present, then append the section to the end of subdivision. 

@@ -1,15 +1,15 @@
 resource "awscc_bedrock_prompt" "this" {
-    default_variant = "variantOne"
-    name            = "${var.prefix}-prompt"
-    variants        = [
-        {
-            inference_configuration = {
-                text = {}
-            }
-            name                    = "variantOne"
-            template_configuration  = {
-                text = {
-                    text = <<-EOT
+  default_variant = "variantOne"
+  name            = "${var.prefix}-prompt"
+  variants = [
+    {
+      inference_configuration = {
+        text = {}
+      }
+      name = "variantOne"
+      template_configuration = {
+        text = {
+          text = <<-EOT
                         Think step-by-step.
                         Step 1. Retrieve all raw tract descriptions from the images provided to you, including all counties such as 'Irion County', 'Glasscock County', 'Menard County', and 'Nolan County', etc. 
                         You will keep each tract together as an individual tract entity and combine the responses to the following questions into a JSON output, with each JSON object corresponding to a single tract entity. Return one JSON object per tract.
@@ -73,9 +73,9 @@ resource "awscc_bedrock_prompt" "this" {
                         - Verify that multiple abstracts, multiple counties, multiple surveys in a tract have been properly joined.
                         - Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
                     EOT
-                }
-            }
-            template_type           = "TEXT"
-        },
-    ]
+        }
+      }
+      template_type = "TEXT"
+    },
+  ]
 }
