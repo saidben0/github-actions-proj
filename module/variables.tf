@@ -47,7 +47,7 @@ variable "prompt_id" {
 
 variable "prompt_ver" {
   type    = string
-  default = "1"
+  default = "3"
 }
 
 variable "system_prompt_id" {
