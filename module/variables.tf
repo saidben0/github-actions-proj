@@ -54,5 +54,5 @@ variable "system_prompt_ver" {
 }
 
 variable "python_version" {
-  type    = string
+  type = string
 }
