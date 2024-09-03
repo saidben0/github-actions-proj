@@ -85,7 +85,7 @@ jobs:
         id: plan
         run: |
           cd ${{ inputs.aws-env-dir }}/
-          terraform plan -destroy -out=tfplan
+          terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3

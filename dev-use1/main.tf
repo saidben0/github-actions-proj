@@ -7,6 +7,7 @@ module "dev-use1" {
   dynamodb_table_name  = var.dynamodb_table_name
   system_prompt_id     = var.system_prompt_id
   system_prompt_ver    = var.system_prompt_ver
+  python_version       = var.python_version
 
   providers = {
     aws.acc = aws.use1

@@ -72,7 +72,7 @@ data "archive_file" "lambda_layer" {
 resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "python-libs"
   description         = "Lambda layer for Land Llandman doc processing"
-  compatible_runtimes = ["python3.11"]
+  compatible_runtimes = ["python${var.python_version}"]
   filename            = data.archive_file.lambda_layer.output_path
   # filename            = "${path.module}/lambda-layer/python-libs.zip"
   source_code_hash = data.archive_file.lambda_layer.output_base64sha256
@@ -94,7 +94,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
-  runtime                        = "python3.11"
+  runtime                        = "python${var.python_version}"
   timeout                        = "120"
   reserved_concurrent_executions = 100
   memory_size                    = 1024

@@ -52,3 +52,7 @@ variable "system_prompt_ver" {
   type    = string
   default = "1"
 }
+
+variable "python_version" {
+  type    = string
+}

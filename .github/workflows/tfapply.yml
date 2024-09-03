@@ -127,7 +127,7 @@ jobs:
         id: plan
         run: |
           cd ${{ inputs.aws-env-dir }}/
-          terraform plan -out=tfplan
+          terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
@@ -183,7 +183,7 @@ jobs:
       - name: Generate Lambda Archive Zip
         run: |
           cd ${{ inputs.aws-env-dir }}/
-          terraform plan &> /dev/null
+          terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' &> /dev/null
           tree -L 2 ../module
 
       - name: Download Terraform Plan
