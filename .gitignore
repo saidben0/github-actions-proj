@@ -1,9 +1,3 @@
-# Ignore zip files
-image-extraction.zip
-queue-processing.zip
-lambda-layer.zip
-queue-processing.zip
-
 # Local .terraform directories
 **/.terraform/*
 
@@ -42,3 +36,12 @@ tfplan
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore zip files
+image-extraction.zip
+queue-processing.zip
+lambda-layer.zip
+queue-processing.zip
+
+# Ignore python libraries
+python/
