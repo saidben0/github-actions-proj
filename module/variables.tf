@@ -36,7 +36,7 @@ variable "project_name" {
 variable "tags" {
   type = map(string)
   default = {
-    GitRepo   = "Land.Llandman"
+    GitRepo     = "Land.Llandman"
     Environment = "Development"
     Owner       = "Ops"
   }
