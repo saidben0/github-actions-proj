@@ -30,7 +30,7 @@ variable "python_version" {
 variable "tags" {
   type = map(string)
   default = {
-    StackName   = "Land.Llandman"
+    GitRepo   = "Land.Llandman"
     Environment = "Development"
     Owner       = "Ops"
   }

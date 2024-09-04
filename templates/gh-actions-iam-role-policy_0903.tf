@@ -136,7 +136,9 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "bedrock:ListPrompts",
       "bedrock:GetFoundationModelAvailability",
       "bedrock:ListFoundationModels",
-      "bedrock:DeletePrompt"
+      "bedrock:DeletePrompt",
+      "bedrock:TagResource",
+      "bedrock:UntagResource"
     ]
     resources = [
       "arn:aws:bedrock:::prompt/*",
