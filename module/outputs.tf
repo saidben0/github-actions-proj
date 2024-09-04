@@ -18,6 +18,10 @@ output "prompt_name" {
   value = awscc_bedrock_prompt.this.name
 }
 
+output "prompt_arn" {
+  value = awscc_bedrock_prompt.this.arn
+}
+
 output "lambda_role_name" {
   value = data.aws_iam_role.llandman_lambda_exec_role.name
 }

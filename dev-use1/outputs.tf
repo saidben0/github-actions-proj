@@ -18,6 +18,10 @@ output "prompt_name" {
   value = module.dev-use1.prompt_name
 }
 
+output "prompt_arn" {
+  value = module.dev-use1.prompt_arn
+}
+
 output "lambda_role_name" {
   value = module.dev-use1.lambda_role_name
 }
