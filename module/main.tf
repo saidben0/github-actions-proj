@@ -22,6 +22,11 @@ data "aws_s3_bucket" "inputs_bucket" {
   bucket   = var.inputs_bucket_name
 }
 
+data "aws_iam_role" "llandman_lambda_exec_role" {
+  provider = aws.acc
+  name     = var.lambda_role_name
+}
+
 resource "random_id" "this" {
   byte_length = 6
   prefix      = "terraform-aws-"
@@ -90,7 +95,8 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   provider                       = aws.acc
   filename                       = data.archive_file.this.output_path
   function_name                  = "${var.prefix}-${var.lambda_function_name}"
-  role                           = aws_iam_role.queue_processing_lambda_role.arn
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  # role                           = aws_iam_role.queue_processing_lambda_role.arn
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -125,7 +131,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   #   security_group_ids = [aws_security_group.allow_tls.id]
   # }
 
-  depends_on = [aws_iam_role.queue_processing_lambda_role]
+  # depends_on = [aws_iam_role.queue_processing_lambda_role]
 }
 #########################################
 #########################################
@@ -144,6 +150,32 @@ resource "aws_sqs_queue" "this" {
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = 4
+  })
+}
+
+# Define an sqs policy to allow S3 to send messages to the SQS queue
+resource "aws_sqs_queue_policy" "this" {
+  provider  = aws.acc
+  queue_url = aws_sqs_queue.this.url
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "s3.amazonaws.com"
+        },
+        Action   = "sqs:SendMessage",
+        Resource = aws_sqs_queue.this.arn,
+        Condition = {
+          ArnEquals = {
+            # "aws:SourceArn" = aws_s3_bucket.this.arn
+            "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
+          }
+        }
+      }
+    ]
   })
 }
 

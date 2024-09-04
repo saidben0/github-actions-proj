@@ -3,7 +3,6 @@ module "dev-use1" {
   inputs_bucket_name   = var.inputs_bucket_name
   lambda_function_name = var.lambda_function_name
   lambda_role_name     = var.lambda_role_name
-  lambda_policy_name   = var.lambda_policy_name
   dynamodb_table_name  = var.dynamodb_table_name
   system_prompt_id     = var.system_prompt_id
   system_prompt_ver    = var.system_prompt_ver

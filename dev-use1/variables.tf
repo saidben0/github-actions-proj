@@ -15,12 +15,7 @@ variable "lambda_function_name" {
 
 variable "lambda_role_name" {
   type    = string
-  default = "queue-processing_lambda_role"
-}
-
-variable "lambda_policy_name" {
-  type    = string
-  default = "queue-processing_lambda_policy"
+  default = "llandman-lambda-exec-role"
 }
 
 variable "dynamodb_table_name" {
