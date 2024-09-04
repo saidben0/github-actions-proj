@@ -92,10 +92,10 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
-  provider                       = aws.acc
-  filename                       = data.archive_file.this.output_path
-  function_name                  = "${var.prefix}-${var.lambda_function_name}"
-  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider      = aws.acc
+  filename      = data.archive_file.this.output_path
+  function_name = "${var.prefix}-${var.lambda_function_name}"
+  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # role                           = aws_iam_role.queue_processing_lambda_role.arn
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
