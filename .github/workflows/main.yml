@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - envVars
+      - provider
 
 jobs:
   dev-use1:
