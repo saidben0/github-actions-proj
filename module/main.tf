@@ -108,11 +108,11 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
   environment {
     variables = {
-      BUCKET_NAME       = var.inputs_bucket_name
-      S3_URI            = "s3://${var.inputs_bucket_name}/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf"
-      DDB_TABLE_NAME    = aws_dynamodb_table.model_outputs.name
-      PROJECT_NAME      = var.project_name
-      PROMPT_ID         = awscc_bedrock_prompt.this.prompt_id
+      BUCKET_NAME    = var.inputs_bucket_name
+      S3_URI         = "s3://${var.inputs_bucket_name}/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf"
+      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      PROJECT_NAME   = var.project_name
+      PROMPT_ID      = awscc_bedrock_prompt.this.prompt_id
       # PROMPT_VER        = var.prompt_ver
       # SYSTEM_PROMPT_ID  = var.system_prompt_id
       # SYSTEM_PROMPT_VER = var.system_prompt_ver
