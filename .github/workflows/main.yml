@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - prompt
+      - envVars
 
 jobs:
   dev-use1:
