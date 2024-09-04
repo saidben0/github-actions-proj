@@ -149,6 +149,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
     effect = "Allow"
     actions = [
       "cloudformation:CreateResource",
+      "cloudformation:UpdateResource",
       "cloudformation:GetResource",
       "cloudformation:DeleteResource",
       "cloudformation:GetResourceRequestStatus"
