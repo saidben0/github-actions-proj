@@ -10,6 +10,14 @@ output "current_caller_arn" {
   value = data.aws_caller_identity.this.arn
 }
 
+output "prompt_id" {
+  value = awscc_bedrock_prompt.this.prompt_id
+}
+
+output "prompt_name" {
+  value = awscc_bedrock_prompt.this.name
+}
+
 output "lambda_role_name" {
   value = data.aws_iam_role.llandman_lambda_exec_role.name
 }

@@ -10,6 +10,14 @@ output "current_caller_arn" {
   value = module.dev-use1.current_caller_arn
 }
 
+output "prompt_id" {
+  value = module.dev-use1.prompt_id
+}
+
+output "prompt_name" {
+  value = module.dev-use1.prompt_name
+}
+
 output "lambda_role_name" {
   value = module.dev-use1.lambda_role_name
 }
