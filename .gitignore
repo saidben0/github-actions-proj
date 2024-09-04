@@ -45,3 +45,6 @@ queue-processing.zip
 
 # Ignore python libraries
 python/
+
+# Others
+.DS_Store
