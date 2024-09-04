@@ -33,7 +33,7 @@ variable "project_name" {
   default = "land-doc-processing"
 }
 
-variable "tags"{
+variable "tags" {
   type = map(string)
   default = {
     StackName   = "Land.Llandman"

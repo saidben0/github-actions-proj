@@ -1,5 +1,5 @@
 resource "awscc_bedrock_prompt" "this" {
-  provider = awscc.acc
+  provider        = awscc.acc
   default_variant = "variantOne"
   name            = "${var.prefix}-prompt"
   variants = [

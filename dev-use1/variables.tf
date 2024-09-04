@@ -27,7 +27,7 @@ variable "python_version" {
   type = string
 }
 
-variable "tags"{
+variable "tags" {
   type = map(string)
   default = {
     StackName   = "Land.Llandman"
