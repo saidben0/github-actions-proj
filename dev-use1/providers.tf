@@ -10,3 +10,8 @@ provider "aws" {
     }
   }
 }
+
+provider "awscc" {
+  alias  = "use1"
+  region = "us-east-1"
+}

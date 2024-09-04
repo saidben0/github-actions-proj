@@ -33,6 +33,15 @@ variable "project_name" {
   default = "land-doc-processing"
 }
 
+variable "tags"{
+  type = map(string)
+  default = {
+    StackName   = "Land.Llandman"
+    Environment = "Development"
+    Owner       = "Ops"
+  }
+}
+
 # variable "prompt_ver" {
 #   type    = string
 #   default = "3"

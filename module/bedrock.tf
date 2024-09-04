@@ -1,4 +1,5 @@
 resource "awscc_bedrock_prompt" "this" {
+  provider = awscc.acc
   default_variant = "variantOne"
   name            = "${var.prefix}-prompt"
   variants = [
@@ -23,4 +24,6 @@ resource "awscc_bedrock_prompt" "this" {
       template_type = "TEXT"
     },
   ]
+
+  tags = var.tags
 }
