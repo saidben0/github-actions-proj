@@ -17,7 +17,7 @@ resource "awscc_bedrock_prompt" "this" {
       name = "variantOne"
       template_configuration = {
         text = {
-          text = file("${path.module}/prompt_template.txt")
+          text = file("${path.module}/templates/prompt_template.txt")
         }
       }
       template_type = "TEXT"
