@@ -30,7 +30,7 @@ resource "awscc_bedrock_prompt" "this" {
 
 resource "awscc_bedrock_prompt_version" "this" {
   # provider   = awscc.acc
-  prompt_arn = awscc_bedrock_prompt.test.arn
+  prompt_arn = awscc_bedrock_prompt.this.arn
 }
 
 
