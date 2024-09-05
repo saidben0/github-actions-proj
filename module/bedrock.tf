@@ -45,6 +45,7 @@ resource "awscc_bedrock_prompt" "test" {
       inference_configuration = {
         text = {
           temperature = 0
+          max_tokens  = 300
         }
       }
 
