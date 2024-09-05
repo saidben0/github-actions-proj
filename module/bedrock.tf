@@ -4,7 +4,7 @@ resource "awscc_bedrock_prompt" "this" {
   provider        = awscc.acc
   default_variant = each.value.default_variant
   name            = each.value.name
-  variants = each.value.variants
+  variants        = each.value.variants
 }
 
 output "bedrock_prompts" {

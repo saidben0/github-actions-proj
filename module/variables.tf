@@ -72,9 +72,9 @@ locals {
           inference_configuration = {
             text = {
               temperature = 0
-              top_p        = 0.9900000095367432
-              max_tokens   = 300
-              top_k        = 250
+              top_p       = 0.9900000095367432
+              max_tokens  = 300
+              top_k       = 250
             }
           }
           name = "variantOne"
@@ -95,9 +95,9 @@ locals {
           inference_configuration = {
             text = {
               temperature = 0.5
-              top_p        = 0.9000000000000000
-              max_tokens   = 200
-              top_k        = 100
+              top_p       = 0.9000000000000000
+              max_tokens  = 200
+              top_k       = 100
             }
           }
           name = "variantTwo"

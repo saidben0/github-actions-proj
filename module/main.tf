@@ -94,7 +94,7 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
-  for_each = local.bedrock_prompts
+  for_each      = local.bedrock_prompts
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-${var.lambda_function_name}"
@@ -199,7 +199,7 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each = local.bedrock_prompts
+  for_each         = local.bedrock_prompts
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = aws_lambda_function.queue_processing_lambda_function[each.key].arn
