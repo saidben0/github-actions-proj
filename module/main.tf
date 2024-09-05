@@ -10,14 +10,6 @@ data "aws_region" "this" {
   provider = aws.acc
 }
 
-locals {
-  account_id       = data.aws_caller_identity.this.account_id
-  partition        = data.aws_partition.this.partition
-  region           = data.aws_region.this.name
-  prompt_id        = awscc_bedrock_prompt.this["mainPrompt"].prompt_id
-  system_prompt_id = awscc_bedrock_prompt.this["systemPrompt"].prompt_id
-}
-
 
 data "aws_s3_bucket" "inputs_bucket" {
   provider = aws.acc
@@ -200,10 +192,9 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each         = local.bedrock_prompts
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
-  function_name    = aws_lambda_function.queue_processing_lambda_function[each.key].arn
+  function_name    = aws_lambda_function.queue_processing_lambda_function.arn
   enabled          = true
   batch_size       = 10
 }

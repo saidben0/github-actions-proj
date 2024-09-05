@@ -42,6 +42,11 @@ variable "tags" {
   }
 }
 
+variable "python_version" {
+  type = string
+}
+
+
 # variable "prompt_ver" {
 #   type    = string
 #   default = "3"
@@ -57,61 +62,6 @@ variable "tags" {
 #   default = "1"
 # }
 
-variable "python_version" {
-  type = string
-}
-
-# Define a variable with configurations for multiple prompts
-locals {
-  bedrock_prompts = {
-    "mainPrompt" = {
-      default_variant = "variantOne"
-      name            = "mainPrompt"
-      variants = [
-        {
-          inference_configuration = {
-            text = {
-              temperature = 0
-              top_p       = 0.9900000095367432
-              max_tokens  = 300
-              top_k       = 250
-            }
-          }
-          name = "variantOne"
-          template_configuration = {
-            text = {
-              text = "${path.module}/templates/prompt_template.txt"
-            }
-          }
-          template_type = "TEXT"
-        }
-      ]
-    }
-    "systemPrompt" = {
-      default_variant = "variantTwo"
-      name            = "systemPrompt"
-      variants = [
-        {
-          inference_configuration = {
-            text = {
-              temperature = 0.5
-              top_p       = 0.9000000000000000
-              max_tokens  = 200
-              top_k       = 100
-            }
-          }
-          name = "variantTwo"
-          template_configuration = {
-            text = {
-              text = "${path.module}/templates/system_prompt_template.txt"
-            }
-          }
-          template_type = "TEXT"
-        }
-      ]
-    }
-  }
-}
 
 
 # variable "bedrock_prompts" {
