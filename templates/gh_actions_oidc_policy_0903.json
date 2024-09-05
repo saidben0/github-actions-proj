@@ -12,20 +12,6 @@
         {
             "Effect": "Allow",
             "Action": [
-                "kms:DescribeKey",
-                "kms:ListAliases",
-                "kms:GenerateDataKey",
-                "kms:Encrypt",
-                "kms:Decrypt"
-            ],
-            "Resource": [
-                "arn:aws:kms:*:${ACCOUNT_ID}:alias/*",
-                "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
                 "lambda:GetFunction",
                 "lambda:CreateFunction",
                 "lambda:TagResource",
