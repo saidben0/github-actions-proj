@@ -22,7 +22,7 @@ locals {
           name = "variantOne"
           template_configuration = {
             text = {
-              text = "${path.module}/templates/prompt_template.txt"
+              text = file("${path.module}/templates/prompt_template.txt")
             }
           }
           template_type = "TEXT"
@@ -30,7 +30,7 @@ locals {
       ]
     }
     "systemPrompt" = {
-      default_variant = "variantTwo"
+      default_variant = "variantOne"
       name            = "systemPrompt"
       variants = [
         {
@@ -42,10 +42,10 @@ locals {
               top_k       = 100
             }
           }
-          name = "variantTwo"
+          name = "variantOne"
           template_configuration = {
             text = {
-              text = "${path.module}/templates/system_prompt_template.txt"
+              text = file("${path.module}/templates/system_prompt_template.txt")
             }
           }
           template_type = "TEXT"
