@@ -14,6 +14,10 @@ output "current_caller_arn" {
 #   value = module.dev-use1.prompt_id
 # }
 
+output "bedrock_prompt" {
+  value = module.dev-use1.bedrock_prompts
+}
+
 output "bedrock_prompt_ids" {
   value = module.dev-use1.bedrock_prompt_ids
 }

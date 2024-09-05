@@ -7,10 +7,12 @@ resource "awscc_bedrock_prompt" "this" {
   variants        = each.value.variants
 }
 
-output "bedrock_prompts" {
-  value = local.bedrock_prompts
+resource "awscc_bedrock_prompt_version" "this" {
+  for_each = local.bedrock_prompts
+  
+  provider   = awscc.acc
+  prompt_arn = awscc_bedrock_prompt.this[each.key].arn
 }
-
 
 # # Create a Bedrock prompt for each entry in the map
 # resource "awscc_bedrock_prompt" "this" {
