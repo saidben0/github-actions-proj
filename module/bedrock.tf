@@ -1,21 +1,20 @@
 resource "awscc_bedrock_prompt" "this" {
-  provider        = awscc.acc
-  default_variant = "variantOne"
+  # provider        = awscc.acc
+  default_variant = "default-variant"
   name            = "${var.prefix}-prompt"
   variants = [
     {
       inference_configuration = {
         text = {
           temperature = 0
-          # temperature = 1
-          # top_p       = 0.9900000095367432
-          # max_tokens  = 300
-          # stop_sequences = ["\\n\\nHuman:"]
-          # top_k = 250
+          top_p       = 0.9900000095367432
+          max_tokens  = 300
+          stop_sequences = ["\\n\\nHuman:"]
+          top_k = 250
         }
       }
 
-      name = "variantOne"
+      name = "default-variant"
       template_configuration = {
         text = {
           text = file("${path.module}/templates/prompt_template.txt")
@@ -30,14 +29,14 @@ resource "awscc_bedrock_prompt" "this" {
 
 
 resource "awscc_bedrock_prompt_version" "this" {
-  provider   = awscc.acc
+  # provider   = awscc.acc
   prompt_arn = awscc_bedrock_prompt.test.arn
 }
 
 
 #### TEST PROMPT ####
 resource "awscc_bedrock_prompt" "test" {
-  provider        = awscc.acc
+  # provider        = awscc.acc
   default_variant = "variantOne"
   name            = "${var.prefix}-prompt-test"
   variants = [
@@ -67,6 +66,6 @@ resource "awscc_bedrock_prompt" "test" {
 
 
 resource "awscc_bedrock_prompt_version" "test" {
-  provider   = awscc.acc
+  # provider   = awscc.acc
   prompt_arn = awscc_bedrock_prompt.test.arn
 }
