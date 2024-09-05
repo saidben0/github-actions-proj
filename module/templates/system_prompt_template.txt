@@ -60,4 +60,4 @@ Important:
 - Verify that quarters have been properly split into separate tracts when necessary.
 - Verify that multiple abstracts, multiple counties, multiple surveys in a tract have been properly joined.
 - Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
-- Thu Sep  5 14:29:06 EDT 2024
+- Thu Sep  5 14:34:17 EDT 2024
