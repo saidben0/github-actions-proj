@@ -59,4 +59,3 @@ Important:
 - Double-check that all relevant information has been captured for each tract.
 - Verify that quarters have been properly split into separate tracts when necessary.
 - Verify that multiple abstracts, multiple counties, multiple surveys in a tract have been properly joined.
-- Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
