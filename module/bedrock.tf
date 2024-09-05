@@ -6,7 +6,7 @@ resource "awscc_bedrock_prompt" "this" {
     {
       inference_configuration = {
         text = {
-          temperature    = 0
+          temperature = 0
           # top_p          = 0.9900000095367432
           # max_tokens     = 300
           # top_k          = 250
