@@ -22,9 +22,9 @@ output "prompt_arn" {
   value = awscc_bedrock_prompt.this.arn
 }
 
-output "prompt_version" {
-  value = awscc_bedrock_prompt_version.this.version
-}
+# output "prompt_version" {
+#   value = awscc_bedrock_prompt_version.this.version
+# }
 
 output "lambda_role_name" {
   value = data.aws_iam_role.llandman_lambda_exec_role.name
