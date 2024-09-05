@@ -83,29 +83,11 @@
         {
             "Effect": "Allow",
             "Action": [
-                "iam:ListRoleTags",
-                "iam:PutRolePolicy",
-                "iam:ListAttachedRolePolicies",
-                "iam:CreateRole",
-                "iam:ListRolePolicies",
                 "iam:GetRole",
-                "iam:DeleteRole",
-                "iam:UntagRole",
-                "iam:TagRole",
-                "iam:GetRolePolicy",
-                "iam:ListInstanceProfilesForRole",
-                "iam:PassRole",
-                "iam:DeleteRolePolicy",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion",
-                "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy",
-                "iam:ListPolicies"
+                "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/*",
-                "arn:aws:iam::${ACCOUNT_ID}:*",
-                "arn:aws:iam::aws:policy/service-role/*"
+                "arn:aws:iam::${ACCOUNT_ID}:role/llandman-lambda-exec-role"
             ]
         },
         {
@@ -116,8 +98,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823",
-                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823/*"
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
             ]
         },
         {
@@ -134,8 +116,8 @@
                 "s3:PutBucketNotification"
             ],
             "Resource": [
-                "arn:aws:s3:::enverus-tfstates-0823",
-                "arn:aws:s3:::enverus-tfstates-0823/*"
+                "arn:aws:s3:::enverus-tfstates",
+                "arn:aws:s3:::enverus-tfstates/*"
             ]
         },
         {
