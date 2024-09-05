@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - p_version
+      - prompt_ver
 
 jobs:
   dev-use1:
