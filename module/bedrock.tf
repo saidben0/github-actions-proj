@@ -1,6 +1,6 @@
 resource "awscc_bedrock_prompt" "this" {
   # provider        = awscc.acc
-  default_variant = "default-variant"
+  default_variant = "variantOne"
   name            = "${var.prefix}-prompt"
   variants = [
     {
@@ -14,7 +14,7 @@ resource "awscc_bedrock_prompt" "this" {
         }
       }
 
-      name = "default-variant"
+      name = "variantOne"
       template_configuration = {
         text = {
           text = file("${path.module}/templates/prompt_template.txt")
