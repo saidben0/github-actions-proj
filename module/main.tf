@@ -14,6 +14,8 @@ locals {
   account_id = data.aws_caller_identity.this.account_id
   partition  = data.aws_partition.this.partition
   region     = data.aws_region.this.name
+  # prompt_template = file("${path.module}/templates/prompt_template.txt")
+  # prompt_system_template = file("${path.module}/templates/prompt_system_template.txt")
 }
 
 
@@ -92,6 +94,7 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
+  for_each = local.bedrock_prompts
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-${var.lambda_function_name}"
@@ -112,7 +115,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
       S3_URI         = "s3://${var.inputs_bucket_name}/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf"
       DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       PROJECT_NAME   = var.project_name
-      PROMPT_ID      = awscc_bedrock_prompt.this.prompt_id
+      PROMPT_ID      = awscc_bedrock_prompt.this[each.key].prompt_id
       # PROMPT_VER        = var.prompt_ver
       # SYSTEM_PROMPT_ID  = var.system_prompt_id
       # SYSTEM_PROMPT_VER = var.system_prompt_ver
@@ -196,9 +199,10 @@ resource "aws_s3_bucket_notification" "sqs_notification" {
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
+  for_each = local.bedrock_prompts
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
-  function_name    = aws_lambda_function.queue_processing_lambda_function.arn
+  function_name    = aws_lambda_function.queue_processing_lambda_function[each.key].arn
   enabled          = true
   batch_size       = 10
 }

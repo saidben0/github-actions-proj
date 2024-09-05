@@ -10,17 +10,21 @@ output "current_caller_arn" {
   value = data.aws_caller_identity.this.arn
 }
 
-output "prompt_id" {
-  value = awscc_bedrock_prompt.this.prompt_id
+output "bedrock_prompt_ids" {
+  value = { for p in awscc_bedrock_prompt.this : p.id => p.id }
 }
 
-output "prompt_name" {
-  value = awscc_bedrock_prompt.this.name
-}
+# output "prompt_id" {
+#   value = awscc_bedrock_prompt.this[*].prompt_id
+# }
 
-output "prompt_arn" {
-  value = awscc_bedrock_prompt.this.arn
-}
+# output "prompt_name" {
+#   value = awscc_bedrock_prompt.this[*].name
+# }
+
+# output "prompt_arn" {
+#   value = awscc_bedrock_prompt.this[*].arn
+# }
 
 # output "prompt_version" {
 #   value = awscc_bedrock_prompt_version.this.version
