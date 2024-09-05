@@ -9,7 +9,7 @@ resource "awscc_bedrock_prompt" "this" {
 
 resource "awscc_bedrock_prompt_version" "this" {
   for_each = local.bedrock_prompts
-  
+
   provider   = awscc.acc
   prompt_arn = awscc_bedrock_prompt.this[each.key].arn
 }
