@@ -47,20 +47,20 @@ variable "python_version" {
 }
 
 
-# variable "prompt_ver" {
-#   type    = string
-#   default = "3"
-# }
+variable "prompt_ver" {
+  type    = string
+  default = "1"
+}
 
 # variable "system_prompt_id" {
 #   type    = string
 #   default = "IB5O7AZE0G"
 # }
 
-# variable "system_prompt_ver" {
-#   type    = string
-#   default = "1"
-# }
+variable "system_prompt_ver" {
+  type    = string
+  default = "1"
+}
 
 
 

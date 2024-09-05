@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - foreach
+      - envars
 
 jobs:
   dev-use1:

@@ -5,9 +5,8 @@ module "dev-use1" {
   lambda_role_name     = var.lambda_role_name
   dynamodb_table_name  = var.dynamodb_table_name
   python_version       = var.python_version
+  system_prompt_ver    = var.system_prompt_ver
   tags                 = var.tags
-  # system_prompt_id     = var.system_prompt_id
-  # system_prompt_ver    = var.system_prompt_ver
 
   providers = {
     aws.acc   = aws.use1

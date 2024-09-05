@@ -107,11 +107,9 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
       DDB_TABLE_NAME   = aws_dynamodb_table.model_outputs.name
       PROJECT_NAME     = var.project_name
       PROMPT_ID        = local.prompt_id
+      PROMPT_VER        = var.prompt_ver
       SYSTEM_PROMPT_ID = local.system_prompt_id
-      # PROMPT_ID      = awscc_bedrock_prompt.this[each.key].prompt_id
-      # PROMPT_VER        = var.prompt_ver
-      # SYSTEM_PROMPT_ID  = var.system_prompt_id
-      # SYSTEM_PROMPT_VER = var.system_prompt_ver
+      SYSTEM_PROMPT_VER = var.system_prompt_ver
     }
   }
 
