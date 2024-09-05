@@ -59,3 +59,4 @@ Important:
 - Double-check that all relevant information has been captured for each tract.
 - Verify that quarters have been properly split into separate tracts when necessary.
 - Verify that multiple abstracts, multiple counties, multiple surveys in a tract have been properly joined.
+- Thu Sep  5 12:16:15 EDT 2024
