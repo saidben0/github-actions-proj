@@ -22,6 +22,10 @@ output "prompt_arn" {
   value = module.dev-use1.prompt_arn
 }
 
+output "prompt_version" {
+  value = module.dev-use1.prompt_version
+}
+
 output "lambda_role_name" {
   value = module.dev-use1.lambda_role_name
 }

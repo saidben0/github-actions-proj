@@ -12,18 +12,18 @@ S3_URI = os.environ['S3_URI']
 DDB_TABLE_NAME = os.environ['DDB_TABLE_NAME']
 PROJECT_NAME = os.environ['PROJECT_NAME']
 PROMPT_ID = os.environ['PROMPT_ID']
-# PROMPT_VER = os.environ['PROMPT_VER']
-# SYSTEM_PROMPT_ID = os.environ['PROMPT_ID']
-# SYSTEM_PROMPT_VER = os.environ['PROMPT_VER']
+PROMPT_VER = os.environ['PROMPT_VER']
+SYSTEM_PROMPT_ID = os.environ['PROMPT_ID']
+SYSTEM_PROMPT_VER = os.environ['PROMPT_VER']
 
 # # S3_URI = 's3://enverus-courthouse-dev-chd-plants/tx/austin/000d/000deb93-d254-45ec-825e-d6cb094749dd.pdf'
 # S3_URI = 's3://enverus-courthouse-dev-chd-plants/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf'
 # DDB_TABLE_NAME = 'aws-proserve-land-doc'
 # PROJECT_NAME = 'land-doc-processing'
 # PROMPT_ID = '9OBEWDH99Y'
-PROMPT_VER = '3'
-SYSTEM_PROMPT_ID = 'IB5O7AZE0G'
-SYSTEM_PROMPT_VER = '1'
+# PROMPT_VER = '1'
+# SYSTEM_PROMPT_ID = 'IB5O7AZE0G'
+# SYSTEM_PROMPT_VER = '1'
 
 # Logger information
 logger = logging.getLogger()

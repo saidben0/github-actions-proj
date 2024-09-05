@@ -27,3 +27,9 @@ resource "awscc_bedrock_prompt" "this" {
 
   tags = var.tags
 }
+
+
+resource "awscc_bedrock_prompt_version" "this" {
+    provider        = awscc.acc
+    prompt_arn      = awscc_bedrock_prompt.this.arn
+}
