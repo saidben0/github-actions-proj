@@ -5,7 +5,7 @@ provider "aws" {
   default_tags {
     tags = {
       GitRepo     = "Land.Llandman"
-      Environment = "Development"
+      Environment = "Dev"
       Owner       = "Ops"
     }
   }

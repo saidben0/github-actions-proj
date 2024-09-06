@@ -31,7 +31,7 @@ variable "tags" {
   type = map(string)
   default = {
     GitRepo     = "Land.Llandman"
-    Environment = "Development"
+    Environment = "Dev"
     Owner       = "Ops"
   }
 }

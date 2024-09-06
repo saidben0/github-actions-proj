@@ -6,11 +6,11 @@ on:
       environment:
         description: 'deployment environment'
         required: true
-        default: 'development'
+        default: 'dev'
         type: choice
         options:
-          - development
-          - production
+          - dev
+          - prod
       aws-env-dir:
         required: true
         default: 'dev-use1'
