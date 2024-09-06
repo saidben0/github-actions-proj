@@ -14,6 +14,31 @@ resource "awscc_bedrock_prompt_version" "this" {
   prompt_arn = awscc_bedrock_prompt.this[each.key].arn
 }
 
+resource "null_resource" "main_prompt" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws bedrock-agent create-prompt-version --prompt-identifier ${local.prompt_id}
+    EOT
+  }
+
+  triggers = {
+    filebasesha = "${base64sha256(file("${path.module}/templates/prompt_template.txt"))}"
+  }
+  depends_on = [awscc_bedrock_prompt.this]
+}
+
+resource "null_resource" "system_prompt" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws bedrock-agent create-prompt-version --prompt-identifier ${local.system_prompt_id}
+    EOT
+  }
+
+  triggers = {
+    filebasesha = "${base64sha256(file("${path.module}/templates/system_prompt_template.txt"))}"
+  }
+  depends_on = [awscc_bedrock_prompt.this]
+}
 
 
 

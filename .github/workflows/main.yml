@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - dev
+      - pversion2
 
 jobs:
   dev-use1:
