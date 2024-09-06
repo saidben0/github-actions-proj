@@ -15,7 +15,7 @@ variable "lambda_function_name" {
 
 variable "lambda_role_name" {
   type    = string
-  default = "llandman-lambda-exec-role"
+  default = "llandman-dev-lambda-exec-role"
 }
 
 variable "dynamodb_table_name" {

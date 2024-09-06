@@ -73,7 +73,7 @@
                 "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/llandman-lambda-exec-role"
+                "arn:aws:iam::${ACCOUNT_ID}:role/llandman-dev-lambda-exec-role"
             ]
         },
         {
