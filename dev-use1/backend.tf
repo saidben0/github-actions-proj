@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "enverus-tfstates-0823"
-    key    = "dev/use1/tfstate"
+    bucket = "di-dev-terraform"
+    key    = "dev/llandman/terraform.tfstate"
     region = "us-east-1"
   }
 }
