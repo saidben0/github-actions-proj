@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
     ]
     resources = [
       "arn:aws:lambda:::function:llandman-queue-processing"
-      ]
+    ]
   }
 
   statement {
@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "dynamodb:DescribeContinuousBackups",
       "dynamodb:Update*"
     ]
-    resources =  [
+    resources = [
       "arn:aws:dynamodb:*::table/llandman-model-outputs"
     ]
   }
@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "s3:GetBucketNotification",
       "s3:PutBucketNotification"
     ]
-    resources =  [
+    resources = [
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants",
       "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*"
     ]
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "sqs:SetQueueAttributes",
       "sqs:ListQueueTags"
     ]
-    resources =  [
+    resources = [
       "arn:aws:sqs:::llandman-queue",
       "arn:aws:sqs:::llandman-dlq"
     ]
@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "bedrock:UntagResource",
       "bedrock:CreatePromptVersion"
     ]
-    resources =  [
+    resources = [
       "arn:aws:bedrock:::prompt/*",
       "arn:aws:bedrock:::foundation-model/*"
     ]
@@ -157,7 +157,7 @@ data "aws_iam_policy_document" "gh_actions_oidc_policy" {
       "cloudformation:DeleteResource",
       "cloudformation:GetResourceRequestStatus"
     ]
-    resources =  [
+    resources = [
       "arn:aws:cloudformation:us-east-1::resource/*"
     ]
   }
