@@ -18,6 +18,15 @@ output "bedrock_prompts" {
   value = module.dev-use1.bedrock_prompts
 }
 
+output "bedrock_main_prompt_versions" {
+  value = module.dev-use1.bedrock_main_prompt_versions
+}
+
+output "bedrock_system_prompt_versions" {
+  value = module.dev-use1.bedrock_system_prompt_versions
+}
+
+
 # output "prompt_id" {
 #   value = module.dev-use1.prompt_id
 # }
