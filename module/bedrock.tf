@@ -41,6 +41,21 @@ resource "null_resource" "system_prompt" {
 }
 
 
+data "awscc_bedrock_prompt_version" "main_prompt" {
+  provider = awscc.acc
+  id       = awscc_bedrock_prompt_version.this["mainPrompt"].id
+
+  depends_on = [null_resource.main_prompt]
+}
+
+data "awscc_bedrock_prompt_version" "system_prompt" {
+  provider = awscc.acc
+  id       = awscc_bedrock_prompt_version.this["systemPrompt"].id
+
+  depends_on = [null_resource.system_prompt]
+}
+
+
 
 
 
