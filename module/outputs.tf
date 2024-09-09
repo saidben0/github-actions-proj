@@ -14,13 +14,13 @@ output "bedrock_prompts" {
   value = { for p in awscc_bedrock_prompt.this : p.name => p.arn }
 }
 
-output "bedrock_main_prompt_versions" {
-  value = data.awscc_bedrock_prompt_version.main_prompt.version
-}
+# output "bedrock_main_prompt_versions" {
+#   value = data.awscc_bedrock_prompt_version.main_prompt.version
+# }
 
-output "bedrock_system_prompt_versions" {
-  value = data.awscc_bedrock_prompt_version.system_prompt.version
-}
+# output "bedrock_system_prompt_versions" {
+#   value = data.awscc_bedrock_prompt_version.system_prompt.version
+# }
 
 
 
