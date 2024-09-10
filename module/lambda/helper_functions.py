@@ -10,6 +10,7 @@ from datetime import datetime
 import re
 from botocore.config import Config
 from botocore.response import StreamingBody
+from typing import Optional
 
 class Prompt():
     """
@@ -225,8 +226,8 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
         The prompt version.
     """
     client = boto3.client('bedrock-agent')
-	logging.info(f"Returning version {prompt_ver} of the prompt {prompt_id}.")
-	response = client.get_prompt(promptIdentifier=prompt_id,
+    # logging.info(f"Returning version {prompt_ver} of the prompt {prompt_id}.")
+    response = client.get_prompt(promptIdentifier=prompt_id,
 								promptVersion=prompt_ver)
 
     prompt = response['variants'][0]['templateConfiguration']['text']['text']

@@ -34,6 +34,12 @@ resource "aws_sqs_queue" "dlq" {
   # kms_master_key_id = data.aws_kms_key.this.id
 }
 
+resource "aws_sqs_queue" "redrive" {
+  provider = aws.acc
+  name     = "${var.prefix}-redrive.fifo"
+  fifo_queue = true
+  # kms_master_key_id = data.aws_kms_key.this.id
+}
 
 #########################################
 ############# LAMBDA LAYER ##############
@@ -145,10 +151,10 @@ resource "aws_sqs_queue" "this" {
   receive_wait_time_seconds   = 10
   fifo_queue                  = true
   content_based_deduplication = true
-  # redrive_policy = jsonencode({
-  #   deadLetterTargetArn = aws_sqs_queue.dlq.arn
-  #   maxReceiveCount     = 4
-  # })
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.redrive.arn
+    maxReceiveCount     = 4
+  })
 }
 
 # Define an sqs policy to allow S3 to send messages to the SQS queue

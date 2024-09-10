@@ -7,6 +7,7 @@ import re
 from helper_functions import *
 from typing import Optional
 import math
+import os
 
 # Logger information
 logger = logging.getLogger()
@@ -16,7 +17,9 @@ def lambda_handler(event, context):
 
     #################### Retrieve variables ####################
     try:
-        message = event['Messages'][0]
+        print(event)
+        
+        message = event['Records'][0]
         message_attributes = message['MessageAttributes']
         sqs_message_id = message['MessageId']
         project_name = message_attributes['application']['StringValue']
@@ -32,9 +35,9 @@ def lambda_handler(event, context):
         logging.error("The SQS message has missing attribute(s).")
         raise
 
-    # table_name = os.environ['DDB_TABLE_NAME']
-    # queue_url=os.environ['QUEUE_URL']
-    table_name="aws-proserve-land-doc"
+    table_name = os.environ['DDB_TABLE_NAME']
+    queue_url=os.environ['QUEUE_URL']
+    # table_name="aws-proserve-land-doc"
 
     system_prompt = Prompt(
         identifier = message_attributes.get('system_prompt_id', {}).get('StringValue', None),
@@ -115,15 +118,16 @@ def lambda_handler(event, context):
             logging.error(f"Error saving to DynamoDB table: {e}")
             raise
 
-    #################### Delete received message from queue ####################
-    # try:
-    #     logging.info("Document processed. Deleting SQS message from queue...")
-    #     sqs.delete_message(
-    #     QueueUrl=queue_url,
-    #     ReceiptHandle=receipt_handle
-    #     )
-    # except Exception as e:
-    #     logging.error(f"Error deleting SQS message from queue: {e}")
+    ################### Delete received message from queue ####################
+    try:
+        logging.info("Document processed. Deleting SQS message from queue...")
+        sqs = boto3.client('sqs')
+        sqs.delete_message(
+        QueueUrl=queue_url,
+        ReceiptHandle=receipt_handle
+        )
+    except Exception as e:
+        logging.error(f"Error deleting SQS message from queue: {e}")
 
     return {
         'statusCode': 200,
