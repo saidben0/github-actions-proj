@@ -5,7 +5,7 @@ variable "prefix" {
 
 variable "inputs_bucket_name" {
   type    = string
-  default = "enverus-courthouse-dev-chd-plants"
+  default = "enverus-courthouse-dev-chd-plants-0823"
 }
 
 variable "lambda_function_name" {
