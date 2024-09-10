@@ -137,10 +137,12 @@ resource "aws_sqs_queue" "this" {
   name     = "${var.prefix}-queue"
   # kms_master_key_id = data.aws_kms_key.this.id
   visibility_timeout_seconds = 120
-  delay_seconds              = 90
-  max_message_size           = 2048
-  message_retention_seconds  = 86400
+  delay_seconds              = 0
+  max_message_size           = 10000
+  message_retention_seconds  = 864000
   receive_wait_time_seconds  = 10
+  visibility_timeout_seconds = 20
+  fifo_queue                 = true
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = 4
