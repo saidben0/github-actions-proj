@@ -20,15 +20,15 @@ def lambda_handler(event, context):
         print(event)
         
         message = event['Records'][0]
-        message_attributes = message['MessageAttributes']
-        sqs_message_id = message['MessageId']
-        project_name = message_attributes['application']['StringValue']
-        s3_loc = message_attributes['s3_location']['StringValue']
-        receipt_handle = message['ReceiptHandle']
+        message_attributes = message['messageAttributes']
+        sqs_message_id = message['messageId']
+        project_name = message_attributes['application']['stringValue']
+        s3_loc = message_attributes['s3_location']['stringValue']
+        receipt_handle = message['receiptHandle']
 
         prompt = Prompt(
-            identifier = message_attributes['prompt_id']['StringValue'],
-            ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
+            identifier = message_attributes['prompt_id']['stringValue'],
+            ver = message_attributes.get('prompt_version', {}).get('stringValue', None)
         )
 
     except KeyError as e:
@@ -40,8 +40,8 @@ def lambda_handler(event, context):
     # table_name="aws-proserve-land-doc"
 
     system_prompt = Prompt(
-        identifier = message_attributes.get('system_prompt_id', {}).get('StringValue', None),
-        ver = message_attributes.get('system_prompt_version', {}).get('StringValue', None)
+        identifier = message_attributes.get('system_prompt_id', {}).get('stringValue', None),
+        ver = message_attributes.get('system_prompt_version', {}).get('stringValue', None)
     )
 
     #################### Extract file loc details ####################

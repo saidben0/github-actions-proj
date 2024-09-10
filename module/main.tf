@@ -213,7 +213,7 @@ resource "aws_dynamodb_table" "model_outputs" {
   name         = "${var.prefix}-${var.dynamodb_table_name}"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "document_id"
-  range_key    = "chunk_id"
+  range_key    = "ingestion_time"
 
   attribute {
     name = "document_id"
@@ -221,9 +221,14 @@ resource "aws_dynamodb_table" "model_outputs" {
   }
 
   attribute {
-    name = "chunk_id"
+    name = "ingestion_time"
     type = "N"
   }
+
+  # attribute {
+  #   name = "chunk_id"
+  #   type = "N"
+  # }
 
   point_in_time_recovery {
     enabled = true
