@@ -29,8 +29,8 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "dlq" {
   provider   = aws.acc
-  name       = "${var.prefix}-dlq.fifo"
-  fifo_queue = true
+  name       = "${var.prefix}-dlq"
+  # fifo_queue = true
   # kms_master_key_id = data.aws_kms_key.this.id
 }
 
@@ -143,10 +143,10 @@ resource "aws_sqs_queue" "this" {
   message_retention_seconds  = 864000
   receive_wait_time_seconds  = 10
   fifo_queue                 = true
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.dlq.arn
-    maxReceiveCount     = 4
-  })
+  # redrive_policy = jsonencode({
+  #   deadLetterTargetArn = aws_sqs_queue.dlq.arn
+  #   maxReceiveCount     = 4
+  # })
 }
 
 # Define an sqs policy to allow S3 to send messages to the SQS queue
