@@ -137,7 +137,7 @@ resource "aws_sqs_queue" "this" {
   provider = aws.acc
   name     = "${var.prefix}-queue.fifo"
   # kms_master_key_id = data.aws_kms_key.this.id
-  visibility_timeout_seconds = 20
+  visibility_timeout_seconds = 120
   delay_seconds              = 0
   max_message_size           = 10000
   message_retention_seconds  = 864000
@@ -175,20 +175,20 @@ resource "aws_sqs_queue_policy" "this" {
   })
 }
 
-# send an s3 event to sqs when new s3 object is created/uploaded
-resource "aws_s3_bucket_notification" "sqs_notification" {
-  provider = aws.acc
-  bucket   = data.aws_s3_bucket.inputs_bucket.id
+# # send an s3 event to sqs when new s3 object is created/uploaded
+# resource "aws_s3_bucket_notification" "sqs_notification" {
+#   provider = aws.acc
+#   bucket   = data.aws_s3_bucket.inputs_bucket.id
 
-  queue {
-    queue_arn = aws_sqs_queue.this.arn
-    events    = ["s3:ObjectCreated:*"]
-    # filter_prefix = aws_s3_object.inputs.key
-    # filter_suffix = ".pdf"
-  }
+#   queue {
+#     queue_arn = aws_sqs_queue.this.arn
+#     events    = ["s3:ObjectCreated:*"]
+#     # filter_prefix = aws_s3_object.inputs.key
+#     # filter_suffix = ".pdf"
+#   }
 
-  depends_on = [aws_sqs_queue_policy.this]
-}
+#   depends_on = [aws_sqs_queue_policy.this]
+# }
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
