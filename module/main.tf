@@ -102,7 +102,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME    = aws_dynamodb_table.model_outputs.name
+      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       # BUCKET_NAME       = var.inputs_bucket_name
       # S3_URI            = "s3://${var.inputs_bucket_name}/tx/angelina/502d/502d1735-8162-4fed-b0a9-d12fcea75759.pdf"
       # PROJECT_NAME      = var.project_name
