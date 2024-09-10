@@ -222,7 +222,7 @@ resource "aws_dynamodb_table" "model_outputs" {
 
   attribute {
     name = "ingestion_time"
-    type = "N"
+    type = "S"
   }
 
   # attribute {
