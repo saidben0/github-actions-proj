@@ -21,7 +21,7 @@ resource "null_resource" "main_prompt_version_ssm_param" {
       aws ssm put-parameter \
           --name "/${var.prefix}/${var.env}/bedrock/prompts/${local.prompt_id}/versions/$VERSION_NUM" \
           --type "String" \
-          --value "{ "": "$VERSION_NUM" }" \
+          --value "$VERSION_NUM" \
           --overwrite || true
     EOT
   }
