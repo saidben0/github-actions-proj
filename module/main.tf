@@ -35,8 +35,8 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sqs_queue" "redrive" {
-  provider = aws.acc
-  name     = "${var.prefix}-redrive.fifo"
+  provider   = aws.acc
+  name       = "${var.prefix}-redrive.fifo"
   fifo_queue = true
   # kms_master_key_id = data.aws_kms_key.this.id
 }
