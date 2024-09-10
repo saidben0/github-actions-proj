@@ -134,7 +134,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider = aws.acc
-  name     = "${var.prefix}-queue"
+  name     = "${var.prefix}-queue.fifo"
   # kms_master_key_id = data.aws_kms_key.this.id
   visibility_timeout_seconds = 20
   delay_seconds              = 0
