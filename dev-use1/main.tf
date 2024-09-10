@@ -6,6 +6,8 @@ module "dev-use1" {
   dynamodb_table_name  = var.dynamodb_table_name
   python_version       = var.python_version
   system_prompt_ver    = var.system_prompt_ver
+
+  env                  = var.env
   tags                 = var.tags
 
   providers = {

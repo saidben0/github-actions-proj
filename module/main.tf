@@ -18,7 +18,7 @@ data "aws_s3_bucket" "inputs_bucket" {
 
 data "aws_iam_role" "llandman_lambda_exec_role" {
   provider = aws.acc
-  name     = var.lambda_role_name
+  name     = "${var.prefix}-${var.env}-lambda-exec-role"
 }
 
 resource "random_id" "this" {
