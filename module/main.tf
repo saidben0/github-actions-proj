@@ -29,7 +29,8 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "dlq" {
   provider = aws.acc
-  name     = "${var.prefix}-dlq"
+  name     = "${var.prefix}-dlq.fifo"
+  fifo_queue = true
   # kms_master_key_id = data.aws_kms_key.this.id
 }
 
