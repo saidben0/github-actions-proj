@@ -7,8 +7,8 @@ module "dev-use1" {
   python_version       = var.python_version
   system_prompt_ver    = var.system_prompt_ver
 
-  env                  = var.env
-  tags                 = var.tags
+  env  = var.env
+  tags = var.tags
 
   providers = {
     aws.acc   = aws.use1
