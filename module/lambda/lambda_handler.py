@@ -18,7 +18,7 @@ def lambda_handler(event, context):
     #################### Retrieve variables ####################
     try:
         print(event)
-        
+       
         message = event['Records'][0]
         message_attributes = message['messageAttributes']
         sqs_message_id = message['messageId']
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
         )
 
     except KeyError as e:
-        logging.error("The SQS message has missing attribute(s).")
+        logging.error(f"The SQS message has missing attribute: {e}.")
         raise
 
     table_name = os.environ['DDB_TABLE_NAME']
@@ -108,8 +108,13 @@ def lambda_handler(event, context):
 
         except Exception as e:
             logging.error(f"Error making LLM call: {e}. Storing error details to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_id=i+1, exception=e)
-            continue
+            try:
+                update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_id=i+1, exception=e)
+                exception_flag = True
+                continue
+            except Exception as err:
+                logging.error(f"Error saving to DynamoDB table: {err}")
+                raise
 
         try:
             logging.info(f"Storing results of chunk {i+1} to DynamoDB Table: {table_name}")
@@ -118,16 +123,17 @@ def lambda_handler(event, context):
             logging.error(f"Error saving to DynamoDB table: {e}")
             raise
 
-    ################### Delete received message from queue ####################
-    try:
-        logging.info("Document processed. Deleting SQS message from queue...")
-        sqs = boto3.client('sqs')
-        sqs.delete_message(
-        QueueUrl=queue_url,
-        ReceiptHandle=receipt_handle
-        )
-    except Exception as e:
-        logging.error(f"Error deleting SQS message from queue: {e}")
+    ################### Delete received message from queue if there is no error in the LLM-calling step ####################
+    if not exception_flag:
+        try:
+            logging.info("Document processed. Deleting SQS message from queue...")
+            sqs = boto3.client('sqs')
+            sqs.delete_message(
+            QueueUrl=queue_url,
+            ReceiptHandle=receipt_handle
+            )
+        except Exception as e:
+            logging.error(f"Error deleting SQS message from queue: {e}")
 
     return {
         'statusCode': 200,
