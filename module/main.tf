@@ -27,16 +27,16 @@ resource "random_id" "this" {
 }
 
 
-resource "aws_sqs_queue" "dlq" {
-  provider = aws.acc
-  name     = "${var.prefix}-dlq"
-  # fifo_queue = true
-  # kms_master_key_id = data.aws_kms_key.this.id
-}
+# resource "aws_sqs_queue" "dlq" {
+#   provider = aws.acc
+#   name     = "${var.prefix}-dlq"
+#   # fifo_queue = true
+#   # kms_master_key_id = data.aws_kms_key.this.id
+# }
 
-resource "aws_sqs_queue" "redrive" {
+resource "aws_sqs_queue" "redrive_dlq" {
   provider   = aws.acc
-  name       = "${var.prefix}-redrive.fifo"
+  name       = "${var.prefix}-redrive-dlq.fifo"
   fifo_queue = true
   # kms_master_key_id = data.aws_kms_key.this.id
 }
@@ -124,9 +124,9 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   tracing_config {
     mode = "Active"
   }
-  dead_letter_config {
-    target_arn = aws_sqs_queue.dlq.arn
-  }
+  # dead_letter_config {
+  #   target_arn = aws_sqs_queue.dlq.arn
+  # }
 
   # vpc_config {
   #   subnet_ids         = [module.vpc.private_subnets[0]]
@@ -152,7 +152,7 @@ resource "aws_sqs_queue" "this" {
   fifo_queue                  = true
   content_based_deduplication = true
   redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.redrive.arn
+    deadLetterTargetArn = aws_sqs_queue.redrive_dlq.arn
     maxReceiveCount     = 4
   })
 }
