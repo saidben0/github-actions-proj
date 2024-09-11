@@ -91,11 +91,15 @@ def lambda_handler(event, context):
     #################### LLM call ####################
     # Split the images to chunks of 20
     if len(bytes_inputs) <= 20:
+        num_chunk = 1
         logging.info(f"There are {len(bytes_inputs)} pages in the document. Processing all pages in one chunk.")
     elif len(bytes_inputs) > 20:
-        logging.info(f"Splitting the images into {math.ceil(len(bytes_inputs)/20)} chunks...")
+        num_chunk = math.ceil(len(bytes_inputs)/20)
+        logging.info(f"Splitting the images into {num_chunk} chunks...")
 
     grouped_bytes_input = [bytes_inputs[i:i+20] for i in range(0, len(bytes_inputs), 20)]
+
+    exception_flag = False
 
     for i, byte_input in enumerate(grouped_bytes_input):
         logging.info(f"Extracting land description for chunk {i+1}...")
@@ -107,18 +111,14 @@ def lambda_handler(event, context):
             # print(f"response_text for chunk {i+1}: ----------------\n {response_text}")
 
         except Exception as e:
-            logging.error(f"Error making LLM call: {e}. Storing error details to DynamoDB Table: {table_name}")
-            try:
-                update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_id=i+1, exception=e)
-                exception_flag = True
-                continue
-            except Exception as err:
-                logging.error(f"Error saving to DynamoDB table: {err}")
-                raise
+            logging.error(f"Error making LLM call: {e} Storing error details to DynamoDB Table: {table_name}")
+            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, num_chunk, chunk_id=i+1, exception=e)
+            exception_flag = True
+            raise
 
         try:
             logging.info(f"Storing results of chunk {i+1} to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_id=i+1, model_response=model_response)
+            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, num_chunk, chunk_id=i+1, model_response=model_response)
         except Exception as e:
             logging.error(f"Error saving to DynamoDB table: {e}")
             raise
@@ -126,7 +126,7 @@ def lambda_handler(event, context):
     ################### Delete received message from queue if there is no error in the LLM-calling step ####################
     if not exception_flag:
         try:
-            logging.info("Document processed. Deleting SQS message from queue...")
+            logging.info("Document successfully processed. Deleting SQS message from queue...")
             sqs = boto3.client('sqs')
             sqs.delete_message(
             QueueUrl=queue_url,
@@ -134,6 +134,7 @@ def lambda_handler(event, context):
             )
         except Exception as e:
             logging.error(f"Error deleting SQS message from queue: {e}")
+            raise
 
     return {
         'statusCode': 200,

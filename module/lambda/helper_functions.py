@@ -108,7 +108,7 @@ def convertPdf(file_path: str) -> list[bytes]:
         bytes_outputs.append(pdfbytes)
     return bytes_outputs
 
-def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_id: int, exception:str =None, model_response: dict =None):
+def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
     """
     Save the model response to a DynamoDB Table.
 
@@ -134,6 +134,9 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
 
     system_prompt : Prompt
         An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
+
+    chunk_count : int
+        The total number of chunk for the document.
 
     chunk_id : int
         The ID of the chunk (containing 20-page worth of data) that has been processed.
@@ -171,6 +174,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
 
         item = {
                 "project_name": {"S": project_name},
+                "chunk_count": {"N": str(chunk_count)},
                 "chunk_id": {"N": str(chunk_id)},
                 "sqs_message_id": {"S": sqs_message_id},
                 "document_id": {"S": file_id.split('.')[0]},
@@ -187,6 +191,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
         flag_status = True
         item = {
             "project_name": {"S": project_name},
+            "chunk_count": {"N": str(chunk_count)},
             "chunk_id": {"N": str(chunk_id)},
             "sqs_message_id": {"S": sqs_message_id},
             "document_id": {"S": file_id.split('.')[0]},
