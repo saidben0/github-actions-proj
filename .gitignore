@@ -38,10 +38,7 @@ tfplan
 terraform.rc
 
 # Ignore zip files
-image-extraction.zip
-queue-processing.zip
-lambda-layer.zip
-queue-processing.zip
+*.zip
 
 # Ignore python libraries
 python/

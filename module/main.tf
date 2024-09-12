@@ -56,10 +56,10 @@ resource "null_resource" "lambda_layer" {
   }
 
   triggers = {
-    always_run = "${timestamp()}"
+    filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
   }
   # triggers = {
-  #   filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
+  #   always_run = "${timestamp()}"
   # }
 }
 
