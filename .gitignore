@@ -40,8 +40,5 @@ terraform.rc
 # Ignore zip files
 *.zip
 
-# Ignore python libraries
-python/
-
 # Others
 .DS_Store
