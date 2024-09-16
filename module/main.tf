@@ -102,7 +102,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
   runtime                        = "python${var.python_version}"
-  timeout                        = "120"
+  timeout                        = "900"
   reserved_concurrent_executions = 100
   memory_size                    = 1024
   # kms_key_arn                    = data.aws_kms_key.this.arn
