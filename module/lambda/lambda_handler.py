@@ -24,6 +24,7 @@ def lambda_handler(event, context):
         sqs_message_id = message['messageId']
         project_name = message_attributes['application']['stringValue']
         s3_loc = message_attributes['s3_location']['stringValue']
+        model_id = message_attributes['model_id']['stringValue']
         receipt_handle = message['receiptHandle']
 
         prompt = Prompt(
@@ -106,19 +107,19 @@ def lambda_handler(event, context):
         ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         try:
-            model_response = call_llm(byte_input, prompt, system_prompt)
+            model_response = call_llm(byte_input, model_id, prompt, system_prompt)
             # response_text = model_response["output"]["message"]["content"][0]["text"]
             # print(f"response_text for chunk {i+1}: ----------------\n {response_text}")
 
         except Exception as e:
             logging.error(f"Error making LLM call: {e} Storing error details to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, num_chunk, chunk_id=i+1, exception=e)
+            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, num_chunk, chunk_id=i+1, exception=e)
             exception_flag = True
             raise
 
         try:
             logging.info(f"Storing results of chunk {i+1} to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, num_chunk, chunk_id=i+1, model_response=model_response)
+            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, num_chunk, chunk_id=i+1, model_response=model_response)
         except Exception as e:
             logging.error(f"Error saving to DynamoDB table: {e}")
             raise

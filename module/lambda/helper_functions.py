@@ -108,7 +108,7 @@ def convertPdf(file_path: str) -> list[bytes]:
         bytes_outputs.append(pdfbytes)
     return bytes_outputs
 
-def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
+def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, model_id: str, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
     """
     Save the model response to a DynamoDB Table.
 
@@ -134,6 +134,9 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
 
     system_prompt : Prompt
         An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
+    
+    model_id : str
+        The ID of the model used in Bedrock.
 
     chunk_count : int
         The total number of chunk for the document.
@@ -185,7 +188,8 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
                 "output_token": {"N": str(output_token)},
                 "exception_FLAG": {"BOOL": flag_status},
                 "prompt_id": {"S": prompt_id},
-                "prompt_ver": {"S": prompt_ver}
+                "prompt_ver": {"S": prompt_ver},
+                "model_id": {"S": model_id}
             }
     else:
         flag_status = True
@@ -199,7 +203,8 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
             "exception": {"S": str(exception)},
             "exception_FLAG": {"BOOL": flag_status},
             "prompt_id": {"S": prompt_id},
-            "prompt_ver": {"S": prompt_ver}
+            "prompt_ver": {"S": prompt_ver},
+            "model_id": {"S": model_id}
         }
 
     if prompt_ver:
@@ -239,7 +244,7 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
 
     return prompt, prompt_ver
 
-def call_llm(bytes_inputs: list[bytes], prompt: Prompt, system_prompt: Prompt =None) -> dict:
+def call_llm(bytes_inputs: list[bytes], model_id: str, prompt: Prompt, system_prompt: Prompt =None) -> dict:
     """
     Construct an input to call the LLM using the boto3 Bedrock runtime converse API.
 
@@ -247,6 +252,9 @@ def call_llm(bytes_inputs: list[bytes], prompt: Prompt, system_prompt: Prompt =N
     ----------
     bytes_inputs : list[bytes]
         A list of bytes containing data for each page in the PDF document.
+
+    model_id : str
+        The ID of the model to be used in Bedrock.
 
     prompt : Prompt
         An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
@@ -262,7 +270,6 @@ def call_llm(bytes_inputs: list[bytes], prompt: Prompt, system_prompt: Prompt =N
     config = Config(read_timeout=1000)
     bedrock_runtime = boto3.client("bedrock-runtime", region_name="us-east-1", config=config)
 
-    model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
     temperature = 0
     top_p = 0.1
 
