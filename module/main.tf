@@ -101,7 +101,8 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
-  runtime                        = "python${var.python_version}"
+  # runtime                        = "python${var.python_version}"
+  runtime                        = "python3.12"
   timeout                        = "900"
   reserved_concurrent_executions = 100
   memory_size                    = 1024
