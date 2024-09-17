@@ -98,9 +98,9 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   function_name = "${var.prefix}-${var.lambda_function_name}"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # role                           = aws_iam_role.queue_processing_lambda_role.arn
-  layers                         = [aws_lambda_layer_version.lambda_layer.arn]
-  handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.this.output_base64sha256
+  layers           = [aws_lambda_layer_version.lambda_layer.arn]
+  handler          = "lambda_handler.lambda_handler"
+  source_code_hash = data.archive_file.this.output_base64sha256
   # runtime                        = "python${var.python_version}"
   runtime                        = "python3.12"
   timeout                        = "900"
