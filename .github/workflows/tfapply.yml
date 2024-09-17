@@ -196,6 +196,6 @@ jobs:
       - name: Terraform Apply
         run: |
           cd realtime/${{ inputs.aws-env-dir }}/
-          terraform apply ../tfplan
+          terraform apply ../../tfplan
           # TF_LOG=trace terraform apply --auto-approve ../tfplan &> log.log
           # cat log.log | grep "DEBUG: Request"
