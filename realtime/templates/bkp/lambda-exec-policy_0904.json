@@ -1,0 +1,74 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:SendMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-queue",
+                "arn:aws:sqs:us-east-1:${ACCOUNT_ID}:llandman-dlq"
+            ]
+        },
+        {
+            "Action": [
+                "s3:Get*",
+                "s3:List*",
+                "s3:Describe*",
+                "s3-object-lambda:Get*",
+                "s3-object-lambda:List*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823",
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823/*"
+            ]
+        },
+        {
+            "Action": [
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:Update*"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/llandman-model-outputs"
+        },
+        {
+            "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:GetPrompt",
+                "bedrock:ListPrompts"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+                "arn:aws:bedrock:*::foundation-model/*"
+            ]
+        },
+        {
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/llandman-queue-processing:*"
+        },
+        {
+            "Action": [
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeInstances",
+                "ec2:AttachNetworkInterface"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+name: Real-Time Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'realtime/**'
+
+jobs:
+  dev-use1:
+    uses: ./.github/workflows/tfapply.yml
+    with:
+      path: realtime
+      environment: dev
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
+
+  
+  # dev-usw2:
+  #   # base_ref is the target branch
+  #   if: github.event_name == 'pull_request' && github.event.base_ref == 'main'
+  #   uses: ./.github/workflows/tfapply.yml
+  #   with:
+  #     environment: prod # Change this to 'review' or 'prod' as needed
+  #     aws-env-dir: dev-usw2
+  #     aws-region: us-west-2

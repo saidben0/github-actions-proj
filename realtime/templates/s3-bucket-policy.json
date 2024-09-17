@@ -1,0 +1,22 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::${ACCOUNT_ID}:root",                    
+                    "arn:aws:iam::${ACCOUNT_ID}:role/llandman-queue-processing_lambda_role-us-east-1"
+                ]
+            },
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823",
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823/*"
+            ]
+        }
+    ]
+}
