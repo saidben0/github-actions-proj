@@ -3,7 +3,7 @@ name: Real-Time Pipeline
 on:
   push:
     branches:
-      - monorepo
+      - dev
     paths:
       - 'realtime/**'
 
