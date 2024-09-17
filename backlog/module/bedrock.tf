@@ -51,19 +51,19 @@ resource "null_resource" "system_prompt_version_ssm_param" {
 }
 
 
-data "awscc_bedrock_prompt_version" "main_prompt" {
-  provider = awscc.acc
-  id       = awscc_bedrock_prompt_version.this["mainPrompt"].id
+# data "awscc_bedrock_prompt_version" "main_prompt" {
+#   provider = awscc.acc
+#   id       = awscc_bedrock_prompt_version.this["mainPrompt"].id
 
-  depends_on = [null_resource.main_prompt_version_ssm_param]
-}
+#   depends_on = [null_resource.main_prompt_version_ssm_param]
+# }
 
-data "awscc_bedrock_prompt_version" "system_prompt" {
-  provider = awscc.acc
-  id       = awscc_bedrock_prompt_version.this["systemPrompt"].id
+# data "awscc_bedrock_prompt_version" "system_prompt" {
+#   provider = awscc.acc
+#   id       = awscc_bedrock_prompt_version.this["systemPrompt"].id
 
-  depends_on = [null_resource.system_prompt_version_ssm_param]
-}
+#   depends_on = [null_resource.system_prompt_version_ssm_param]
+# }
 
 
 

@@ -195,7 +195,7 @@ resource "aws_sqs_queue" "this" {
   provider = aws.acc
   name     = "${var.prefix}-queue.fifo"
   # kms_master_key_id = data.aws_kms_key.this.id
-  visibility_timeout_seconds  = 120
+  visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
   message_retention_seconds   = 864000
