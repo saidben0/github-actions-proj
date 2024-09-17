@@ -1,6 +1,6 @@
 variable "prefix" {
   type    = string
-  default = "llandman"
+  default = "llandman-backlog"
 }
 
 variable "env" {
