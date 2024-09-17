@@ -11,6 +11,7 @@ jobs:
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
     with:
+      path: realtime
       environment: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
