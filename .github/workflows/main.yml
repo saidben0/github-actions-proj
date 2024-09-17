@@ -3,7 +3,9 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - dev
+      - mono
+    paths:
+      - 'real-time/**'
 
 jobs:
   dev-use1:

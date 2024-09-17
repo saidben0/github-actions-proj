@@ -1,0 +1,177 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:PutObjectVersionAcl",
+                "s3:PutObjectAcl",
+                "s3:PutObject",
+                "s3:PutBucketNotification",
+                "s3:ListBucket",
+                "s3:GetObjectTagging",
+                "s3:GetObject",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetBucketNotification"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::di-dev-terraform/*",
+                "arn:aws:s3:::di-dev-terraform"
+            ],
+            "Sid": "ManageTerraformStateFile"
+        },
+        {
+            "Action": [
+                "iam:PassRole",
+                "iam:GetRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/llandman-dev-lambda-exec-role",
+            "Sid": "GetPassLambdaExecutionRole"
+        },
+        {
+            "Action": [
+                "lambda:Update*",
+                "lambda:UntagResource",
+                "lambda:TagResource",
+                "lambda:RemovePermission",
+                "lambda:PutFunctionConcurrency",
+                "lambda:ListVersionsByFunction",
+                "lambda:ListTags",
+                "lambda:GetPolicy",
+                "lambda:GetFunctionConfiguration",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:GetFunction",
+                "lambda:DeleteFunction",
+                "lambda:CreateFunction",
+                "lambda:AddPermission"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:function:llandman-queue-processing",
+            "Sid": "ManageLLandManLambdaFunctions"
+        },
+        {
+            "Action": [
+                "lambda:PublishLayerVersion",
+                "lambda:GetLayerVersion",
+                "lambda:DeleteLayerVersion"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs:*",
+                "arn:aws:lambda:*:${ACCOUNT_ID}:layer:python-libs"
+            ],
+            "Sid": "ManageLLandManLambdaFunctionLayer"
+        },
+        {
+            "Action": [
+                "lambda:GetEventSourceMapping",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:CreateEventSourceMapping"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:lambda:*:${var.account_id}:event-source-mapping:*",
+            "Sid": "ManageLambdaFunctionSourceMappingGet"
+        },
+        {
+            "Action": "lambda:DeleteEventSourceMapping",
+            "Effect": "Allow",
+            "Resource": "arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*",
+            "Sid": "ManageLambdaFunctionSourceMappingDelete"
+        },
+        {
+            "Action": [
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:Update*",
+                "dynamodb:UntagResource",
+                "dynamodb:TagResource",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DeleteTable",
+                "dynamodb:CreateTable"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-model-outputs",
+            "Sid": "ManageLLandManDynamoDBTable"
+        },
+        {
+            "Action": [
+                "s3:PutBucketNotification",
+                "s3:ListBucket",
+                "s3:GetBucketNotification"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants/*",
+                "arn:aws:s3:::enverus-courthouse-dev-chd-plants"
+            ],
+            "Sid": "RetriveInputBucketObjects"
+        },
+        {
+            "Action": [
+                "sqs:UntagQueue",
+                "sqs:TagQueue",
+                "sqs:SetQueueAttributes",
+                "sqs:ListQueueTags",
+                "sqs:GetQueueAttributes",
+                "sqs:DeleteQueue",
+                "sqs:CreateQueue"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:sqs:*:${ACCOUNT_ID}:llandman-*"
+            ],
+            "Sid": "ManageLLandManSQSQueues"
+        },
+        {
+            "Action": [
+                "bedrock:UpdatePrompt",
+                "bedrock:UntagResource",
+                "bedrock:TagResource",
+                "bedrock:ListTagsForResource",
+                "bedrock:ListPrompts",
+                "bedrock:ListFoundationModels",
+                "bedrock:GetPrompt",
+                "bedrock:GetFoundationModelAvailability",
+                "bedrock:DeletePrompt",
+                "bedrock:CreatePromptVersion",
+                "bedrock:CreatePrompt"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:bedrock:*:${ACCOUNT_ID}:prompt/*",
+                "arn:aws:bedrock:*:${ACCOUNT_ID}:foundation-model/*"
+            ],
+            "Sid": "LLandmanBedrockPromptManagement"
+        },
+        {
+            "Action": [
+                "cloudformation:UpdateResource",
+                "cloudformation:GetResourceRequestStatus",
+                "cloudformation:GetResource",
+                "cloudformation:DeleteResource",
+                "cloudformation:CreateResource"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*",
+            "Sid": "CFNAccessForLLandmanBedrockPromptManagement"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:DescribeParameters",
+                "ssm:PutParameter",
+                "ssm:GetParameterHistory",
+                "ssm:GetParametersByPath",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:DeleteParameter"
+            ],
+            "Resource": [
+                "arn:aws:ssm:*:${ACCOUNT_ID}:parameter/llandman/dev/bedrock/prompts/*"
+            ]
+        }
+    ]
+}

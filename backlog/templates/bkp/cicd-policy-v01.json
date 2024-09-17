@@ -1,0 +1,140 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreateKey",
+                "lambda:CreateEventSourceMapping"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "iam:TagRole",
+                "iam:CreateRole",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:DeleteRole",
+                "iam:UntagRole",
+				"iam:TagRole",
+                "iam:ListInstanceProfilesForRole",
+                "iam:GetRolePolicy",
+                "iam:PassRole"
+            ],
+            "Resource": [
+                "arn:${local.partition}:iam::${ACCOUNT_ID}:role/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "lambda:PutFunctionConcurrency",
+                "lambda:DeleteFunction",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:TagResource",
+                "lambda:UntagResource",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
+                "lambda:ListVersionsByFunction",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:GetEventSourceMapping"
+            ],
+            "Resource": [
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:function:*",
+                "arn:${local.partition}:lambda:*:${ACCOUNT_ID}:event-source-mapping:*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:PutEncryptionConfiguration",
+                "s3:PutBucketTagging",
+                "s3:PutLifecycleConfiguration",
+                "s3:PutBucketVersioning",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketOwnershipControls",
+                "s3:DeleteBucketPolicy",
+                "s3:PutBucketNotification",
+                "s3:ListBuckets",
+                "s3:GetBucketVersioning",
+                "s3:TagResource",
+                "s3:UntagResource"
+                
+            ],
+            "Resource": [
+                "arn:${local.partition}:s3:::*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject"
+            ],
+            "Resource": "arn:${local.partition}:s3:::*/*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DeleteTable",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:CreateTable",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTagsOfResource"
+                
+            ],
+            "Resource": [
+                "arn:${local.partition}:dynamodb:*:${ACCOUNT_ID}:table/*",
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "kms:*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CreateGrant",
+                "kms:EnableKeyRotation",
+                "kms:CreateAlias",
+                "kms:DeleteAlias",
+                "kms:TagResource",
+                "kms:UntagResource"
+            ],
+            "Resource": [
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:alias/*",
+                "arn:${local.partition}:kms:*:${ACCOUNT_ID}:key/*"
+            ]
+        },
+        
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:SetQueueAttributes",
+                "sqs:DeleteQueue",
+                "sqs:CreateQueue",
+                "sqs:ListQueueTags"
+            ],
+            "Resource": [
+                "arn:${local.partition}:sqs:*:${ACCOUNT_ID}:*"
+            ]
+        }
+    ]
+}
