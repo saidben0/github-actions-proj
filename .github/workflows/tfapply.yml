@@ -35,8 +35,8 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        # python-version: ${{ vars.GH_RUNNER_PY_VER }}
-        python-version: '3.12'
+        python-version: ${{ vars.GH_RUNNER_PY_VER }}
+        # python-version: '3.12'
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -93,8 +93,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          # python-version: ${{ vars.GH_RUNNER_PY_VER }}
-          python-version: '3.12'
+          python-version: ${{ vars.GH_RUNNER_PY_VER }}
+          # python-version: '3.12'
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -150,8 +150,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          # python-version: ${{ vars.GH_RUNNER_PY_VER }}
-          python-version: '3.12'
+          python-version: ${{ vars.GH_RUNNER_PY_VER }}
+          # python-version: '3.12'
 
       - name: Checkout code
         uses: actions/checkout@v3
