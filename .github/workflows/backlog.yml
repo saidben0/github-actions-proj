@@ -1,17 +1,17 @@
-name: Real-Time Pipeline
+name: Backlog Pipeline
 
 on:
   push:
     branches:
-      - mono
+      - devv
     paths:
-      - 'realtime/**'
+      - 'backlog/**'
 
 jobs:
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
     with:
-      path: realtime
+      path: backlog
       environment: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
