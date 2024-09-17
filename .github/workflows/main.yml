@@ -3,7 +3,7 @@ name: Main Pipeline
 on:
   push:
     branches:
-      - pyupdate
+      - dev
 
 jobs:
   dev-use1:
