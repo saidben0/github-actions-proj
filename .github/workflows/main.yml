@@ -5,7 +5,7 @@ on:
     branches:
       - mono
     paths:
-      - 'real-time/**'
+      - 'realtime/**'
 
 jobs:
   dev-use1:
