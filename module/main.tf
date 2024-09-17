@@ -78,7 +78,7 @@ data "archive_file" "lambda_layer" {
 resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "python-libs"
   description         = "Lambda layer for Land Llandman doc processing"
-  compatible_runtimes = ["python${var.python_version}"]
+  compatible_runtimes = ["python${var.python_version}", "python3.11"]
   filename            = data.archive_file.lambda_layer.output_path
   # filename            = "${path.module}/lambda-layer/python-libs.zip"
   source_code_hash = data.archive_file.lambda_layer.output_base64sha256
