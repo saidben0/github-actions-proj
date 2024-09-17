@@ -13,11 +13,11 @@ on:
           - prod
       path:
         required: true
-        default: 'realtime'
+        default: 'backlog'
         type: choice
         options:
-          - 'realtime'
           - 'backlog'
+          - 'realtime'
       aws-env-dir:
         required: true
         default: 'dev-use1'
