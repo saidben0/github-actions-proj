@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - mono
-      paths:
-        - 'real-time/**'
+    paths:
+      - real-time/
+      # - 'real-time/**'
 
 jobs:
   dev-use1:
