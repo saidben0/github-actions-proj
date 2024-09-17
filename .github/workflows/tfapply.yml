@@ -137,7 +137,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: terraform-plan
-          path: ${{ inputs.aws-env-dir }}/tfplan
+          path: ${{ inputs.path }}/${{ inputs.aws-env-dir }}/tfplan
 
 
   terraform-apply:
