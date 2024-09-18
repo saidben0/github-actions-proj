@@ -61,15 +61,29 @@ resource "aws_batch_job_definition" "this" {
   ]
 
   container_properties = jsonencode({
-    # image: "your-docker-image-uri",  # Replace with your Docker image
-    image : "public.ecr.aws/docker/library/alpine:latest"
-    vcpus : 1,
-    memory : 1024,
-    command : ["echo", "Hello from AWS Batch!"],
+    command    = ["echo", "test"]
+    image      = "busybox"
+    jobRoleArn = "arn:aws:iam::${local.account_id}:role/AWSBatchS3ReadOnly"
+
+    fargatePlatformConfiguration = {
+      platformVersion = "LATEST"
+    }
+
+    resourceRequirements = [
+      {
+        type  = "VCPU"
+        value = "0.25"
+      },
+      {
+        type  = "MEMORY"
+        value = "512"
+      }
+    ]
+
     executionRoleArn : data.aws_iam_role.llandman_batch_exec_role.arn
-    # executionRoleArn: aws_iam_role.batch_service_role.arn
   })
 }
+
 
 # Create a null resource to submit a job (optional)
 resource "null_resource" "submit_job" {
