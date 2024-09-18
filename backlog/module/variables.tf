@@ -68,11 +68,11 @@ variable "system_prompt_ver" {
 }
 
 variable "security_grp_id" {
-  type    = string
+  type = string
 }
 
 variable "subnet_id" {
-  type    = string
+  type = string
 }
 
 
