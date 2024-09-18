@@ -57,3 +57,13 @@ variable "system_prompt_ver" {
   type    = string
   default = "1"
 }
+
+variable "security_grp_id" {
+  type    = string
+  default = "sg-04e975365d5ef5219"
+}
+
+variable "subnet_id" {
+  type    = string
+  default = "subnet-01ac397cf39dce5ba"
+}
