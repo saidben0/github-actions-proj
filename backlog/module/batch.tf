@@ -1,6 +1,6 @@
 variable "llandman_batch_exec_role" {
   type    = string
-  default = "llandman-aws-batch-service-role"
+  default = "llandman-batch-exec-role"
 }
 
 variable "security_grp_id" {
@@ -34,7 +34,7 @@ data "aws_subnet" "this" {
 # Create a Compute Environment
 resource "aws_batch_compute_environment" "this" {
   provider                 = aws.acc
-  compute_environment_name = "batch-compute-environment"
+  compute_environment_name = "llandman-batch-compute-environment"
 
   compute_resources {
     max_vcpus = 16
@@ -57,7 +57,7 @@ resource "aws_batch_compute_environment" "this" {
 # Create a Job Queue
 resource "aws_batch_job_queue" "this" {
   provider = aws.acc
-  name     = "batch-job-queue"
+  name     = "llandman-batch-job-queue"
   state    = "ENABLED"
   priority = 1
   compute_environment_order {
@@ -69,7 +69,7 @@ resource "aws_batch_job_queue" "this" {
 # Create a Job Definition
 resource "aws_batch_job_definition" "this" {
   provider = aws.acc
-  name     = "batch-job-definition"
+  name     = "llandman-batch-job-definition"
 
   type = "container"
 

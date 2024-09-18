@@ -1,0 +1,184 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"batch:DescribeJobQueues",
+				"batch:DescribeJobs",
+				"ssm:DescribeParameters",
+				"lambda:GetEventSourceMapping",
+				"batch:DescribeSchedulingPolicies",
+				"batch:DescribeJobDefinitions",
+				"batch:ListJobs",
+				"batch:ListSchedulingPolicies",
+				"lambda:CreateEventSourceMapping",
+				"batch:DescribeComputeEnvironments",
+				"ec2:DescribeSubnets",
+				"ec2:DescribeSecurityGroups"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "VisualEditor1",
+			"Effect": "Allow",
+			"Action": [
+				"sqs:UntagQueue",
+				"dynamodb:ListTagsOfResource",
+				"bedrock:ListPrompts",
+				"bedrock:GetPrompt",
+				"sqs:ListQueueTags",
+				"bedrock:CreatePromptVersion",
+				"bedrock:ListTagsForResource",
+				"dynamodb:DeleteTable",
+				"ssm:GetParameter",
+				"bedrock:UpdatePrompt",
+				"dynamodb:UpdateContinuousBackups",
+				"bedrock:UntagResource",
+				"batch:DeregisterJobDefinition",
+				"iam:PassRole",
+				"batch:ListTagsForResource",
+				"dynamodb:TagResource",
+				"dynamodb:DescribeTable",
+				"dynamodb:DescribeContinuousBackups",
+				"dynamodb:Update*",
+				"ssm:GetParametersByPath",
+				"sqs:SetQueueAttributes",
+				"iam:GetRole",
+				"lambda:UpdateEventSourceMapping",
+				"dynamodb:UntagResource",
+				"ssm:GetParameterHistory",
+				"bedrock:DeletePrompt",
+				"sqs:GetQueueAttributes",
+				"ssm:GetParameters",
+				"dynamodb:DescribeTimeToLive",
+				"dynamodb:CreateTable",
+				"ssm:PutParameter",
+				"sqs:TagQueue",
+				"sqs:DeleteQueue",
+				"sqs:CreateQueue",
+				"bedrock:TagResource",
+				"lambda:DeleteEventSourceMapping"
+			],
+			"Resource": [
+				"arn:aws:batch:*:${ACCOUNT_ID}:job-definition/llandman-*:*",
+				"arn:aws:sqs:*:${ACCOUNT_ID}:llandman-*",
+				"arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+				"arn:aws:bedrock:*::foundation-model/*",
+				"arn:aws:dynamodb:*:${ACCOUNT_ID}:table/llandman-*",
+				"arn:aws:ssm:*:${ACCOUNT_ID}:parameter/llandman/dev/bedrock/prompts/*",
+				"arn:aws:lambda:*:${ACCOUNT_ID}:event-source-mapping:*",
+				"arn:aws:iam::${ACCOUNT_ID}:role/llandman-*"
+			]
+		},
+		{
+			"Sid": "VisualEditor2",
+			"Effect": "Allow",
+			"Action": [
+				"lambda:CreateFunction",
+				"lambda:TagResource",
+				"batch:DeleteComputeEnvironment",
+				"lambda:ListVersionsByFunction",
+				"batch:SubmitJob",
+				"lambda:GetFunctionConfiguration",
+				"s3:ListBucket",
+				"batch:UpdateComputeEnvironment",
+				"lambda:UntagResource",
+				"batch:DeleteSchedulingPolicy",
+				"lambda:PutFunctionConcurrency",
+				"batch:TerminateJob",
+				"batch:CreateJobQueue",
+				"batch:ListTagsForResource",
+				"lambda:ListTags",
+				"batch:DeleteJobQueue",
+				"lambda:DeleteFunction",
+				"batch:GetJobQueueSnapshot",
+				"batch:CreateComputeEnvironment",
+				"lambda:GetFunction",
+				"lambda:Update*",
+				"batch:CreateSchedulingPolicy",
+				"s3:GetBucketNotification",
+				"lambda:GetFunctionCodeSigningConfig",
+				"s3:PutBucketNotification",
+				"lambda:AddPermission",
+				"batch:UpdateSchedulingPolicy",
+				"batch:RegisterJobDefinition",
+				"lambda:RemovePermission",
+				"lambda:GetPolicy",
+				"batch:UpdateJobQueue"
+			],
+			"Resource": [
+				"arn:aws:lambda:*:${ACCOUNT_ID}:function:llandman-*",
+				"arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823/*",
+				"arn:aws:s3:::enverus-courthouse-dev-chd-plants-0823",
+				"arn:aws:batch:*:${ACCOUNT_ID}:job/llandman-*",
+				"arn:aws:batch:*:${ACCOUNT_ID}:job-definition/llandman-*",
+				"arn:aws:batch:*:${ACCOUNT_ID}:job-queue/llandman-*",
+				"arn:aws:batch:*:${ACCOUNT_ID}:compute-environment/llandman-*",
+				"arn:aws:batch:*:${ACCOUNT_ID}:scheduling-policy/llandman-*"
+			]
+		},
+		{
+			"Sid": "VisualEditor3",
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetBucketObjectLockConfiguration",
+				"s3:PutObject",
+				"s3:GetObject",
+				"s3:PutBucketNotification",
+				"lambda:GetLayerVersion",
+				"s3:PutObjectVersionAcl",
+				"lambda:PublishLayerVersion",
+				"lambda:DeleteLayerVersion",
+				"s3:GetObjectTagging",
+				"s3:ListBucket",
+				"s3:GetBucketNotification",
+				"s3:PutObjectAcl"
+			],
+			"Resource": [
+				"arn:aws:s3:::enverus-tfstates-0823",
+				"arn:aws:s3:::enverus-tfstates-0823/*",
+				"arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs",
+				"arn:aws:lambda:us-east-1:${ACCOUNT_ID}:layer:python-libs:*"
+			]
+		},
+		{
+			"Sid": "VisualEditor4",
+			"Effect": "Allow",
+			"Action": [
+				"bedrock:GetFoundationModelAvailability",
+				"bedrock:CreatePrompt",
+				"bedrock:ListFoundationModels"
+			],
+			"Resource": [
+				"arn:aws:bedrock:us-east-1:${ACCOUNT_ID}:prompt/*",
+				"arn:aws:bedrock:*::foundation-model/*"
+			]
+		},
+		{
+			"Sid": "VisualEditor5",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:DeleteResource",
+				"cloudformation:GetResource",
+				"cloudformation:UpdateResource",
+				"cloudformation:GetResourceRequestStatus",
+				"cloudformation:CreateResource"
+			],
+			"Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+		},
+		{
+			"Sid": "VisualEditor6",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:DeleteResource",
+				"cloudformation:GetResource",
+				"cloudformation:UpdateResource",
+				"cloudformation:GetResourceRequestStatus",
+				"cloudformation:CreateResource"
+			],
+			"Resource": "arn:aws:cloudformation:us-east-1:${ACCOUNT_ID}:resource/*"
+		}
+	]
+}
