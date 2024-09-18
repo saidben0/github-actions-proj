@@ -55,7 +55,7 @@ resource "aws_batch_job_definition" "this" {
   name     = "${var.prefix}-job-definition"
 
   type = "container"
-  
+
   platform_capabilities = [
     "FARGATE",
   ]
