@@ -22,20 +22,20 @@ data "aws_iam_role" "llandman_batch_exec_role" {
 
 data "aws_security_group" "this" {
   provider = aws.acc
-  id = var.security_grp_id
+  id       = var.security_grp_id
 }
 
 data "aws_subnet" "this" {
   provider = aws.acc
-  id = var.subnet_id
+  id       = var.subnet_id
 }
 
 
 # Create a Compute Environment
 resource "aws_batch_compute_environment" "this" {
-  provider        = aws.acc
+  provider                 = aws.acc
   compute_environment_name = "batch-compute-environment"
-  
+
   compute_resources {
     max_vcpus = 16
 
@@ -56,10 +56,10 @@ resource "aws_batch_compute_environment" "this" {
 
 # Create a Job Queue
 resource "aws_batch_job_queue" "this" {
-  provider        = aws.acc
-  name                   = "batch-job-queue"
+  provider = aws.acc
+  name     = "batch-job-queue"
   state    = "ENABLED"
-  priority               = 1
+  priority = 1
   compute_environment_order {
     order               = 1
     compute_environment = aws_batch_compute_environment.this.arn
@@ -68,18 +68,18 @@ resource "aws_batch_job_queue" "this" {
 
 # Create a Job Definition
 resource "aws_batch_job_definition" "this" {
-  provider        = aws.acc
-  name = "batch-job-definition"
+  provider = aws.acc
+  name     = "batch-job-definition"
 
   type = "container"
 
   container_properties = jsonencode({
     # image: "your-docker-image-uri",  # Replace with your Docker image
-    image: "public.ecr.aws/docker/library/alpine:latest"
-    vcpus: 1,
-    memory: 1024,
-    command: ["echo", "Hello from AWS Batch!"],
-    executionRoleArn: data.aws_iam_role.llandman_batch_exec_role.arn
+    image : "public.ecr.aws/docker/library/alpine:latest"
+    vcpus : 1,
+    memory : 1024,
+    command : ["echo", "Hello from AWS Batch!"],
+    executionRoleArn : data.aws_iam_role.llandman_batch_exec_role.arn
     # executionRoleArn: aws_iam_role.batch_service_role.arn
   })
 }
