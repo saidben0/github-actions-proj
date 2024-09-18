@@ -8,7 +8,7 @@ locals {
   bedrock_prompts = {
     "mainPrompt" = {
       default_variant = "variantOne"
-      name            = "mainPrompt"
+      name            = "backlog-mainPrompt"
       variants = [
         {
           inference_configuration = {
@@ -31,7 +31,7 @@ locals {
     }
     "systemPrompt" = {
       default_variant = "variantOne"
-      name            = "systemPrompt"
+      name            = "backlog-systemPrompt"
       variants = [
         {
           inference_configuration = {
