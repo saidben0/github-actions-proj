@@ -1,6 +1,6 @@
 variable "prefix" {
   type    = string
-  default = "llandman-backlog"
+  default = "llandman"
 }
 
 variable "env" {
@@ -65,6 +65,14 @@ variable "prompt_ver" {
 variable "system_prompt_ver" {
   type    = string
   default = "1"
+}
+
+variable "security_grp_id" {
+  type = string
+}
+
+variable "subnet_id" {
+  type = string
 }
 
 

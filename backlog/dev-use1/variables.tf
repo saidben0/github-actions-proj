@@ -9,9 +9,9 @@ variable "env" {
 }
 
 variable "inputs_bucket_name" {
-  type    = string
-  default = "enverus-courthouse-dev-chd-plants"
-  # default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
+  type = string
+  # default = "enverus-courthouse-dev-chd-plants"
+  default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
 }
 
 variable "lambda_function_name" {
@@ -56,4 +56,14 @@ variable "prompt_ver" {
 variable "system_prompt_ver" {
   type    = string
   default = "1"
+}
+
+variable "security_grp_id" {
+  type    = string
+  default = "sg-04e975365d5ef5219"
+}
+
+variable "subnet_id" {
+  type    = string
+  default = "subnet-01ac397cf39dce5ba"
 }
