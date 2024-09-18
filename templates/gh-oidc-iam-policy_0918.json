@@ -40,8 +40,7 @@
             ],
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/llandman-*",
-                "arn:aws:iam::061039788063:role/AWSBatchS3ReadOnly"
+                "arn:aws:iam::${ACCOUNT_ID}:role/llandman-*"
             ],
             "Sid": "GetPassLambdaExecutionRole"
         },

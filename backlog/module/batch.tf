@@ -61,9 +61,9 @@ resource "aws_batch_job_definition" "this" {
   ]
 
   container_properties = jsonencode({
-    command    = ["echo", "test"]
-    image      = "busybox"
-    jobRoleArn = "arn:aws:iam::${local.account_id}:role/AWSBatchS3ReadOnly"
+    command = ["echo", "test"]
+    image   = "busybox"
+    # jobRoleArn = "arn:aws:iam::${local.account_id}:role/AWSBatchS3ReadOnly"
 
     fargatePlatformConfiguration = {
       platformVersion = "LATEST"
