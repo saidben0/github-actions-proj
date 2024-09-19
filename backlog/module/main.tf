@@ -183,10 +183,29 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
     detail-type = ["Bedrock Batch Inference Job State Change"]
     detail = {
       status  = ["COMPLETED"],
-      job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
+      JobName = {
+        prefix = "${var.prefix}"
+      },
+      # job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
     }
   })
+#   event_pattern = <<PATTERN
+#     {
+#       "source": ["aws.bedrock"],
+#       "detail-type": [
+#         "Bedrock Batch Inference Job State Change"
+#       ],
+#       "detail": {
+#         "batchJobName": "llandman-*",
+#         "status": "Completed",
+#         "batchJobName": [{
+#           "prefix": "${var.prefix}"
+#         }]
+#       }
+#     }
+# PATTERN
 }
+
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
   provider  = aws.acc
