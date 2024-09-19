@@ -234,6 +234,40 @@
                 "arn:aws:batch:*:${var.account_id}:compute-environment/llandman-*",
                 "arn:aws:batch:*:${var.account_id}:scheduling-policy/llandman-*"
             ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "batch:DescribeJobDefinitions",
+                "batch:DescribeComputeEnvironments",
+                "batch:DescribeJobQueues"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:ListRules",
+                "events:ListTagsForResource",
+                "events:DescribeRule",
+                "events:PutRule",
+                "events:PutTargets",
+                "events:PutEvents",
+                "events:Update*",
+                "events:StartReplay",
+                "events:EnableRule",
+                "events:DisableRule",
+                "events:RemoveTargets",
+                "events:DeleteRule",
+                "events:TagResource",
+                "events:UntagResource",
+                "events:ListTargetsByRule"
+            ],
+            "Resource": [
+                "arn:aws:events:*:${ACCOUNT_ID}:event-bus/llandman-*",
+                "arn:aws:events:*:${ACCOUNT_ID}:rule/*/llandman-*",
+                "arn:aws:events:*:${ACCOUNT_ID}:rule/llandman-*"
+            ]
         }
     ]
 }

@@ -80,7 +80,7 @@ resource "aws_batch_job_definition" "this" {
       }
     ]
 
-    executionRoleArn : data.aws_iam_role.llandman_batch_exec_role.arn
+    executionRoleArn = data.aws_iam_role.llandman_batch_exec_role.arn
   })
 }
 
@@ -88,7 +88,7 @@ resource "aws_batch_job_definition" "this" {
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   provider    = aws.acc
-  name        = "${var.prefix}-bedrock_batch_inference_complete"
+  name        = "${var.prefix}-bedrock_batch-inference-complete"
   description = "Trigger when AWS Bedrock batch inference job is complete"
   event_pattern = jsonencode({
     source      = ["aws.bedrock"]
