@@ -184,7 +184,7 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
     detail = {
       status = ["COMPLETED"],
       JobName = {
-        prefix = "${var.prefix}"
+        prefix = ["${var.prefix}"]
       },
       # job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
     }
