@@ -185,7 +185,7 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
       "Bedrock Batch Inference Job State Change"
     ],
     "detail": {
-      "status": "Completed",
+      "status": ["Completed"],
       "batchJobName": [{
         "prefix": "${var.prefix}"
       }]
