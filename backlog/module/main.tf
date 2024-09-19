@@ -54,7 +54,7 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
-  memory_size                    = 1024
+  memory_size                    = 10240
 
   environment {
     variables = {
