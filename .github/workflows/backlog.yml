@@ -3,8 +3,7 @@ name: Backlog Pipeline
 on:
   push:
     branches:
-      # - devv
-      - rule
+      - devv
     paths:
       - 'backlog/**'
 
