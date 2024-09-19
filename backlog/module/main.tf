@@ -58,7 +58,7 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       QUEUE_URL      = aws_sqs_queue.this.url
     }
   }
@@ -83,7 +83,7 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       QUEUE_URL      = aws_sqs_queue.this.url
     }
   }
@@ -108,7 +108,7 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       QUEUE_URL      = aws_sqs_queue.this.url
     }
   }
@@ -173,25 +173,25 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 
-resource "aws_dynamodb_table" "model_outputs" {
-  provider     = aws.acc
-  name         = "${var.prefix}-backlog-${var.dynamodb_table_name}"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "document_id"
-  range_key    = "ingestion_time"
+# resource "aws_dynamodb_table" "model_outputs" {
+#   provider     = aws.acc
+#   name         = "${var.prefix}-backlog-${var.dynamodb_table_name}"
+#   billing_mode = "PAY_PER_REQUEST"
+#   hash_key     = "document_id"
+#   range_key    = "ingestion_time"
 
-  attribute {
-    name = "document_id"
-    type = "S"
-  }
+#   attribute {
+#     name = "document_id"
+#     type = "S"
+#   }
 
-  attribute {
-    name = "ingestion_time"
-    type = "S"
-  }
+#   attribute {
+#     name = "ingestion_time"
+#     type = "S"
+#   }
 
-  point_in_time_recovery {
-    enabled = true
-  }
+#   point_in_time_recovery {
+#     enabled = true
+#   }
 
-}
+# }
