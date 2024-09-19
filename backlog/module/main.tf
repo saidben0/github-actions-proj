@@ -59,7 +59,7 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
   environment {
     variables = {
       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
@@ -84,7 +84,7 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
   environment {
     variables = {
       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
@@ -109,7 +109,7 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
   environment {
     variables = {
       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
