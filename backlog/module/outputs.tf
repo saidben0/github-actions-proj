@@ -10,9 +10,9 @@ output "current_caller_arn" {
   value = data.aws_caller_identity.this.arn
 }
 
-output "bedrock_prompts" {
-  value = { for p in awscc_bedrock_prompt.this : p.name => p.arn }
-}
+# output "bedrock_prompts" {
+#   value = { for p in awscc_bedrock_prompt.this : p.name => p.arn }
+# }
 
 # output "bedrock_main_prompt_versions" {
 #   value = data.awscc_bedrock_prompt_version.main_prompt.version

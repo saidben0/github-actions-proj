@@ -54,12 +54,12 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
-  memory_size                    = 1024
+  memory_size                    = 10240
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
@@ -83,8 +83,8 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
@@ -108,8 +108,8 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL      = aws_sqs_queue.this.url
+      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+      QUEUE_URL = aws_sqs_queue.this.url
     }
   }
 
@@ -173,25 +173,56 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 
-resource "aws_dynamodb_table" "model_outputs" {
-  provider     = aws.acc
-  name         = "${var.prefix}-backlog-${var.dynamodb_table_name}"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "document_id"
-  range_key    = "ingestion_time"
-
-  attribute {
-    name = "document_id"
-    type = "S"
-  }
-
-  attribute {
-    name = "ingestion_time"
-    type = "S"
-  }
-
-  point_in_time_recovery {
-    enabled = true
-  }
-
+# listen for "Bedrock Batch Inference Job State Change" events
+resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
+  provider    = aws.acc
+  name        = "${var.prefix}-bedrock-batch-inference-complete"
+  description = "Trigger when AWS Bedrock batch inference job is complete"
+  event_pattern = jsonencode({
+    source      = ["aws.bedrock"]
+    detail-type = ["Bedrock Batch Inference Job State Change"]
+    detail = {
+      status  = ["COMPLETED"],
+      job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
+    }
+  })
 }
+
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  provider  = aws.acc
+  rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
+  target_id = "InvokeLambdaFunction"
+  arn       = aws_lambda_function.model_outputs_retrieval_lambda_function.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  provider      = aws.acc
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.model_outputs_retrieval_lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
+}
+
+# resource "aws_dynamodb_table" "model_outputs" {
+#   provider     = aws.acc
+#   name         = "${var.prefix}-backlog-${var.dynamodb_table_name}"
+#   billing_mode = "PAY_PER_REQUEST"
+#   hash_key     = "document_id"
+#   range_key    = "ingestion_time"
+
+#   attribute {
+#     name = "document_id"
+#     type = "S"
+#   }
+
+#   attribute {
+#     name = "ingestion_time"
+#     type = "S"
+#   }
+
+#   point_in_time_recovery {
+#     enabled = true
+#   }
+
+# }
