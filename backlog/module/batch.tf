@@ -87,28 +87,28 @@ resource "aws_batch_job_definition" "this" {
 
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
-  provider = aws.acc
+  provider    = aws.acc
   name        = "${var.prefix}-bedrock_batch_inference_complete"
   description = "Trigger when AWS Bedrock batch inference job is complete"
   event_pattern = jsonencode({
-    source = ["aws.bedrock"]
+    source      = ["aws.bedrock"]
     detail-type = ["Bedrock Batch Inference Job State Change"]
     detail = {
-      status = ["COMPLETED"],
+      status  = ["COMPLETED"],
       job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/${var.prefix}-*"]
     }
   })
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
-  provider = aws.acc
+  provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
   target_id = "InvokeLambdaFunction"
   arn       = aws_lambda_function.model_outputs_retrieval_lambda_function.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
-  provider = aws.acc
+  provider      = aws.acc
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.model_outputs_retrieval_lambda_function.function_name
