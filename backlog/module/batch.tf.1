@@ -95,7 +95,7 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
     detail-type = ["Bedrock Batch Inference Job State Change"]
     detail = {
       status  = ["COMPLETED"],
-      job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/${var.prefix}-*"]
+      job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
     }
   })
 }

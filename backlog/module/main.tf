@@ -173,6 +173,37 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 
+# listen for "Bedrock Batch Inference Job State Change" events
+resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
+  provider    = aws.acc
+  name        = "${var.prefix}-bedrock-batch-inference-complete"
+  description = "Trigger when AWS Bedrock batch inference job is complete"
+  event_pattern = jsonencode({
+    source      = ["aws.bedrock"]
+    detail-type = ["Bedrock Batch Inference Job State Change"]
+    detail = {
+      status  = ["COMPLETED"],
+      job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  provider  = aws.acc
+  rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
+  target_id = "InvokeLambdaFunction"
+  arn       = aws_lambda_function.model_outputs_retrieval_lambda_function.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  provider      = aws.acc
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.model_outputs_retrieval_lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
+}
+
 # resource "aws_dynamodb_table" "model_outputs" {
 #   provider     = aws.acc
 #   name         = "${var.prefix}-backlog-${var.dynamodb_table_name}"
