@@ -178,32 +178,32 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   provider    = aws.acc
   name        = "${var.prefix}-bedrock-batch-inference-complete"
   description = "Trigger when AWS Bedrock batch inference job is complete"
-  event_pattern = jsonencode({
-    source      = ["aws.bedrock"]
-    detail-type = ["Bedrock Batch Inference Job State Change"]
-    detail = {
-      status = ["COMPLETED"],
-      JobName = {
-        prefix = ["${var.prefix}"]
-      },
-      # job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
+  event_pattern = <<PATTERN
+  {
+    "source": ["aws.bedrock"],
+    "detail-type": [
+      "Bedrock Batch Inference Job State Change"
+    ],
+    "detail": {
+      "status": "Completed",
+      "batchJobName": [{
+        "prefix": "${var.prefix}"
+      }]
     }
-  })
-  #   event_pattern = <<PATTERN
-  #     {
-  #       "source": ["aws.bedrock"],
-  #       "detail-type": [
-  #         "Bedrock Batch Inference Job State Change"
-  #       ],
-  #       "detail": {
-  #         "batchJobName": "llandman-*",
-  #         "status": "Completed",
-  #         "batchJobName": [{
-  #           "prefix": "${var.prefix}"
-  #         }]
-  #       }
-  #     }
-  # PATTERN
+  }
+PATTERN
+  # event_pattern = jsonencode({
+  #   source      = ["aws.bedrock"]
+  #   detail-type = ["Bedrock Batch Inference Job State Change"]
+  #   detail = {
+  #     status = ["COMPLETED"],
+  #     JobName = {
+  #       prefix = ["${var.prefix}"]
+  #     },
+  #     # job_arn = ["arn:${local.partition}:bedrock:${local.region}:${local.account_id}:batch-job/*"]
+  #   }
+  # })
+
 }
 
 
