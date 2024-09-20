@@ -190,7 +190,7 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
     }
   }
   PATTERN
-  }
+}
 
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
