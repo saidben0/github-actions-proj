@@ -180,17 +180,17 @@ resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   description   = "Trigger when AWS Bedrock batch inference job is complete"
   event_pattern = <<PATTERN
   {
-  "source": ["aws.bedrock"],
-  "detail-type": ["Batch Inference Job State Change"],
-  "detail": {
-    "batchJobName": [{
-      "prefix": "${var.prefix}"
-    }],
-    "status": ["Completed"]
+    "source": ["aws.bedrock"],
+    "detail-type": ["Batch Inference Job State Change"],
+    "detail": {
+      "batchJobName": [{
+        "prefix": "${var.prefix}"
+      }],
+      "status": ["Completed"]
+    }
   }
-}
-PATTERN
-}
+  PATTERN
+  }
 
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
