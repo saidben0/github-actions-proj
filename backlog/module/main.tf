@@ -34,6 +34,18 @@ resource "aws_sqs_queue" "redrive_dlq" {
 }
 
 
+# configure backend to access state-file of realtime/dev-use1 module
+data "terraform_remote_state" "realtime_dev_use1" {
+  backend = "s3" // Adjust this to your actual backend
+  config = {
+    # bucket = "di-dev-terraform"
+    bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
+    # key = "dev/llandman/terraform.tfstate"
+    key    = "dev/use1/tfstate" # for testing in proserve shared acc
+    region = "us-east-1"
+  }
+}
+
 # Package the Lambda function code
 data "archive_file" "this" {
   type        = "zip"
@@ -48,6 +60,7 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-backlog-invoke-model"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   # layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -73,6 +86,7 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-backlog-model-invocation-status"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   # layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -98,6 +112,7 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-backlog-model-outputs-retrieval"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   # layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
