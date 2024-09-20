@@ -56,11 +56,11 @@ data "archive_file" "this" {
 
 
 resource "aws_lambda_function" "invoke_model_lambda_function" {
-  provider      = aws.acc
-  filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-invoke-model"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
+  provider                       = aws.acc
+  filename                       = data.archive_file.this.output_path
+  function_name                  = "${var.prefix}-backlog-invoke-model"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
   runtime                        = "python${var.python_version}"
@@ -81,11 +81,11 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
 }
 
 resource "aws_lambda_function" "model_invocation_status_lambda_function" {
-  provider      = aws.acc
-  filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-model-invocation-status"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
+  provider                       = aws.acc
+  filename                       = data.archive_file.this.output_path
+  function_name                  = "${var.prefix}-backlog-model-invocation-status"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
   runtime                        = "python${var.python_version}"
@@ -106,11 +106,11 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
 }
 
 resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
-  provider      = aws.acc
-  filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-model-outputs-retrieval"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  layers        = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
+  provider                       = aws.acc
+  filename                       = data.archive_file.this.output_path
+  function_name                  = "${var.prefix}-backlog-model-outputs-retrieval"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
   runtime                        = "python${var.python_version}"
@@ -132,8 +132,8 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
 
 
 resource "aws_sqs_queue" "this" {
-  provider = aws.acc
-  name     = "${var.prefix}-backlog-queue.fifo"
+  provider                    = aws.acc
+  name                        = "${var.prefix}-backlog-queue.fifo"
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
@@ -176,9 +176,9 @@ resource "aws_sqs_queue_policy" "this" {
 resource "aws_lambda_event_source_mapping" "this" {
   provider         = aws.acc
   event_source_arn = aws_sqs_queue.this.arn
-  function_name = aws_lambda_function.invoke_model_lambda_function.arn
-  enabled       = true
-  batch_size    = 1
+  function_name    = aws_lambda_function.invoke_model_lambda_function.arn
+  enabled          = true
+  batch_size       = 1
 }
 
 

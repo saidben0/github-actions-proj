@@ -70,7 +70,7 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   description         = "Lambda layer for Land Llandman doc processing"
   compatible_runtimes = ["python${var.python_version}"]
   filename            = data.archive_file.lambda_layer.output_path
-  source_code_hash = data.archive_file.lambda_layer.output_base64sha256
+  source_code_hash    = data.archive_file.lambda_layer.output_base64sha256
 }
 
 # Package the Lambda function code
@@ -82,10 +82,10 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
-  provider      = aws.acc
-  filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-${var.lambda_function_name}"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider                       = aws.acc
+  filename                       = data.archive_file.this.output_path
+  function_name                  = "${var.prefix}-${var.lambda_function_name}"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -115,8 +115,8 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
 
 resource "aws_sqs_queue" "this" {
-  provider = aws.acc
-  name     = "${var.prefix}-queue.fifo"
+  provider                    = aws.acc
+  name                        = "${var.prefix}-queue.fifo"
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
