@@ -36,7 +36,7 @@ resource "aws_sqs_queue" "redrive_dlq" {
 
 # configure backend to access state-file of realtime/dev-use1 module
 data "terraform_remote_state" "realtime_dev_use1" {
-  backend = "s3" // Adjust this to your actual backend
+  backend = "s3"
   config = {
     # bucket = "di-dev-terraform"
     bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
