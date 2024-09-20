@@ -27,23 +27,13 @@ resource "random_id" "this" {
 }
 
 
-# resource "aws_sqs_queue" "dlq" {
-#   provider = aws.acc
-#   name     = "${var.prefix}-dlq"
-#   # fifo_queue = true
-#   # kms_master_key_id = data.aws_kms_key.this.id
-# }
-
 resource "aws_sqs_queue" "redrive_dlq" {
   provider   = aws.acc
   name       = "${var.prefix}-redrive-dlq.fifo"
   fifo_queue = true
-  # kms_master_key_id = data.aws_kms_key.this.id
 }
 
-#########################################
-############# LAMBDA LAYER ##############
-#########################################
+
 resource "null_resource" "lambda_layer" {
   provisioner "local-exec" {
     command = <<EOT
@@ -80,7 +70,6 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   description         = "Lambda layer for Land Llandman doc processing"
   compatible_runtimes = ["python${var.python_version}"]
   filename            = data.archive_file.lambda_layer.output_path
-  # filename            = "${path.module}/lambda-layer/python-libs.zip"
   source_code_hash = data.archive_file.lambda_layer.output_base64sha256
 }
 
@@ -97,7 +86,6 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   filename      = data.archive_file.this.output_path
   function_name = "${var.prefix}-${var.lambda_function_name}"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  # role                           = aws_iam_role.queue_processing_lambda_role.arn
   layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
@@ -105,7 +93,6 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   timeout                        = "900"
   reserved_concurrent_executions = 100
   memory_size                    = 1024
-  # kms_key_arn                    = data.aws_kms_key.this.arn
 
   environment {
     variables = {
@@ -124,26 +111,12 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
   tracing_config {
     mode = "Active"
   }
-  # dead_letter_config {
-  #   target_arn = aws_sqs_queue.dlq.arn
-  # }
-
-  # vpc_config {
-  #   subnet_ids         = [module.vpc.private_subnets[0]]
-  #   security_group_ids = [aws_security_group.allow_tls.id]
-  # }
-
-  # depends_on = [aws_iam_role.queue_processing_lambda_role]
 }
-#########################################
-#########################################
-#########################################
 
 
 resource "aws_sqs_queue" "this" {
   provider = aws.acc
   name     = "${var.prefix}-queue.fifo"
-  # kms_master_key_id = data.aws_kms_key.this.id
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
@@ -174,7 +147,6 @@ resource "aws_sqs_queue_policy" "this" {
         Resource = aws_sqs_queue.this.arn,
         Condition = {
           ArnEquals = {
-            # "aws:SourceArn" = aws_s3_bucket.this.arn
             "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
           }
         }
@@ -182,21 +154,6 @@ resource "aws_sqs_queue_policy" "this" {
     ]
   })
 }
-
-# # send an s3 event to sqs when new s3 object is created/uploaded
-# resource "aws_s3_bucket_notification" "sqs_notification" {
-#   provider = aws.acc
-#   bucket   = data.aws_s3_bucket.inputs_bucket.id
-
-#   queue {
-#     queue_arn = aws_sqs_queue.this.arn
-#     events    = ["s3:ObjectCreated:*"]
-#     # filter_prefix = aws_s3_object.inputs.key
-#     # filter_suffix = ".pdf"
-#   }
-
-#   depends_on = [aws_sqs_queue_policy.this]
-# }
 
 # map sqs queue to trigger the lambda function when an 3 event is received
 resource "aws_lambda_event_source_mapping" "this" {
@@ -225,17 +182,25 @@ resource "aws_dynamodb_table" "model_outputs" {
     type = "S"
   }
 
-  # attribute {
-  #   name = "chunk_id"
-  #   type = "N"
-  # }
-
   point_in_time_recovery {
     enabled = true
   }
-
-  # server_side_encryption {
-  #   enabled     = true
-  #   kms_key_arn = data.aws_kms_key.this.arn
-  # }
 }
+
+
+
+
+# # send an s3 event to sqs when new s3 object is created/uploaded
+# resource "aws_s3_bucket_notification" "sqs_notification" {
+#   provider = aws.acc
+#   bucket   = data.aws_s3_bucket.inputs_bucket.id
+
+#   queue {
+#     queue_arn = aws_sqs_queue.this.arn
+#     events    = ["s3:ObjectCreated:*"]
+#     # filter_prefix = aws_s3_object.inputs.key
+#     # filter_suffix = ".pdf"
+#   }
+
+#   depends_on = [aws_sqs_queue_policy.this]
+# }
