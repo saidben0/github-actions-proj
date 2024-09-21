@@ -3,7 +3,8 @@ name: Real-Time Pipeline
 on:
   push:
     branches:
-      - dev
+      # - dev
+      - datapipe
     paths:
       - 'realtime/**'
 
