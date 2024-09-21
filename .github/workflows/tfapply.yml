@@ -71,9 +71,16 @@ jobs:
           cd ${{ inputs.data-pipeline }}/module
           pwd && ls
           # cd ../module
+          echo "################## mkdir -p ./lambda-layer/python ##################"
           mkdir -p ./lambda-layer/python
+          
+          echo "################## pip install -r ./lambda-layer/requirements.txt ##################"
           pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
+          
+          echo "################## zip -r ./lambda-layer.zip ./lambda-layer/python ##################"
           zip -r ./lambda-layer.zip ./lambda-layer/python
+          
+          echo "################## ls ./lambda-layer ##################"
           ls ./lambda-layer
 
 
