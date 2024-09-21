@@ -26,6 +26,49 @@ permissions:
   contents: read    # This is required for actions/checkout
 
 jobs:
+  build-lambda-layer:
+    if: contains(github.event.head_commit.message, 'requirements.txt')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check if requirements.txt was changed
+        id: check_changes
+        run: |
+          git fetch origin ${{ github.event.before }}  # Fetch the previous commit
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'requirements.txt'; then
+            echo "requirements.txt has been updated!"
+            echo "changed=true" >> $GITHUB_ENV
+          else
+            echo "requirements.txt has not been updated."
+            echo "changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build lambda layer
+        if: env.changed == 'true'
+        run: |
+          echo "Running commands because requirements.txt has been updated!"
+          # Add your commands here, e.g., install dependencies, run tests, etc.
+          # Enable manyLinux
+          echo "#### Enable manyLinux ####"
+          python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+          PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER || true
+          echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+          python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
+          
+          echo "#### Build Lambda Layer ####"
+          pwd && ls
+          cd ${{ inputs.data-pipeline }}/module
+          pwd && ls
+          # cd ../module
+          mkdir -p ./lambda-layer/python
+          pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
+          zip -r ./lambda-layer.zip ./lambda-layer/python
+          ls ./lambda-layer
+
+
   terraform-unit-tests:
     name: 'Terraform Unit Tests'
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
