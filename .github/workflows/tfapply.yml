@@ -87,7 +87,7 @@ jobs:
                         --layer-name test-layer \
                         --description "My Lambda Layer for shared libraries" \
                         --zip-file fileb://lambda-layer.zip \
-                        --compatible-runtimes ${{ vars.GH_RUNNER_PY_VER }} \
+                        --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
                         --license-info "MIT")
           lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
           echo $lambda_layer_version_arn
