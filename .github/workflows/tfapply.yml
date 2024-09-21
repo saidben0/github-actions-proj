@@ -41,6 +41,15 @@ jobs:
         with:
           python-version: ${{ vars.GH_RUNNER_PY_VER }}
 
+      - name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as an env variable for corresponding environment
+          aws-region: ${{ inputs.aws-region }}
+          role-session-name: enverus-session
+          role-duration-seconds: 3600
+          audience: sts.amazonaws.com
+
       - name: Check if requirements.txt was changed
         id: check_changes
         run: |
@@ -71,6 +80,7 @@ jobs:
           cd ${{ inputs.data-pipeline }}/module
           pwd && ls
           # cd ../module
+
           echo "################## mkdir -p ./lambda-layer/python ##################"
           mkdir -p ./lambda-layer/python
           
@@ -80,10 +90,22 @@ jobs:
           echo "################## zip -r ./lambda-layer.zip ./lambda-layer/python ##################"
           zip -r ./lambda-layer.zip ./lambda-layer/python
           
-          echo "################## ls ./lambda-layer ##################"
+          echo "################## ls ##################"
+          ls -ltr
           ls ./lambda-layer
 
+          echo "################## aws lambda publish-layer-version ##################"
+          aws sts get-caller-identity
+          response=$(aws lambda publish-layer-version \
+                        --layer-name test-layer \
+                        --description "My Lambda Layer for shared libraries" \
+                        --zip-file fileb://queue-processing.zip \
+                        --compatible-runtimes python3.8 python3.9 \
+                        --license-info "MIT")
+          lambda_layer_arn=$(echo $response | jq -r '.LayerArn')
+          echo $lambda_layer_arn
 
+          
   terraform-unit-tests:
     name: 'Terraform Unit Tests'
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
