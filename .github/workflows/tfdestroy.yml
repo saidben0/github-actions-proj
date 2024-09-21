@@ -11,7 +11,7 @@ on:
         options:
           - dev
           - prod
-      path:
+      data-pipeline:
         required: true
         default: 'backlog'
         type: choice
@@ -76,7 +76,7 @@ jobs:
         
       - name: Terraform Init
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
 
@@ -85,20 +85,20 @@ jobs:
 
       - name: Terraform Validate
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform validate
 
       - name: Terraform Plan
         id: plan
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
         with:
           name: terraform-plan
-          path: ${{ inputs.path }}/${{ inputs.aws-env-dir }}/tfplan
+          path: ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/tfplan
   
   terraform-destroy:
     name: Terraform Destroy
@@ -126,7 +126,7 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
 
@@ -137,7 +137,7 @@ jobs:
 
       - name: Terraform Destroy
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform state list
           terraform apply -destroy ../../tfplan
           terraform state list

@@ -6,7 +6,7 @@ on:
       environment:
         required: true
         type: string
-      path:
+      data-pipeline:
         required: True
         type: string
       aws-env-dir:
@@ -60,13 +60,13 @@ jobs:
         
     - name: Terraform Init
       run: |
-        cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         rm -rf .terraform*
         terraform init
   
     - name: Terraform Validate
       run: |
-        cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         terraform validate
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -123,21 +123,21 @@ jobs:
         
       - name: Terraform Init
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
 
       - name: Terraform Plan
         id: plan
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
         with:
           name: terraform-plan
-          path: ${{ inputs.path }}/${{ inputs.aws-env-dir }}/tfplan
+          path: ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/tfplan
 
 
   terraform-apply:
@@ -172,7 +172,7 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           rm -rf .terraform*
           terraform init
       
@@ -187,7 +187,7 @@ jobs:
 
       - name: Generate Lambda Archive Zip
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' &> /dev/null
           tree -L 2 ../module
 
@@ -198,7 +198,7 @@ jobs:
       
       - name: Terraform Apply
         run: |
-          cd ${{ inputs.path }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform apply ../../tfplan
           # TF_LOG=trace terraform apply --auto-approve ../tfplan &> log.log
           # cat log.log | grep "DEBUG: Request"
