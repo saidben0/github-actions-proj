@@ -76,38 +76,23 @@ jobs:
           python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
           
           echo "#### Build Lambda Layer ####"
-          pwd && ls
           cd ${{ inputs.data-pipeline }}/module
-          pwd && ls
-          # cd ../module
-
-          echo "################## mkdir -p ./lambda-layer/python ##################"
           mkdir -p ./lambda-layer/python
-          
-          echo "################## pip install -r ./lambda-layer/requirements.txt ##################"
           pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
-          
-          echo "################## zip -r ./lambda-layer.zip ./lambda-layer/python ##################"
           cd ./lambda-layer
           zip -r ../lambda-layer.zip ./python
           cd ../
-          
-          echo "################## ls ##################"
-          ls -ltr
-          ls ./lambda-layer
-
-          echo "################## aws lambda publish-layer-version ##################"
           aws sts get-caller-identity
           response=$(aws lambda publish-layer-version \
                         --layer-name test-layer \
                         --description "My Lambda Layer for shared libraries" \
                         --zip-file fileb://lambda-layer.zip \
-                        --compatible-runtimes python3.8 python3.9 \
+                        --compatible-runtimes 3.12 \
                         --license-info "MIT")
-          lambda_layer_arn=$(echo $response | jq -r '.LayerArn')
-          echo $lambda_layer_arn
+          lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
+          echo $lambda_layer_version_arn
 
-          
+
   terraform-unit-tests:
     name: 'Terraform Unit Tests'
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
