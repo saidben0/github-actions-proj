@@ -90,6 +90,7 @@ jobs:
           echo "################## zip -r ./lambda-layer.zip ./lambda-layer/python ##################"
           cd ./lambda-layer
           zip -r ../lambda-layer.zip ./python
+          cd ../
           
           echo "################## ls ##################"
           ls -ltr
