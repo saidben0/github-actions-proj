@@ -35,6 +35,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.GH_RUNNER_PY_VER }}
 
       - name: Check if requirements.txt was changed
         id: check_changes
