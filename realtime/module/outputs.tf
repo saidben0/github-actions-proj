@@ -22,6 +22,10 @@ output "lambda_role_arn" {
   value = data.aws_iam_role.llandman_lambda_exec_role.arn
 }
 
-output "lambda_layer_arn" {
-  value = aws_lambda_layer_version.lambda_layer.arn
+output "lambda_layer_version_arn" {
+  value = var.lambda_layer_version_arn
 }
+
+# output "lambda_layer_arn" {
+#   value = aws_lambda_layer_version.lambda_layer.arn
+# }

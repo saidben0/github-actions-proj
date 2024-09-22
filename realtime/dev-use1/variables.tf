@@ -57,3 +57,7 @@ variable "system_prompt_ver" {
   type    = string
   default = "1"
 }
+
+variable "lambda_layer_version_arn" {
+  type = string
+}
