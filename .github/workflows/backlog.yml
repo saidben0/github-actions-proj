@@ -3,10 +3,9 @@ name: Backlog Pipeline
 on:
   push:
     branches:
-      # - devv
-      - buildlayer
-    # paths:
-    #   - 'backlog/**'
+      - devv
+    paths:
+      - 'backlog/**'
 
 jobs:
   dev-use1:
