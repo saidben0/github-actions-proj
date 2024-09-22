@@ -108,7 +108,6 @@ jobs:
           else
             echo "requirements.txt has not been updated."
             echo "changed=false" >> $GITHUB_ENV
-            exit 0
           fi
 
       - name: Setup Python
