@@ -87,7 +87,7 @@ jobs:
     name: Publish Lambda Layer Version
     needs: terraform-unit-tests
     # if: ${{ inputs.data-pipeline }} == 'realtime' && contains(github.event.head_commit.message, 'requirements.txt')
-    if: contains(github.event.head_commit.message, 'requirements.txt')
+    # if: contains(github.event.head_commit.message, 'requirements.txt')
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
 
@@ -159,7 +159,7 @@ jobs:
     name: Terraform Plan
     # needs: terraform-unit-tests
     needs: publish-lambda-layer-version
-    if: ${{ needs.lambda_layer_job_status.result == 'success' || needs.lambda_layer_job_status.result == 'skipped' }}
+    # if: ${{ needs.lambda_layer_job_status.result == 'success' || needs.lambda_layer_job_status.result == 'skipped' }}
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}
  
