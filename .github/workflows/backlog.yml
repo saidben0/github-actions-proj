@@ -5,8 +5,8 @@ on:
     branches:
       # - devv
       - buildlayer
-    paths:
-      - 'backlog/**'
+    # paths:
+    #   - 'backlog/**'
 
 jobs:
   dev-use1:
