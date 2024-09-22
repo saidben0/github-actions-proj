@@ -67,3 +67,7 @@ variable "subnet_id" {
   type    = string
   default = "subnet-01ac397cf39dce5ba"
 }
+
+variable "lambda_layer_version_arn" {
+  type = string
+}

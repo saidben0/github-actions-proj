@@ -34,44 +34,44 @@ resource "aws_sqs_queue" "redrive_dlq" {
 }
 
 
-resource "null_resource" "lambda_layer" {
-  provisioner "local-exec" {
-    command = <<EOT
-      pwd && ls
-      cd ../module
-      mkdir -p ./lambda-layer/python
-      pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
-      # rm ./lambda-layer/requirements.txt
-    EOT
-  }
+# resource "null_resource" "lambda_layer" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       pwd && ls
+#       cd ../module
+#       mkdir -p ./lambda-layer/python
+#       pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
+#       # rm ./lambda-layer/requirements.txt
+#     EOT
+#   }
 
-  triggers = {
-    filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
-  }
-  # triggers = {
-  #   always_run = "${timestamp()}"
-  # }
-}
+#   triggers = {
+#     filebasesha = "${base64sha256(file("${path.module}/lambda-layer/requirements.txt"))}"
+#   }
+#   # triggers = {
+#   #   always_run = "${timestamp()}"
+#   # }
+# }
 
-# Package the Lambda Layer
-data "archive_file" "lambda_layer" {
-  type        = "zip"
-  output_path = "${path.module}/lambda-layer.zip"
+# # Package the Lambda Layer
+# data "archive_file" "lambda_layer" {
+#   type        = "zip"
+#   output_path = "${path.module}/lambda-layer.zip"
 
-  source_dir = "${path.module}/lambda-layer"
-  excludes   = ["requirements.txt"]
+#   source_dir = "${path.module}/lambda-layer"
+#   excludes   = ["requirements.txt"]
 
-  depends_on = [null_resource.lambda_layer]
-}
+#   depends_on = [null_resource.lambda_layer]
+# }
 
-# Create Lambda Layer
-resource "aws_lambda_layer_version" "lambda_layer" {
-  layer_name          = "python-libs"
-  description         = "Lambda layer for Land Llandman doc processing"
-  compatible_runtimes = ["python${var.python_version}"]
-  filename            = data.archive_file.lambda_layer.output_path
-  source_code_hash    = data.archive_file.lambda_layer.output_base64sha256
-}
+# # Create Lambda Layer
+# resource "aws_lambda_layer_version" "lambda_layer" {
+#   layer_name          = "python-libs"
+#   description         = "Lambda layer for Land Llandman doc processing"
+#   compatible_runtimes = ["python${var.python_version}"]
+#   filename            = data.archive_file.lambda_layer.output_path
+#   source_code_hash    = data.archive_file.lambda_layer.output_base64sha256
+# }
 
 # Package the Lambda function code
 data "archive_file" "this" {
@@ -82,11 +82,12 @@ data "archive_file" "this" {
 }
 
 resource "aws_lambda_function" "queue_processing_lambda_function" {
-  provider                       = aws.acc
-  filename                       = data.archive_file.this.output_path
-  function_name                  = "${var.prefix}-${var.lambda_function_name}"
-  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
-  layers                         = [aws_lambda_layer_version.lambda_layer.arn]
+  provider      = aws.acc
+  filename      = data.archive_file.this.output_path
+  function_name = "${var.prefix}-${var.lambda_function_name}"
+  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  # layers                         = [aws_lambda_layer_version.lambda_layer.arn]
+  layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.this.output_base64sha256
   runtime                        = "python${var.python_version}"

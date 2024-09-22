@@ -67,6 +67,10 @@ variable "system_prompt_ver" {
   default = "1"
 }
 
+variable "lambda_layer_version_arn" {
+  type = string
+}
+
 
 
 # variable "bedrock_prompts" {
