@@ -56,10 +56,10 @@ data "archive_file" "this" {
 
 
 resource "aws_lambda_function" "invoke_model_lambda_function" {
-  provider                       = aws.acc
-  filename                       = data.archive_file.this.output_path
-  function_name                  = "${var.prefix}-backlog-invoke-model"
-  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider      = aws.acc
+  filename      = data.archive_file.this.output_path
+  function_name = "${var.prefix}-backlog-invoke-model"
+  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
@@ -82,10 +82,10 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
 }
 
 resource "aws_lambda_function" "model_invocation_status_lambda_function" {
-  provider                       = aws.acc
-  filename                       = data.archive_file.this.output_path
-  function_name                  = "${var.prefix}-backlog-model-invocation-status"
-  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider      = aws.acc
+  filename      = data.archive_file.this.output_path
+  function_name = "${var.prefix}-backlog-model-invocation-status"
+  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
@@ -108,10 +108,10 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
 }
 
 resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
-  provider                       = aws.acc
-  filename                       = data.archive_file.this.output_path
-  function_name                  = "${var.prefix}-backlog-model-outputs-retrieval"
-  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider      = aws.acc
+  filename      = data.archive_file.this.output_path
+  function_name = "${var.prefix}-backlog-model-outputs-retrieval"
+  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
