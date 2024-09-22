@@ -147,7 +147,7 @@ jobs:
           aws sts get-caller-identity
           response=$(aws lambda publish-layer-version \
                         --layer-name python-libs \
-                        --description "My Lambda Layer for shared libraries" \
+                        --description "Llandman Lambda Layer for shared py libraries" \
                         --zip-file fileb://lambda-layer.zip \
                         --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
                         --license-info "MIT")
