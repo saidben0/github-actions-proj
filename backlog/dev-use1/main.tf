@@ -8,6 +8,7 @@ module "dev-use1" {
   system_prompt_ver    = var.system_prompt_ver
   security_grp_id      = var.security_grp_id
   subnet_id            = var.subnet_id
+  lambda_layer_version_arn = var.lambda_layer_version_arn
 
   env  = var.env
   tags = var.tags

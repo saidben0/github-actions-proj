@@ -14,10 +14,10 @@ output "lambda_role_name" {
   value = module.dev-use1.lambda_role_name
 }
 
-output "lambda_role_arn" {
-  value = module.dev-use1.lambda_role_arn
+output "lambda_layer_version_arn" {
+  value = var.lambda_layer_version_arn
 }
 
-output "realtime_dev_use1_lambda_layer_arn" {
-  value = module.dev-use1.realtime_dev_use1_lambda_layer_arn
-}
+# output "realtime_dev_use1_lambda_layer_arn" {
+#   value = module.dev-use1.realtime_dev_use1_lambda_layer_arn
+# }

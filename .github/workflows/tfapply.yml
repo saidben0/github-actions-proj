@@ -146,7 +146,7 @@ jobs:
           cd ../
           aws sts get-caller-identity
           response=$(aws lambda publish-layer-version \
-                        --layer-name test-layer \
+                        --layer-name python-libs \
                         --description "My Lambda Layer for shared libraries" \
                         --zip-file fileb://lambda-layer.zip \
                         --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
@@ -204,8 +204,15 @@ jobs:
         id: plan
         run: |
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
-      
+          lambda_layer_version_arn=$(aws lambda list-layer-versions \
+                                          --layer-name python-libs \
+                                          --query 'LayerVersions[0].LayerVersionArn' \
+                                          --output text)
+          terraform plan \
+            -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
+            -var lambda_layer_version_arn=$lambda_layer_version_arn \
+            -out=tfplan
+
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
         with:
@@ -261,7 +268,11 @@ jobs:
       - name: Generate Lambda Archive Zip
         run: |
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' &> /dev/null
+          # terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' &> /dev/null
+          terraform plan \
+            -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
+            -var lambda_layer_version_arn=$lambda_layer_version_arn \
+            -out=tfplan &> /dev/null
           tree -L 2 ../module
 
       - name: Download Terraform Plan
