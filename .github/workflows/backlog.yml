@@ -6,7 +6,7 @@ on:
       - dev_
     paths:
       - 'backlog/**'
-  workflow_run: # In order for this to work, you must the ddefault repo branch.
+  workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
     branches: [dev_]
     types:
