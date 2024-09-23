@@ -29,7 +29,7 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "redrive_dlq" {
   provider = aws.acc
-  name     = "${var.prefix}-backlog-redrive-dlq"
+  name     = "${var.prefix}-batch-redrive-dlq"
 }
 
 
@@ -57,7 +57,7 @@ data "archive_file" "this" {
 resource "aws_lambda_function" "invoke_model_lambda_function" {
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-invoke-model"
+  function_name = "${var.prefix}-batch-invoke-model"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -83,7 +83,7 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
 resource "aws_lambda_function" "model_invocation_status_lambda_function" {
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-model-invocation-status"
+  function_name = "${var.prefix}-batch-model-invocation-status"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -109,7 +109,7 @@ resource "aws_lambda_function" "model_invocation_status_lambda_function" {
 resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-backlog-model-outputs-retrieval"
+  function_name = "${var.prefix}-batch-model-outputs-retrieval"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -135,7 +135,7 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider                    = aws.acc
-  name                        = "${var.prefix}-backlog-queue"
+  name                        = "${var.prefix}-batch-queue"
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000

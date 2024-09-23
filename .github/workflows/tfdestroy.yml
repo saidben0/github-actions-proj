@@ -13,10 +13,10 @@ on:
           - prod
       data-pipeline:
         required: true
-        default: 'backlog'
+        default: 'batch'
         type: choice
         options:
-          - 'backlog'
+          - 'batch'
           - 'realtime'
       aws-env-dir:
         required: true

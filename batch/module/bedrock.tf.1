@@ -19,7 +19,7 @@ resource "null_resource" "main_prompt_version_ssm_param" {
     command = <<EOT
       VERSION_NUM=$(aws bedrock-agent create-prompt-version --prompt-identifier ${local.prompt_id} | grep -i version | awk -F'"' '{print $4}')
       aws ssm put-parameter \
-          --name "/${var.prefix}/${var.env}/bedrock/prompts/backlog/${local.prompt_id}/versions/$VERSION_NUM" \
+          --name "/${var.prefix}/${var.env}/bedrock/prompts/batch/${local.prompt_id}/versions/$VERSION_NUM" \
           --type "String" \
           --value "$VERSION_NUM" \
           --overwrite || true
@@ -37,7 +37,7 @@ resource "null_resource" "system_prompt_version_ssm_param" {
     command = <<EOT
       VERSION_NUM=$(aws bedrock-agent create-prompt-version --prompt-identifier ${local.system_prompt_id} | grep -i version | awk -F'"' '{print $4}')
       aws ssm put-parameter \
-          --name "/${var.prefix}/${var.env}/bedrock/prompts/backlog/${local.system_prompt_id}/versions/$VERSION_NUM" \
+          --name "/${var.prefix}/${var.env}/bedrock/prompts/batch/${local.system_prompt_id}/versions/$VERSION_NUM" \
           --type "String" \
           --value "$VERSION_NUM" \
           --overwrite || true

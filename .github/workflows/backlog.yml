@@ -1,4 +1,4 @@
-name: Backlog Pipeline
+name: batch Pipeline
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - dev_
       - nfifo
     paths:
-      - 'backlog/**'
+      - 'batch/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
     branches: [dev_]
@@ -17,7 +17,7 @@ jobs:
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
     with:
-      data-pipeline: backlog
+      data-pipeline: batch
       environment: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
