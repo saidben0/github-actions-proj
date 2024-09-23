@@ -13,7 +13,6 @@ on:
     types:
       - completed
 
-
 jobs:
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
