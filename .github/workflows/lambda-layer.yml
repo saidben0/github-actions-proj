@@ -3,7 +3,6 @@ name: Lambda Layer Pipeline
 on:
   push:
     branches:
-      - devv
       - workflow
     paths:
       - 'lambda-layer/requirements.txt'
@@ -14,20 +13,9 @@ defaults:
     shell: bash
 
 
-# jobs:
-#   dev-use1:
-#     uses: ./.github/workflows/publish-layer.yml
-#     with:
-#       environment: dev
-#       aws-region: us-east-1
-
-jobs: 
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-  
-    - name: Build
-      run: echo "Building the project..."
+jobs:
+  dev-use1:
+    uses: ./.github/workflows/publish-layer.yml
+    with:
+      environment: dev
+      aws-region: us-east-1
