@@ -7,7 +7,7 @@ on:
     paths:
       - 'realtime/**'
   workflow_run:
-    workflows: ["Publish Lambda Layer Version"]
+    workflows: ["Lambda Layer Pipeline"]
     types:
       - completed
 
