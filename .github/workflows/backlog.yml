@@ -3,10 +3,14 @@ name: Backlog Pipeline
 on:
   push:
     branches:
-      - devv
+      - dev_
     paths:
       - 'backlog/**'
-      - 'lambda-layer/requirements.txt'
+  workflow_run: # In order for this to work, you must the ddefault repo branch.
+    workflows: ["Lambda Layer Pipeline"]
+    branches: [dev_]
+    types:
+      - completed
 
 jobs:
   dev-use1:

@@ -3,10 +3,14 @@ name: Real-Time Pipeline
 on:
   push:
     branches:
-      - dev
+      - dev_
     paths:
       - 'realtime/**'
-      - 'lambda-layer/requirements.txt'
+  workflow_run: # In order for this to work, you must the ddefault repo branch.
+    workflows: ["Lambda Layer Pipeline"]
+    branches: [dev_]
+    types:
+      - completed
 
 jobs:
   dev-use1:
