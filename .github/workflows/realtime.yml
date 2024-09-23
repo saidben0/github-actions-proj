@@ -6,7 +6,10 @@ on:
       - dev
     paths:
       - 'realtime/**'
-      - 'lambda-layer/requirements.txt'
+  workflow_run:
+    workflows: ["Publish Lambda Layer Version"]
+    types:
+      - completed
 
 jobs:
   dev-use1:

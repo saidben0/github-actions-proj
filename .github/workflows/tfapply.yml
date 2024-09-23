@@ -83,81 +83,82 @@ jobs:
         skip_check: CKV_AWS_116,CKV_AWS_272,CKV_AWS_18,CKV_AWS_144,CKV_AWS_290,CKV_AWS_355,CKV_TF_1,CKV_AWS_117,CKV_AWS_373,CKV_AWS_27,CKV_AWS_173,CKV_AWS_119,CKV_AWS_356,CKV_AWS_111
 
   
-  publish-lambda-layer-version:
-    name: Publish Lambda Layer Version
-    needs: terraform-unit-tests
-    # if: ${{ inputs.data-pipeline }} == 'realtime' && contains(github.event.head_commit.message, 'requirements.txt')
-    # if: contains(github.event.head_commit.message, 'requirements.txt')
-    runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+  # publish-lambda-layer-version:
+  #   name: Publish Lambda Layer Version
+  #   needs: terraform-unit-tests
+  #   # if: ${{ inputs.data-pipeline }} == 'realtime' && contains(github.event.head_commit.message, 'requirements.txt')
+  #   # if: contains(github.event.head_commit.message, 'requirements.txt')
+  #   runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
+  #   environment: ${{ inputs.environment }}
 
-    outputs:
-      lambda_layer_job_status: ${{ job.status }}
+  #   outputs:
+  #     lambda_layer_job_status: ${{ job.status }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
       
-      - name: Check if requirements.txt was changed
-        id: check_changes
-        run: |
-          git fetch origin ${{ github.event.before }}  # Fetch the previous commit
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'requirements.txt'; then
-            echo "requirements.txt has been updated!"
-            echo "changed=true" >> $GITHUB_ENV
-          else
-            echo "requirements.txt has not been updated."
-            echo "changed=false" >> $GITHUB_ENV
-          fi
+  #     - name: Check if requirements.txt was changed
+  #       id: check_changes
+  #       run: |
+  #         git fetch origin ${{ github.event.before }}  # Fetch the previous commit
+  #         if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'requirements.txt'; then
+  #           echo "requirements.txt has been updated!"
+  #           echo "changed=true" >> $GITHUB_ENV
+  #         else
+  #           echo "requirements.txt has not been updated."
+  #           echo "changed=false" >> $GITHUB_ENV
+  #         fi
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ vars.GH_RUNNER_PY_VER }}
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ vars.GH_RUNNER_PY_VER }}
 
-      - name: Configure AWS Creds
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as an env variable for corresponding environment
-          aws-region: ${{ inputs.aws-region }}
-          role-session-name: enverus-session
-          role-duration-seconds: 3600
-          audience: sts.amazonaws.com
+  #     - name: Configure AWS Creds
+  #       uses: aws-actions/configure-aws-credentials@v3
+  #       with:
+  #         role-to-assume: ${{ vars.IAM_ROLE_ARN_DEV }} # use github UI to define as an env variable for corresponding environment
+  #         aws-region: ${{ inputs.aws-region }}
+  #         role-session-name: enverus-session
+  #         role-duration-seconds: 3600
+  #         audience: sts.amazonaws.com
 
-      - name: Build lambda layer
-        if: env.changed == 'true'
-        run: |
-          echo "Running commands because requirements.txt has been updated!"
-          # Add your commands here, e.g., install dependencies, run tests, etc.
-          # Enable manyLinux
-          echo "#### Enable manyLinux ####"
-          python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
-          PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER || true
-          echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
-          cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
-          python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
+  #     - name: Build lambda layer
+  #       if: env.changed == 'true'
+  #       run: |
+  #         echo "Running commands because requirements.txt has been updated!"
+  #         # Add your commands here, e.g., install dependencies, run tests, etc.
+  #         # Enable manyLinux
+  #         echo "#### Enable manyLinux ####"
+  #         python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" || true
+  #         PY_VER=$(echo "$(python --version)" | awk '{print $2}' | awk -F '.' '{print $1"."$2}') && echo $PY_VER || true
+  #         echo 'manylinux1_compatible = True' > ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+  #         cat ${Python_ROOT_DIR}/lib/python${PY_VER}/site-packages/_manylinux.py || true
+  #         python -c 'import sys; sys.path.append(r"/_manylinux.py")' || true
           
-          echo "#### Build Lambda Layer ####"
-          # cd ${{ inputs.data-pipeline }}/module
-          mkdir -p ./lambda-layer/python
-          pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
-          cd ./lambda-layer
-          zip -r ../lambda-layer.zip ./python
-          cd ../
-          aws sts get-caller-identity
-          response=$(aws lambda publish-layer-version \
-                        --layer-name python-libs \
-                        --description "Llandman Lambda Layer for shared py libraries" \
-                        --zip-file fileb://lambda-layer.zip \
-                        --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
-                        --license-info "MIT")
-          lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
-          echo $lambda_layer_version_arn
+  #         echo "#### Build Lambda Layer ####"
+  #         # cd ${{ inputs.data-pipeline }}/module
+  #         mkdir -p ./lambda-layer/python
+  #         pip install -r ./lambda-layer/requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: -t ./lambda-layer/python
+  #         cd ./lambda-layer
+  #         zip -r ../lambda-layer.zip ./python
+  #         cd ../
+  #         aws sts get-caller-identity
+  #         response=$(aws lambda publish-layer-version \
+  #                       --layer-name python-libs \
+  #                       --description "Llandman Lambda Layer for shared py libraries" \
+  #                       --zip-file fileb://lambda-layer.zip \
+  #                       --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
+  #                       --license-info "MIT")
+  #         lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
+  #         echo $lambda_layer_version_arn
 
 
   terraform-plan:
     name: Terraform Plan
-    needs: publish-lambda-layer-version
+    needs: terraform-unit-tests
+    # needs: publish-lambda-layer-version
     # if: ${{ needs.lambda_layer_job_status.result == 'success' || needs.lambda_layer_job_status.result == 'skipped' }}
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
     environment: ${{ inputs.environment }}

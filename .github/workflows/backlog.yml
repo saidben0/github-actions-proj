@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - devv
+      - workflow
     paths:
       - 'backlog/**'
-      - 'lambda-layer/requirements.txt'
+  workflow_run:
+    workflows: ["Publish Lambda Layer Version"]
+    types:
+      - completed
 
 jobs:
   dev-use1:
