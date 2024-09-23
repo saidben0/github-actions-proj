@@ -79,6 +79,14 @@
             "Sid": "ManageLLandManLambdaFunctionLayer"
         },
         {
+			"Action": [
+				"lambda:GetEventSourceMapping"
+			],
+			"Effect": "Allow",
+			"Resource": "*",
+			"Sid": "GetLambdaEventSourceMapping"
+		},
+        {
             "Action": [
                 "lambda:GetEventSourceMapping",
                 "lambda:UpdateEventSourceMapping",

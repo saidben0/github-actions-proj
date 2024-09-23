@@ -147,39 +147,39 @@ resource "aws_sqs_queue" "this" {
   })
 }
 
-# Define an sqs policy to allow S3 to send messages to the SQS queue
-resource "aws_sqs_queue_policy" "this" {
-  provider  = aws.acc
-  queue_url = aws_sqs_queue.this.url
+# # Define an sqs policy to allow S3 to send messages to the SQS queue
+# resource "aws_sqs_queue_policy" "this" {
+#   provider  = aws.acc
+#   queue_url = aws_sqs_queue.this.url
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "s3.amazonaws.com"
-        },
-        Action   = "sqs:SendMessage",
-        Resource = aws_sqs_queue.this.arn,
-        Condition = {
-          ArnEquals = {
-            "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
-          }
-        }
-      }
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect = "Allow",
+#         Principal = {
+#           Service = "s3.amazonaws.com"
+#         },
+#         Action   = "sqs:SendMessage",
+#         Resource = aws_sqs_queue.this.arn,
+#         Condition = {
+#           ArnEquals = {
+#             "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
+#           }
+#         }
+#       }
+#     ]
+#   })
+# }
 
-# map sqs queue to trigger the lambda function when an 3 event is received
-resource "aws_lambda_event_source_mapping" "this" {
-  provider         = aws.acc
-  event_source_arn = aws_sqs_queue.this.arn
-  function_name    = aws_lambda_function.invoke_model_lambda_function.arn
-  enabled          = true
-  batch_size       = 1
-}
+# # map sqs queue to trigger the lambda function when an s3 event is received
+# resource "aws_lambda_event_source_mapping" "this" {
+#   provider         = aws.acc
+#   event_source_arn = aws_sqs_queue.this.arn
+#   function_name    = aws_lambda_function.invoke_model_lambda_function.arn
+#   enabled          = true
+#   batch_size       = 1
+# }
 
 
 # listen for "Bedrock Batch Inference Job State Change" events
