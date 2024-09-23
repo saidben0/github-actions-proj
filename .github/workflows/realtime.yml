@@ -6,6 +6,7 @@ on:
       - dev
     paths:
       - 'realtime/**'
+      - 'lambda-layer/requirements.txt'
 
 jobs:
   dev-use1:
