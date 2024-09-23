@@ -1,12 +1,12 @@
 name: Backlog Pipeline
 
 on:
-  push:
-    branches:
-      - dev
-      - workflow
-    paths:
-      - 'backlog/**'
+  # push:
+  #   branches:
+  #     - dev
+  #     - workflow
+  #   paths:
+  #     - 'backlog/**'
   workflow_run:
     workflows: ["Lambda Layer Pipeline"]
     types:
