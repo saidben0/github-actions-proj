@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - lambdatrigger
     paths:
       - 'realtime/**'
       - 'lambda-layer/requirements.txt'
