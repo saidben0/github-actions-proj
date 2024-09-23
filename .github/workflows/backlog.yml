@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - devv
-      - lambdatrigger
     paths:
       - 'backlog/**'
       - 'lambda-layer/requirements.txt'
