@@ -14,14 +14,14 @@ on:
       - completed
 
 
-# jobs:
-#   dev-use1:
-#     uses: ./.github/workflows/tfapply.yml
-#     with:
-#       data-pipeline: backlog
-#       environment: dev
-#       aws-env-dir: dev-use1
-#       aws-region: us-east-1
+jobs:
+  dev-use1:
+    uses: ./.github/workflows/tfapply.yml
+    with:
+      data-pipeline: backlog
+      environment: dev
+      aws-env-dir: dev-use1
+      aws-region: us-east-1
 
   
   # dev-usw2:
@@ -32,15 +32,3 @@ on:
   #     environment: prod # Change this to 'review' or 'prod' as needed
   #     aws-env-dir: dev-usw2
   #     aws-region: us-west-2
-
-
-jobs: 
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-  
-    - name: Build
-      run: echo "Building the project..."
