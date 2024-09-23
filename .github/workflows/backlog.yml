@@ -6,6 +6,7 @@ on:
       - devv
     paths:
       - 'backlog/**'
+      - 'lambda-layer/requirements.txt'
 
 jobs:
   dev-use1:
