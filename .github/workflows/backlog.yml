@@ -3,11 +3,13 @@ name: Backlog Pipeline
 on:
   push:
     branches:
+      - dev
       - workflow
     paths:
       - 'backlog/**'
   workflow_run:
     workflows: ["Lambda Layer Pipeline"]
+    branches: [workflow]
     types:
       - completed
 
