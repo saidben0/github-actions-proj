@@ -141,7 +141,6 @@ resource "aws_sqs_queue" "this" {
   max_message_size            = 10000
   message_retention_seconds   = 864000
   receive_wait_time_seconds   = 10
-  content_based_deduplication = true
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.redrive_dlq.arn
     maxReceiveCount     = 4
