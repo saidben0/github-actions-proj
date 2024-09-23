@@ -29,8 +29,7 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "redrive_dlq" {
   provider   = aws.acc
-  name       = "${var.prefix}-backlog-redrive-dlq.fifo"
-  fifo_queue = true
+  name       = "${var.prefix}-backlog-redrive-dlq"
 }
 
 
@@ -136,13 +135,12 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider                    = aws.acc
-  name                        = "${var.prefix}-backlog-queue.fifo"
+  name                        = "${var.prefix}-backlog-queue"
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
   message_retention_seconds   = 864000
   receive_wait_time_seconds   = 10
-  fifo_queue                  = true
   content_based_deduplication = true
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.redrive_dlq.arn
