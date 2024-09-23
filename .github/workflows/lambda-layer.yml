@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - devv
+      - workflow
     paths:
       - 'lambda-layer/requirements.txt'
 
