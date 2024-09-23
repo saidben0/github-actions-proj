@@ -28,8 +28,8 @@ resource "random_id" "this" {
 
 
 resource "aws_sqs_queue" "redrive_dlq" {
-  provider   = aws.acc
-  name       = "${var.prefix}-backlog-redrive-dlq"
+  provider = aws.acc
+  name     = "${var.prefix}-backlog-redrive-dlq"
 }
 
 
