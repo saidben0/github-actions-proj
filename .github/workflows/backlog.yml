@@ -3,7 +3,7 @@ name: Backlog Pipeline
 on:
   push:
     branches:
-      - devv
+      - dev
       - workflow
     paths:
       - 'backlog/**'
