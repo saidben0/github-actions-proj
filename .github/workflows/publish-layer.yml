@@ -76,11 +76,11 @@ jobs:
           zip -r ../lambda-layer.zip ./python
           cd ../
           aws sts get-caller-identity
-          response=$(aws lambda publish-layer-version \
-                        --layer-name python-libs \
-                        --description "Llandman Lambda Layer for shared py libraries" \
-                        --zip-file fileb://lambda-layer.zip \
-                        --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
-                        --license-info "MIT")
-          lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
-          echo $lambda_layer_version_arn
+          # response=$(aws lambda publish-layer-version \
+          #               --layer-name python-libs \
+          #               --description "Llandman Lambda Layer for shared py libraries" \
+          #               --zip-file fileb://lambda-layer.zip \
+          #               --compatible-runtimes "python${{ vars.GH_RUNNER_PY_VER }}" \
+          #               --license-info "MIT")
+          # lambda_layer_version_arn=$(echo $response | jq -r '.LayerVersionArn')
+          # echo $lambda_layer_version_arn
