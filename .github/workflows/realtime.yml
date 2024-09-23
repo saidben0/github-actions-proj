@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - dev
+      - workflow
     paths:
       - 'realtime/**'
   workflow_run:
     workflows: ["Lambda Layer Pipeline"]
+    branches: [workflow]
     types:
       - completed
 
