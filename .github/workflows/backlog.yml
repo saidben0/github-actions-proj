@@ -3,12 +3,12 @@ name: Backlog Pipeline
 on:
   push:
     branches:
-      - dev
+      - dev_
     paths:
       - 'backlog/**'
   workflow_run: # In order for this to work, you must the ddefault repo branch.
     workflows: ["Lambda Layer Pipeline"]
-    branches: [dev]
+    branches: [dev_]
     types:
       - completed
 
