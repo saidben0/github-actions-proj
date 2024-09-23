@@ -1,31 +1,9 @@
 # land.llandman 
 
-### Use `Cloud9` to download python libraries `zip` file
-|------------------|
-| requirements.txt |
-|------------------|
-| pymupdf==1.24.9  |
-| joblib==1.4.2    |
-|------------------|
-```bash
-# download the libraries
-mkdir tmp && cd tmp
-python3 -m pip install virtualenv
-virtualenv .venv
-source ./.venv/bin/activate
-mkdir python
-pip install pymupdf==1.24.9 joblib==1.4.2 -t ./python
-# pip install -r requirements.txt -t ./python
-# cp -r ../.venv/lib64/python3.9/site-packages/* .
-# cd ..
-zip -r python_libs.zip python
-deactivate
-aws lambda publish-layer-version --layer-name python_libs --zip-file fileb://python_libs.zip --compatible-runtimes python3.9
-```
+## Publish New Lambda Layer Version
+You need to update the content of `lambda-layer/requirements.txt`, which will trigger:
+   1- `lambda-layer.yml` pipeline to call the re-usable workflow `publish-layer.yml`
+   2- Once `publish-layer.yml` pipeline execution is `completed`, it will trigger both `realtime` and `backlog` data-pipeline workflows to update the layer version of their lambda functions
 
-
-### Troubleshooting
-
-#### Issue#1: `publishing Lambda Layer (python-libs) Version: operation error Lambda: PublishLayerVersion, https response error StatusCode: 400, RequestID: 01a11772-c7b6-4739-bbdd-b3b2126b30d0, InvalidParameterValueException: Uploaded file must be a non-empty zip`
-   >>> FIX: edit `requirements.txt` then add any comment in it to trigger `null_resource.lambda_layer` to download python libraries; push the code after that to trigger the pipeline to run.
+*** Please note that in order for `realtime` and `backlog` data-pipeline workflow to be triggered, the `lambda-layer.yml` pipeline file must referenced from the `default` git repo branch.
 
