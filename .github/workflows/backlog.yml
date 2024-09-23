@@ -4,12 +4,11 @@ on:
   push:
     branches:
       - dev
-      - workflow
     paths:
       - 'backlog/**'
-  workflow_run:
+  workflow_run: # In order for this to work, you must the ddefault repo branch.
     workflows: ["Lambda Layer Pipeline"]
-    branches: [workflow]
+    branches: [dev]
     types:
       - completed
 
