@@ -33,18 +33,6 @@ resource "aws_sqs_queue" "redrive_dlq" {
 }
 
 
-# # configure backend to access state-file of realtime/dev-use1 module
-# data "terraform_remote_state" "realtime_dev_use1" {
-#   backend = "s3"
-#   config = {
-#     # bucket = "di-dev-terraform"
-#     bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
-#     # key = "dev/llandman/terraform.tfstate"
-#     key    = "dev/use1/tfstate" # for testing in proserve shared acc
-#     region = "us-east-1"
-#   }
-# }
-
 # Package the Lambda function code
 data "archive_file" "this" {
   type        = "zip"
@@ -147,40 +135,6 @@ resource "aws_sqs_queue" "this" {
   })
 }
 
-# # Define an sqs policy to allow S3 to send messages to the SQS queue
-# resource "aws_sqs_queue_policy" "this" {
-#   provider  = aws.acc
-#   queue_url = aws_sqs_queue.this.url
-
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Principal = {
-#           Service = "s3.amazonaws.com"
-#         },
-#         Action   = "sqs:SendMessage",
-#         Resource = aws_sqs_queue.this.arn,
-#         Condition = {
-#           ArnEquals = {
-#             "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
-#           }
-#         }
-#       }
-#     ]
-#   })
-# }
-
-# # map sqs queue to trigger the lambda function when an s3 event is received
-# resource "aws_lambda_event_source_mapping" "this" {
-#   provider         = aws.acc
-#   event_source_arn = aws_sqs_queue.this.arn
-#   function_name    = aws_lambda_function.invoke_model_lambda_function.arn
-#   enabled          = true
-#   batch_size       = 1
-# }
-
 
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
@@ -217,3 +171,53 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
+
+
+
+
+
+# # configure backend to access state-file of realtime/dev-use1 module
+# data "terraform_remote_state" "realtime_dev_use1" {
+#   backend = "s3"
+#   config = {
+#     # bucket = "di-dev-terraform"
+#     bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
+#     # key = "dev/llandman/terraform.tfstate"
+#     key    = "dev/use1/tfstate" # for testing in proserve shared acc
+#     region = "us-east-1"
+#   }
+# }
+
+# # Define an sqs policy to allow S3 to send messages to the SQS queue
+# resource "aws_sqs_queue_policy" "this" {
+#   provider  = aws.acc
+#   queue_url = aws_sqs_queue.this.url
+
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect = "Allow",
+#         Principal = {
+#           Service = "s3.amazonaws.com"
+#         },
+#         Action   = "sqs:SendMessage",
+#         Resource = aws_sqs_queue.this.arn,
+#         Condition = {
+#           ArnEquals = {
+#             "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
+#           }
+#         }
+#       }
+#     ]
+#   })
+# }
+
+# # map sqs queue to trigger the lambda function when an s3 event is received
+# resource "aws_lambda_event_source_mapping" "this" {
+#   provider         = aws.acc
+#   event_source_arn = aws_sqs_queue.this.arn
+#   function_name    = aws_lambda_function.invoke_model_lambda_function.arn
+#   enabled          = true
+#   batch_size       = 1
+# }
