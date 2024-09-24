@@ -92,7 +92,15 @@ jobs:
         id: plan
         run: |
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
+          lambda_layer_version_arn=$(aws lambda list-layer-versions \
+                                          --layer-name python-libs \
+                                          --query 'LayerVersions[0].LayerVersionArn' \
+                                          --output text)
+          terraform plan -destroy \
+            -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
+            -var lambda_layer_version_arn=$lambda_layer_version_arn \
+            -out=tfplan
+          # terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3

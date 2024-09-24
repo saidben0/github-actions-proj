@@ -34,23 +34,23 @@ resource "aws_sqs_queue" "redrive_dlq" {
 
 
 # Package the Lambda function code
-data "archive_file" "queue_processor" {
+data "archive_file" "bedrock_inference" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda_functions/queue-processor"
+  source_dir  = "${path.module}/lambda_functions/bedrock-inference"
   excludes    = ["requirements.txt"]
-  output_path = "${path.module}/outputs/queue-processor/artifacts.zip"
+  output_path = "${path.module}/outputs/bedrock-inference/artifacts.zip"
 }
 
 
-resource "aws_lambda_function" "invoke_model_lambda_function" {
+resource "aws_lambda_function" "invoke_bedrock_inference" {
   provider      = aws.acc
-  filename      = data.archive_file.queue_processor.output_path
+  filename      = data.archive_file.bedrock_inference.output_path
   function_name = "${var.prefix}-batch-invoke-model"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.queue_processor.output_base64sha256
+  source_code_hash               = data.archive_file.bedrock_inference.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -152,18 +152,18 @@ resource "aws_cloudwatch_event_rule" "scheduler" {
   schedule_expression = "cron(0 0 * * ? *)" # daily at 00:00 utc (19:00 cst)
 }
 
-resource "aws_cloudwatch_event_target" "invoke_model_lambda_function" {
+resource "aws_cloudwatch_event_target" "invoke_bedrock_inference" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.scheduler.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.invoke_model_lambda_function.arn
+  arn       = aws_lambda_function.invoke_bedrock_inference.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.invoke_model_lambda_function.function_name
+  function_name = aws_lambda_function.invoke_bedrock_inference.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.scheduler.arn
 }
@@ -250,7 +250,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 # resource "aws_lambda_event_source_mapping" "this" {
 #   provider         = aws.acc
 #   event_source_arn = aws_sqs_queue.this.arn
-#   function_name    = aws_lambda_function.invoke_model_lambda_function.arn
+#   function_name    = aws_lambda_function.invoke_bedrock_inference.arn
 #   enabled          = true
 #   batch_size       = 1
 # }
