@@ -69,22 +69,22 @@ resource "aws_lambda_function" "bedrock_inference" {
 }
 
 # Package the Lambda function code
-data "archive_file" "post_processor" {
+data "archive_file" "post_inference_processor" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda_functions/post-processor"
+  source_dir  = "${path.module}/lambda_functions/post-inference-processor"
   excludes    = ["requirements.txt"]
-  output_path = "${path.module}/outputs/post-processor/artifacts.zip"
+  output_path = "${path.module}/outputs/post-inference-processor/artifacts.zip"
 }
 
-resource "aws_lambda_function" "post_processor" {
+resource "aws_lambda_function" "post_inference_processor" {
   provider      = aws.acc
-  filename      = data.archive_file.post_processor.output_path
-  function_name = "${var.prefix}-post-processor"
+  filename      = data.archive_file.post_inference_processor.output_path
+  function_name = "${var.prefix}-post-inference-processor"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.post_processor.output_base64sha256
+  source_code_hash               = data.archive_file.post_inference_processor.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -167,14 +167,14 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.post_processor.arn
+  arn       = aws_lambda_function.post_inference_processor.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.post_processor.function_name
+  function_name = aws_lambda_function.post_inference_processor.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
