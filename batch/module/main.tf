@@ -42,7 +42,7 @@ data "archive_file" "bedrock_inference" {
 }
 
 
-resource "aws_lambda_function" "invoke_bedrock_inference" {
+resource "aws_lambda_function" "bedrock_inference" {
   provider      = aws.acc
   filename      = data.archive_file.bedrock_inference.output_path
   function_name = "${var.prefix}-invoke-bedrock-inference"
@@ -69,22 +69,22 @@ resource "aws_lambda_function" "invoke_bedrock_inference" {
 }
 
 # Package the Lambda function code
-data "archive_file" "bedrock_inference_data_processor" {
+data "archive_file" "post_processor" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda_functions/data-retrieval"
+  source_dir  = "${path.module}/lambda_functions/post-processor"
   excludes    = ["requirements.txt"]
-  output_path = "${path.module}/outputs/data-retrieval/artifacts.zip"
+  output_path = "${path.module}/outputs/post-processor/artifacts.zip"
 }
 
-resource "aws_lambda_function" "bedrock_inference_data_processor" {
+resource "aws_lambda_function" "post_processor" {
   provider      = aws.acc
-  filename      = data.archive_file.bedrock_inference_data_processor.output_path
-  function_name = "${var.prefix}-bedrock-inference-data-retrieval"
+  filename      = data.archive_file.post_processor.output_path
+  function_name = "${var.prefix}-bedrock-inference-post-processor"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.bedrock_inference_data_processor.output_base64sha256
+  source_code_hash               = data.archive_file.post_processor.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -126,18 +126,18 @@ resource "aws_cloudwatch_event_rule" "scheduler" {
   schedule_expression = "cron(0 0 * * ? *)" # daily at 00:00 utc (19:00 cst)
 }
 
-resource "aws_cloudwatch_event_target" "invoke_bedrock_inference" {
+resource "aws_cloudwatch_event_target" "bedrock_inference" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.scheduler.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.invoke_bedrock_inference.arn
+  arn       = aws_lambda_function.bedrock_inference.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.invoke_bedrock_inference.function_name
+  function_name = aws_lambda_function.bedrock_inference.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.scheduler.arn
 }
@@ -167,14 +167,14 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.bedrock_inference_data_processor.arn
+  arn       = aws_lambda_function.post_processor.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.bedrock_inference_data_processor.function_name
+  function_name = aws_lambda_function.post_processor.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
@@ -224,7 +224,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 # resource "aws_lambda_event_source_mapping" "this" {
 #   provider         = aws.acc
 #   event_source_arn = aws_sqs_queue.this.arn
-#   function_name    = aws_lambda_function.invoke_bedrock_inference.arn
+#   function_name    = aws_lambda_function.bedrock_inference.arn
 #   enabled          = true
 #   batch_size       = 1
 # }
