@@ -34,23 +34,23 @@ resource "aws_sqs_queue" "redrive_dlq" {
 
 
 # Package the Lambda function code
-data "archive_file" "this" {
+data "archive_file" "queue_processor" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda_functions/"
+  source_dir  = "${path.module}/lambda_functions/queue-processor"
   excludes    = ["requirements.txt"]
-  output_path = "${path.module}/outputs/lambda-artifacts.zip"
+  output_path = "${path.module}/outputs/queue-processor/artifacts.zip"
 }
 
 
 resource "aws_lambda_function" "invoke_model_lambda_function" {
   provider      = aws.acc
-  filename      = data.archive_file.this.output_path
+  filename      = data.archive_file.queue_processor.output_path
   function_name = "${var.prefix}-batch-invoke-model"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.this.output_base64sha256
+  source_code_hash               = data.archive_file.queue_processor.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -68,41 +68,49 @@ resource "aws_lambda_function" "invoke_model_lambda_function" {
   }
 }
 
-resource "aws_lambda_function" "model_invocation_status_lambda_function" {
-  provider      = aws.acc
-  filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-batch-model-invocation-status"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
-  layers                         = [var.lambda_layer_version_arn]
-  handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.this.output_base64sha256
-  runtime                        = "python${var.python_version}"
-  timeout                        = "900"
-  reserved_concurrent_executions = 100
-  memory_size                    = 1024
+# resource "aws_lambda_function" "model_invocation_status_lambda_function" {
+#   provider      = aws.acc
+#   filename      = data.archive_file.this.output_path
+#   function_name = "${var.prefix}-batch-model-invocation-status"
+#   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+#   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
+#   layers                         = [var.lambda_layer_version_arn]
+#   handler                        = "lambda_handler.lambda_handler"
+#   source_code_hash               = data.archive_file.this.output_base64sha256
+#   runtime                        = "python${var.python_version}"
+#   timeout                        = "900"
+#   reserved_concurrent_executions = 100
+#   memory_size                    = 1024
 
-  environment {
-    variables = {
-      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL = aws_sqs_queue.this.url
-    }
-  }
+#   environment {
+#     variables = {
+#       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
+#       QUEUE_URL = aws_sqs_queue.this.url
+#     }
+#   }
 
-  tracing_config {
-    mode = "Active"
-  }
+#   tracing_config {
+#     mode = "Active"
+#   }
+# }
+
+# Package the Lambda function code
+data "archive_file" "data_retrieval" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda_functions/data-retrieval"
+  excludes    = ["requirements.txt"]
+  output_path = "${path.module}/outputs/data-retrieval/artifacts.zip"
 }
 
 resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
   provider      = aws.acc
-  filename      = data.archive_file.this.output_path
+  filename      = data.archive_file.data_retrieval.output_path
   function_name = "${var.prefix}-batch-model-outputs-retrieval"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.this.output_base64sha256
+  source_code_hash               = data.archive_file.data_retrieval.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -115,10 +123,10 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
     }
   }
 
-  tracing_config {
-    mode = "Active"
-  }
-}
+#   tracing_config {
+#     mode = "Active"
+#   }
+# }
 
 
 resource "aws_sqs_queue" "this" {
