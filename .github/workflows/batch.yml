@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - dev
-      - proserve
-    # paths:
-    #   - 'batch/**'
+    paths:
+      - 'batch/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
     branches: [dev]

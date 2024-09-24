@@ -45,7 +45,7 @@ data "archive_file" "bedrock_inference" {
 resource "aws_lambda_function" "bedrock_inference" {
   provider      = aws.acc
   filename      = data.archive_file.bedrock_inference.output_path
-  function_name = "${var.prefix}-invoke-bedrock-inference"
+  function_name = "${var.prefix}-bedrock-inference"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -79,7 +79,7 @@ data "archive_file" "post_processor" {
 resource "aws_lambda_function" "post_processor" {
   provider      = aws.acc
   filename      = data.archive_file.post_processor.output_path
-  function_name = "${var.prefix}-bedrock-inference-post-processor"
+  function_name = "${var.prefix}-post-processor"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
