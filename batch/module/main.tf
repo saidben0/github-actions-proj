@@ -136,6 +136,31 @@ resource "aws_sqs_queue" "this" {
 }
 
 
+# EventBridge rule that triggers the queue processing lambda function every day at 00:00 UTC
+resource "aws_cloudwatch_event_rule" "scheduler" {
+  provider      = aws.acc
+  name          = "${var.prefix}-batch-invoke-model-scheduled-event"
+  description   = "Trigger lambda function every day at 00:00 UTC"
+  schedule_expression = "cron(0 0 * * ? *)" # daily at 00:00 utc (19:00 cst)
+}
+
+resource "aws_cloudwatch_event_target" "invoke_model_lambda_function" {
+  provider  = aws.acc
+  rule      = aws_cloudwatch_event_rule.scheduler.name
+  target_id = "InvokeLambdaFunction"
+  arn       = aws_lambda_function.invoke_model_lambda_function.arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  provider      = aws.acc
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.invoke_model_lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.scheduler.arn
+}
+
+
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   provider      = aws.acc
