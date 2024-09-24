@@ -102,7 +102,7 @@ data "archive_file" "data_retrieval" {
   output_path = "${path.module}/outputs/data-retrieval/artifacts.zip"
 }
 
-resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
+resource "aws_lambda_function" "data_retrieval" {
   provider      = aws.acc
   filename      = data.archive_file.data_retrieval.output_path
   function_name = "${var.prefix}-batch-model-outputs-retrieval"
@@ -123,10 +123,10 @@ resource "aws_lambda_function" "model_outputs_retrieval_lambda_function" {
     }
   }
 
-#   tracing_config {
-#     mode = "Active"
-#   }
-# }
+  tracing_config {
+    mode = "Active"
+  }
+}
 
 
 resource "aws_sqs_queue" "this" {
@@ -193,14 +193,14 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.model_outputs_retrieval_lambda_function.arn
+  arn       = aws_lambda_function.data_retrieval.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.model_outputs_retrieval_lambda_function.function_name
+  function_name = aws_lambda_function.data_retrieval.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
