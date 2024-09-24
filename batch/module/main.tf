@@ -146,7 +146,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   provider      = aws.acc
-  name          = "${var.prefix}-bedrock-batch-inference-complete"
+  name          = "${var.prefix}-bedrock-inference-complete"
   description   = "Trigger when AWS Bedrock batch inference job is complete"
   event_pattern = <<PATTERN
   {
