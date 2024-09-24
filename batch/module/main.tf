@@ -121,7 +121,7 @@ resource "aws_sqs_queue" "this" {
 # EventBridge rule that triggers the queue processing lambda function every day at 00:00 UTC
 resource "aws_cloudwatch_event_rule" "scheduler" {
   provider            = aws.acc
-  name                = "${var.prefix}-batch-invoke-model-scheduled-event"
+  name                = "${var.prefix}-invoke-model-scheduled-event"
   description         = "Trigger lambda function every day at 00:00 UTC"
   schedule_expression = "cron(0 0 * * ? *)" # daily at 00:00 utc (19:00 cst)
 }
