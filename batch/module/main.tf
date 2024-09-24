@@ -45,7 +45,7 @@ data "archive_file" "bedrock_inference" {
 resource "aws_lambda_function" "invoke_bedrock_inference" {
   provider      = aws.acc
   filename      = data.archive_file.bedrock_inference.output_path
-  function_name = "${var.prefix}-batch-invoke-model"
+  function_name = "${var.prefix}-invoke-bedrock-inference"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -68,49 +68,23 @@ resource "aws_lambda_function" "invoke_bedrock_inference" {
   }
 }
 
-# resource "aws_lambda_function" "model_invocation_status_lambda_function" {
-#   provider      = aws.acc
-#   filename      = data.archive_file.this.output_path
-#   function_name = "${var.prefix}-batch-model-invocation-status"
-#   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-#   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
-#   layers                         = [var.lambda_layer_version_arn]
-#   handler                        = "lambda_handler.lambda_handler"
-#   source_code_hash               = data.archive_file.this.output_base64sha256
-#   runtime                        = "python${var.python_version}"
-#   timeout                        = "900"
-#   reserved_concurrent_executions = 100
-#   memory_size                    = 1024
-
-#   environment {
-#     variables = {
-#       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-#       QUEUE_URL = aws_sqs_queue.this.url
-#     }
-#   }
-
-#   tracing_config {
-#     mode = "Active"
-#   }
-# }
-
 # Package the Lambda function code
-data "archive_file" "data_retrieval" {
+data "archive_file" "bedrock_inference_data_processor" {
   type        = "zip"
   source_dir  = "${path.module}/lambda_functions/data-retrieval"
   excludes    = ["requirements.txt"]
   output_path = "${path.module}/outputs/data-retrieval/artifacts.zip"
 }
 
-resource "aws_lambda_function" "data_retrieval" {
+resource "aws_lambda_function" "bedrock_inference_data_processor" {
   provider      = aws.acc
-  filename      = data.archive_file.data_retrieval.output_path
-  function_name = "${var.prefix}-batch-model-outputs-retrieval"
+  filename      = data.archive_file.bedrock_inference_data_processor.output_path
+  function_name = "${var.prefix}-bedrock-inference-data-retrieval"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
-  source_code_hash               = data.archive_file.data_retrieval.output_base64sha256
+  source_code_hash               = data.archive_file.bedrock_inference_data_processor.output_base64sha256
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
@@ -193,14 +167,14 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   provider  = aws.acc
   rule      = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.name
   target_id = "InvokeLambdaFunction"
-  arn       = aws_lambda_function.data_retrieval.arn
+  arn       = aws_lambda_function.bedrock_inference_data_processor.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
   provider      = aws.acc
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.data_retrieval.function_name
+  function_name = aws_lambda_function.bedrock_inference_data_processor.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
