@@ -3,7 +3,7 @@ name: Terraform Apply
 on:
   workflow_call:
     inputs:
-      environment:
+      env:
         required: true
         type: string
       data-pipeline:
@@ -28,7 +28,7 @@ jobs:
   terraform-unit-tests:
     name: 'Terraform Unit Tests'
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+    env: ${{ inputs.env }}
    
     steps:
     - name: Setup Python
@@ -86,7 +86,7 @@ jobs:
     name: Terraform Plan
     needs: terraform-unit-tests
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+    env: ${{ inputs.env }}
  
     steps:
       - name: Setup Python
@@ -134,6 +134,7 @@ jobs:
                                           --query 'LayerVersions[0].LayerVersionArn' \
                                           --output text)
           terraform plan \
+            -var env=${{ inputs.env }} \
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan
@@ -150,7 +151,7 @@ jobs:
     # if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+    env: ${{ inputs.env }}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -184,8 +185,8 @@ jobs:
       - name: Generate Lambda Archive Zip
         run: |
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          # terraform plan -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' &> /dev/null
           terraform plan \
+            -var env=${{ inputs.env }} \
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan &> /dev/null

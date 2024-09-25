@@ -29,7 +29,7 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "redrive_dlq" {
   provider = aws.acc
-  name     = "${var.prefix}-batch-redrive-dlq"
+  name     = "${var.prefix}-${var.env}-batch-redrive-dlq"
 }
 
 
@@ -45,7 +45,7 @@ data "archive_file" "bedrock_inference" {
 resource "aws_lambda_function" "bedrock_inference" {
   provider      = aws.acc
   filename      = data.archive_file.bedrock_inference.output_path
-  function_name = "${var.prefix}-bedrock-inference"
+  function_name = "${var.prefix}-${var.env}-bedrock-inference"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -79,7 +79,7 @@ data "archive_file" "post_inference_processor" {
 resource "aws_lambda_function" "post_inference_processor" {
   provider      = aws.acc
   filename      = data.archive_file.post_inference_processor.output_path
-  function_name = "${var.prefix}-post-inference-processor"
+  function_name = "${var.prefix}-${var.env}-post-inference-processor"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -105,7 +105,7 @@ resource "aws_lambda_function" "post_inference_processor" {
 
 resource "aws_sqs_queue" "this" {
   provider                   = aws.acc
-  name                       = "${var.prefix}-batch-queue"
+  name                       = "${var.prefix}-${var.env}-batch-queue"
   visibility_timeout_seconds = 900
   delay_seconds              = 0
   max_message_size           = 10000
@@ -121,7 +121,7 @@ resource "aws_sqs_queue" "this" {
 # EventBridge rule that triggers the queue processing lambda function every day at 00:00 UTC
 resource "aws_cloudwatch_event_rule" "scheduler" {
   provider            = aws.acc
-  name                = "${var.prefix}-invoke-model-scheduled-event"
+  name                = "${var.prefix}-${var.env}-invoke-model-scheduled-event"
   description         = "Trigger lambda function every day at 00:00 UTC"
   schedule_expression = "cron(0 0 * * ? *)" # daily at 00:00 utc (19:00 cst)
 }
@@ -146,7 +146,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 # listen for "Bedrock Batch Inference Job State Change" events
 resource "aws_cloudwatch_event_rule" "bedrock_batch_inference_complete" {
   provider      = aws.acc
-  name          = "${var.prefix}-bedrock-inference-complete"
+  name          = "${var.prefix}-${var.env}-bedrock-inference-complete"
   description   = "Trigger when AWS Bedrock batch inference job is complete"
   event_pattern = <<PATTERN
   {

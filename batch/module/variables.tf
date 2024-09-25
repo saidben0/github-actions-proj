@@ -5,7 +5,6 @@ variable "prefix" {
 
 variable "env" {
   type    = string
-  default = "dev"
 }
 
 variable "inputs_bucket_name" {
@@ -42,7 +41,7 @@ variable "tags" {
   type = map(string)
   default = {
     GitRepo     = "Land.Llandman"
-    Environment = "Dev"
+    Env         = "Dev"
     Owner       = "Ops"
   }
 }

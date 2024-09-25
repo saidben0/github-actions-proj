@@ -29,7 +29,7 @@ resource "random_id" "this" {
 
 resource "aws_sqs_queue" "redrive_dlq" {
   provider   = aws.acc
-  name       = "${var.prefix}-redrive-dlq.fifo"
+  name       = "${var.prefix}-${var.env}-redrive-dlq.fifo"
   fifo_queue = true
 }
 
@@ -45,7 +45,7 @@ data "archive_file" "this" {
 resource "aws_lambda_function" "queue_processing_lambda_function" {
   provider      = aws.acc
   filename      = data.archive_file.this.output_path
-  function_name = "${var.prefix}-${var.lambda_function_name}"
+  function_name = "${var.prefix}-${var.env}-queue-processing"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
   # layers                         = [aws_lambda_layer_version.lambda_layer.arn]
   layers                         = [var.lambda_layer_version_arn]
@@ -78,7 +78,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
 
 resource "aws_sqs_queue" "this" {
   provider                    = aws.acc
-  name                        = "${var.prefix}-queue.fifo"
+  name                        = "${var.prefix}-${var.env}-queue.fifo"
   visibility_timeout_seconds  = 900
   delay_seconds               = 0
   max_message_size            = 10000
@@ -129,7 +129,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
 resource "aws_dynamodb_table" "model_outputs" {
   provider     = aws.acc
-  name         = "${var.prefix}-${var.dynamodb_table_name}"
+  name         = "${var.prefix}-${var.env}-model-outputs"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "document_id"
   range_key    = "ingestion_time"
