@@ -93,7 +93,7 @@ resource "aws_lambda_function" "post_inference_processor" {
   environment {
     variables = {
       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL = aws_sqs_queue.this.url
+      QUEUE_URL         = aws_sqs_queue.this.url
       BATCH_DATA_BUCKET = aws_s3_bucket.batch_inference_bucket.id
     }
   }
