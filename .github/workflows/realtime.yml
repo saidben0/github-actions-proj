@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - dev_
-    paths:
-      - 'realtime/**'
+      - refactor
+    # paths:
+    #   - 'realtime/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
     branches: [dev_]
