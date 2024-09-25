@@ -147,6 +147,11 @@ resource "aws_dynamodb_table" "model_outputs" {
   point_in_time_recovery {
     enabled = true
   }
+
+  # prevent destruction of this table
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 
