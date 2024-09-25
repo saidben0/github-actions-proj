@@ -148,10 +148,10 @@ resource "aws_dynamodb_table" "model_outputs" {
     enabled = true
   }
 
-  # prevent destruction of this table
-  lifecycle {
-    prevent_destroy = true
-  }
+  # # prevent destruction of this table
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 
