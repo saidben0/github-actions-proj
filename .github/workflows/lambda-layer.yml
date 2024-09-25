@@ -17,5 +17,5 @@ jobs:
   dev-use1:
     uses: ./.github/workflows/publish-layer.yml
     with:
-      environment: dev
+      env: dev
       aws-region: us-east-1

@@ -1,16 +1,16 @@
 variable "prefix" {
   type    = string
-  default = "llandman"
+  default = "llandman-batch"
 }
 
 variable "env" {
-  type    = string
-  default = "dev"
+  type = string
 }
 
 variable "inputs_bucket_name" {
-  type    = string
-  default = "enverus-courthouse-dev-chd-plants"
+  type = string
+  # default = "enverus-courthouse-dev-chd-plants"
+  default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
 }
 
 variable "lambda_function_name" {
@@ -28,33 +28,29 @@ variable "dynamodb_table_name" {
   default = "model-outputs"
 }
 
-variable "kms_alias_name" {
-  type    = string
-  default = "key-alias"
-}
-
-variable "project_name" {
-  type    = string
-  default = "land-doc-processing"
+variable "python_version" {
+  type = string
 }
 
 variable "tags" {
   type = map(string)
   default = {
-    GitRepo     = "Land.Llandman"
-    Environment = "Dev"
-    Owner       = "Ops"
+    GitRepo = "Land.Llandman"
+    Env     = "Dev"
+    Owner   = "Ops"
   }
 }
 
-variable "python_version" {
-  type = string
-}
 
 variable "prompt_ver" {
   type    = string
   default = "1"
 }
+
+# variable "system_prompt_id" {
+#   type    = string
+#   default = "IB5O7AZE0G"
+# }
 
 variable "system_prompt_ver" {
   type    = string
@@ -62,11 +58,13 @@ variable "system_prompt_ver" {
 }
 
 variable "security_grp_id" {
-  type = string
+  type    = string
+  default = "sg-04e975365d5ef5219"
 }
 
 variable "subnet_id" {
-  type = string
+  type    = string
+  default = "subnet-01ac397cf39dce5ba"
 }
 
 variable "lambda_layer_version_arn" {

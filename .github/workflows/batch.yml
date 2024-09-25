@@ -1,14 +1,14 @@
-name: Backlog Pipeline
+name: Batch Pipeline
 
 on:
   push:
     branches:
       - dev_
     paths:
-      - 'backlog/**'
+      - 'batch/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
-    branches: [dev_]
+    branches: [dev]
     types:
       - completed
 
@@ -16,8 +16,8 @@ jobs:
   dev-use1:
     uses: ./.github/workflows/tfapply.yml
     with:
-      data-pipeline: backlog
-      environment: dev
+      data-pipeline: batch
+      env: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
 
@@ -27,6 +27,6 @@ jobs:
   #   if: github.event_name == 'pull_request' && github.event.base_ref == 'main'
   #   uses: ./.github/workflows/tfapply.yml
   #   with:
-  #     environment: prod # Change this to 'review' or 'prod' as needed
+  #     env: prod # Change this to 'review' or 'prod' as needed
   #     aws-env-dir: dev-usw2
   #     aws-region: us-west-2

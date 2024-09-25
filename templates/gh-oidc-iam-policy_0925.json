@@ -79,6 +79,14 @@
             "Sid": "ManageLLandManLambdaFunctionLayer"
         },
         {
+			"Action": [
+				"lambda:GetEventSourceMapping"
+			],
+			"Effect": "Allow",
+			"Resource": "*",
+			"Sid": "GetLambdaEventSourceMapping"
+		},
+        {
             "Action": [
                 "lambda:GetEventSourceMapping",
                 "lambda:UpdateEventSourceMapping",
@@ -267,6 +275,27 @@
                 "arn:aws:events:*:${ACCOUNT_ID}:event-bus/llandman-*",
                 "arn:aws:events:*:${ACCOUNT_ID}:rule/*/llandman-*",
                 "arn:aws:events:*:${ACCOUNT_ID}:rule/llandman-*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:Update*",
+                "s3:list*",
+                "s3:Get*",
+                "s3:Delete*",
+                "s3:PutBucketTagging",
+                "s3:TagResource",
+                "s3:UntagResource",
+                "s3:PutBucketVersioning",
+                "s3:PutLifecycleConfiguration",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketOwnershipControls"
+            ],
+            "Resource": [
+                "arn:aws:s3:::llandman-*",
+                "arn:aws:s3:::llandman-*/*"
             ]
         }
     ]

@@ -3,7 +3,7 @@ name: Terraform Destroy
 on:
   workflow_dispatch:  # Allows manual triggering of the workflow
     inputs:
-      environment:
+      env:
         description: 'deployment environment'
         required: true
         default: 'dev'
@@ -13,10 +13,10 @@ on:
           - prod
       data-pipeline:
         required: true
-        default: 'backlog'
+        default: 'batch'
         type: choice
         options:
-          - 'backlog'
+          - 'batch'
           - 'realtime'
       aws-env-dir:
         required: true
@@ -41,7 +41,7 @@ jobs:
   terraform-plan:
     name: Terraform Destroy Plan
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.env }}
     
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -92,7 +92,16 @@ jobs:
         id: plan
         run: |
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
+          lambda_layer_version_arn=$(aws lambda list-layer-versions \
+                                          --layer-name python-libs \
+                                          --query 'LayerVersions[0].LayerVersionArn' \
+                                          --output text)
+          terraform plan -destroy \
+            -var env=${{ inputs.env }} \
+            -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
+            -var lambda_layer_version_arn=$lambda_layer_version_arn \
+            -out=tfplan
+          # terraform plan -destroy -var 'python_version=${{ vars.GH_RUNNER_PY_VER }}' -out=tfplan
       
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
@@ -104,7 +113,7 @@ jobs:
     name: Terraform Destroy
     needs: terraform-plan
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.env }}
 
     steps:
       - name: Checkout code
