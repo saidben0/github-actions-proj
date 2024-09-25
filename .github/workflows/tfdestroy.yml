@@ -97,7 +97,6 @@ jobs:
                                           --query 'LayerVersions[0].LayerVersionArn' \
                                           --output text)
           terraform plan -destroy \
-            -target module.dev-use1.aws_s3_bucket.batch_inference_bucket \
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan
