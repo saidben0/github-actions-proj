@@ -42,7 +42,7 @@ Step 5. From the output of Step 4, if the JSON only contains 'tract', 'state' an
 
 Step 6. For surveys: Ensure the full survey name is captured, even if it spans multiple lines.
 
-Step 7. For section: If there are multiple sections, separate them into seaparate tracts.
+Step 7. For section: If there are multiple sections, separate them into separate tracts.
 
 Step 8. For quarter: If multiple quarters are present, create separate JSON objects.
 - Example: "N/2 of N/2 and N/2 of S/2" should result in two tract entries.
