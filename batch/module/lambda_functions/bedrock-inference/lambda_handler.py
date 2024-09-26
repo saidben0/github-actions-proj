@@ -13,6 +13,7 @@ logger.setLevel("INFO")
 # Read environment variables
 queue_url = os.environ.get('QUEUE_URL')
 dest_bucket = os.environ.get('BATCH_DATA_BUCKET')
+# TODO: add role ARN from ENV VAR
 
 def lambda_function(event, context):
     s3 = boto3.client('s3')
@@ -102,7 +103,11 @@ def lambda_function(event, context):
         logging.error(f"Error receiving SQS message from queue: {e}")
         sys.exit(0)
     
+
+    # TODO:  add logic to determine the model ID
+    
     logging.info("Finish reading SQS messages.")
+    
     logging.info("Start processing data.")
     
     with Manager() as manager:
@@ -151,7 +156,7 @@ def lambda_function(event, context):
     job_name = f"batch-inference-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
     try:
         response=bedrock.create_model_invocation_job(
-                                                    roleArn="arn:aws:iam::070551638384:role/PassRole-proserve-land-role",
+                                                    roleArn="arn:aws:iam::070551638384:role/PassRole-proserve-land-role", # TODO: change the role ARN to the Lambda ARN
                                                     modelId="anthropic.claude-3-5-sonnet-20240620-v1:0",
                                                     jobName=job_name,
                                                     inputDataConfig=inputDataConfig,

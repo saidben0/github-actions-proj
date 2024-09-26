@@ -163,13 +163,16 @@ def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
         A list of bytes for the PDF data. The length of the list equals to the number of pages of the PDF.
     """
     bytes_outputs = []
-
-    doc = pymupdf.open(mime, body.read())  # open document
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(dpi=90)  # render page to an image
-        pdfbytes=pix.tobytes()
-        b64 = base64.b64encode(pdfbytes).decode('utf8')
-        bytes_outputs.append(b64)
+    try:
+        doc = pymupdf.open(mime, body.read())  # open document
+        for page in doc:  # iterate through the pages
+            pix = page.get_pixmap(dpi=90)  # render page to an image
+            pdfbytes=pix.tobytes()
+            b64 = base64.b64encode(pdfbytes).decode('utf8')
+            bytes_outputs.append(b64)
+    except Exception as e:
+        logging.error(f"Error converting document: {e}")
+        raise e
     return bytes_outputs
 
 def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
