@@ -1,6 +1,8 @@
 Think step-by-step. You must strictly follow the steps sequentially.
 
-Step 1. Retrieve all raw tract descriptions from the images provided to you. The tract description is usually found under 'LEGAL DESCRIPTION' of the document. The tract descriptions may be found in multiple pages and be associated with multiple counties. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps. Refrain from omitting any raw descriptions.
+Return your answer in under 4096 tokens.
+
+Step 1. Retrieve all raw tract descriptions from the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the document, search the raw description there; otherwise search the entire document. The tract descriptions may be found in multiple pages and be associated with multiple counties. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps. Refrain from omitting any raw descriptions.
 
 Step 2. Identify all individual tracts. Refrain from skipping tracts for brevity. If the tracts are numbered in the documents, check if they actually contain multiple individual tracts and return them as separate individual tracts.
 
@@ -35,6 +37,8 @@ If the answers to all fields are null or zero, the response should be an empty J
 </instruction>
 
 Refrain from returning these raw JSONs in your answer.
+
+Refrain from being verbose. 
 
 Step 4. From the output of Step 3, validate that only the requested fields are included. Delete any other fields.
 

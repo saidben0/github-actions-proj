@@ -48,7 +48,7 @@ def lambda_function(event, context):
         # so we will contine to call if we haven't received the EXPECTED number yet
         # note we could receive a few more messages depending on how many messages in the last call
         while (msg_count < EXPECTED):
-            logging.info(f"Calling receive_message: messages received so far = {msg_count}")
+            logging.info(f"Messages received so far = {msg_count}, calling receive_message again -")
             response = sqs.receive_message(
                 QueueUrl=queue_url,
                 MaxNumberOfMessages=10,
@@ -96,8 +96,8 @@ def lambda_function(event, context):
                         queue_arr.append(receipt_handle)
 
                     except KeyError as e:
-                        logging.error(f"Error receiving SQS message from queue: {e}")
-                        raise
+                        logging.info(f"Error parsing SQS message # {msg_count}: {e}")
+                        continue
   
     except Exception as e:
         logging.error(f"Error receiving SQS message from queue: {e}")
@@ -164,5 +164,8 @@ def lambda_function(event, context):
                                                     timeoutDurationInHours=72
                                                 )
         logging.info(f"Bedrock batch inference job successfully created. Job name: {job_name}")
+        #delete messages from SQS using queue_arr 
+        delete_queue_messages(sqs, queue_url, queue_arr)
+
     except Exception as e:
         logging.error(f"Error creating Bedrock batch inference job: {e}")

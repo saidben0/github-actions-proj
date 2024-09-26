@@ -104,8 +104,17 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
         s3_key = f.split('/', 3)[3:][0]
         file_id = f.split('/')[-1].split('.')[0]
         # file_id = f.split('.')[0]
-        mime, body = retrievePdf(bucket_name, s3_key)
-        bytes_inputs = convertS3Pdf(mime, body)
+        try:
+            mime, body = retrievePdf(bucket_name, s3_key)
+        except Exception as e:
+            logging.info(f"Error retrieving document thus skipping: {s3_key} - {e}")
+            continue
+    
+        try:
+            bytes_inputs = convertS3Pdf(mime, body)
+        except Exception as e:
+            logging.info(f"Error conversting document thus skipping: {s3_key} - {e}")
+            continue
         # bytes_inputs = convertPdf(f)
 
         prompt = Prompt(
@@ -225,11 +234,21 @@ def retrievePdf(bucket: str , s3_key: str) -> tuple[str, StreamingBody]:
     """
     s3 = boto3.client('s3')
 
-    response = s3.get_object(Bucket=bucket, Key=s3_key)
+    try:
+        response = s3.get_object(Bucket=bucket, Key=s3_key)
+    except Exception as e:
+        logging.error(f"Error retrieving document from S3: {s3_key} - {e}")
+        raise e
     mime = response["ContentType"]
     body = response["Body"]
 
     return mime, body
+
+def delete_queue_messages(sqs, queue_url, queue_arr):
+    logging.info(f"Deleting all SQS messages ")
+    for i in range(0, len(queue_arr)):
+        sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=queue_arr[i])
+    logging.info(f"sqs message deleted: - {i}")
 
 class Prompt():
     """
