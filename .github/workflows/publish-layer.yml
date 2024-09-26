@@ -26,6 +26,12 @@ jobs:
     env: ${{ inputs.env }}
 
     steps:
+      - name: Set output for env
+        id: set_output
+        run: |
+          echo "Environment selected: ${{ github.event.inputs.env }}"
+          echo "env=${{ github.event.inputs.env }}" >> "$GITHUB_OUTPUT"  # Set the output
+
       - name: Checkout code
         uses: actions/checkout@v2
       

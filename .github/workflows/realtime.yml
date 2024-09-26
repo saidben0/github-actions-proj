@@ -14,6 +14,7 @@ on:
 
 jobs:
   dev-use1:
+    if: ${{ github.event.workflow_run.outputs.env == 'dev' }}
     uses: ./.github/workflows/tfapply.yml
     with:
       data-pipeline: realtime

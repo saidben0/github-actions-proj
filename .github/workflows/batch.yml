@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - outputs
     paths:
       - 'batch/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
@@ -14,6 +15,7 @@ on:
 
 jobs:
   dev-use1:
+    if: ${{ github.event.workflow_run.outputs.env == 'dev' }}
     uses: ./.github/workflows/tfapply.yml
     with:
       data-pipeline: batch
