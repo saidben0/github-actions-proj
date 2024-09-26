@@ -20,7 +20,7 @@ jobs:
       env: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
-      deploy: 'true' # must set to 'true' to run `terraform apply` job
+      deploy: 'false' # must set to 'true' to run `terraform apply` job
 
   
   # dev-usw2:
