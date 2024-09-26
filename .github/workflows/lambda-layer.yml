@@ -3,8 +3,7 @@ name: Lambda Layer Pipeline
 on:
   push:
     branches:
-      # - dev
-      - outputs
+      - dev
     paths:
       - 'lambda-layer/requirements.txt'
 
