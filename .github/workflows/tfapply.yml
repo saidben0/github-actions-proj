@@ -15,6 +15,10 @@ on:
       aws-region:
         required: true
         type: string
+      deploy:
+        required: true
+        default: 'false'
+        type: string
 
 defaults:
   run:
@@ -148,6 +152,7 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
+    if: ${{ inputs.deploy == 'true' }}
     # if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.merged == true
     needs: terraform-plan
     runs-on: ${{ vars.GH_RUNNER_TAG }} # use github UI to define as a repo variable
