@@ -3,7 +3,7 @@ name: Batch Pipeline
 on:
   push:
     branches:
-      - dev_
+      - dev
     paths:
       - 'batch/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
@@ -20,6 +20,7 @@ jobs:
       env: dev
       aws-env-dir: dev-use1
       aws-region: us-east-1
+      deploy: 'false' # must set to 'true' to run `terraform apply` job
 
   
   # dev-usw2:

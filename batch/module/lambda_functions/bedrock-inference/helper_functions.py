@@ -1,63 +1,149 @@
-import logging
-import multiprocessing 
-from joblib import Parallel, delayed
-import botocore
+import sys
+import json
+import os
 import boto3
-from decimal import Decimal
-import math
-import pymupdf
 from datetime import datetime
-import re
-from botocore.config import Config
-from botocore.response import StreamingBody
-from typing import Optional
 
-class Prompt():
-    """
-    A class to represent a prompt.
+def prepare_model_inputs(bytes_inputs, model_id, prompt, system_prompt):
+    temperature = 0
+    top_p = 0.1
+    max_tokens = 4096
+    anthropic_version = "bedrock-2023-05-31"
+    
+    ### Retrieve prompts from Bedrock
+    prompt.text, prompt.ver = retrieve_bedrock_prompt(prompt.identifier, prompt.ver)
+    
+    if system_prompt.identifier:
+        system_prompt.text, system_prompt.ver = retrieve_bedrock_prompt(system_prompt.identifier, system_prompt.ver)
 
-    Attributes
-    ----------
-    identifier : str
-        The unique ID of the prompt on Amazon Bedrock Prompt Management.
-    ver : str
-        The version of the prompt on Amazon Bedrock Prompt Management.
-    text : str
-        The prompt body.
+    ### Split the data into chunks of 20 pages
+    grouped_bytes_input = [bytes_inputs[i:i+20] for i in range(0, len(bytes_inputs), 20)]
 
-    """
-    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
-        self.identifier = identifier
-        self.ver = ver
-        self.text = text
-		
-def retrievePdf(bucket: str , s3_key: str) -> tuple[str, StreamingBody]:
-    """
-    Retrieve data of a file from an S3 bucket.
+    chunk_count = len(grouped_bytes_input)
 
-    Parameters:
-    ----------
-    bucket : str
-        The name of the S3 bucket.
+    model_inputs = []
 
-    s3_key : str
-        The file path to the file.
+    for i, bytes_input in enumerate(grouped_bytes_input):
+        page_count = 1
+        content_input = []
+        for one_page_data in bytes_input:
+            content_input.append({"type": "text", "text": f"Image {page_count}"})
+            content_input.append({"type": "image",
+                                 "source": {"type": "base64",
+                                           "media_type": "image/png",
+                                           "data": one_page_data}})
+            page_count += 1
 
-    Returns:
-    ----------
-    tuple[str, StreamingBody]
-        A tuple containing:
-        - mime (str): A standard MIME type describing the format of the file data.
-        - body (StreamingBody): The file data.
+        content_input.append({"type": "text", "text": prompt.text})
 
-    """
-    s3 = boto3.client('s3')
+        model_input = {
+            "anthropic_version": anthropic_version,
+            "temperature": temperature,
+            "top_p": top_p,
+            "max_tokens": max_tokens,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": content_input,
+                }
+            ]}
 
-    response = s3.get_object(Bucket=bucket, Key=s3_key)
-    mime = response["ContentType"]
-    body = response["Body"]
+        if system_prompt.identifier:
+            model_input["system"] = system_prompt.text
 
-    return mime, body
+        final_json = {"recordId": f"{i+1}".zfill(11),
+                      "modelInput": model_input}
+
+        model_inputs.append(final_json)
+
+    return model_inputs, chunk_count
+
+def write_jsonl(data, file_path):
+    with open(file_path, 'w') as file:
+        for item in data:
+            json_str = json.dumps(item)
+            file.write(json_str + '\n')
+
+def upload_to_s3(path, bucket_name, bucket_subfolder=None):
+    # check if the path is a file
+    if os.path.isfile(path):
+        # If the path is a file, upload it directly
+        object_name = os.path.basename(path) if bucket_subfolder is None else f"{bucket_subfolder}/{os.path.basename(path)}"
+        try:
+            s3.upload_file(path, bucket_name, object_name)
+            print(f"Successfully uploaded {path} to {bucket_name}/{object_name}")
+            return True
+        except Exception as e:
+            print(f"Error uploading {path} to S3: {e}")
+            return False
+    elif os.path.isdir(path):
+        # If the path is a directory, recursively upload all files within it
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                relative_path = os.path.relpath(file_path, path)
+                object_name = relative_path if bucket_subfolder is None else f"{bucket_subfolder}/{relative_path}"
+                try:
+                    s3.upload_file(file_path, bucket_name, object_name)
+                except Exception as e:
+                    print(f"Error uploading {file_path} to S3: {e}")
+        return None
+    else:
+        print(f"{path} is not a file or directory.")
+        return None
+    
+def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
+    totalsize = 0
+    totalpage = 0
+
+    for j in range(0, len(array)):
+        f = array[j]
+        logging.info(f"Start processing file:{j} - {f}")
+
+        bucket_name = f.split('/')[2]
+        s3_key = f.split('/', 3)[3:][0]
+        file_id = f.split('/')[-1].split('.')[0]
+        # file_id = f.split('.')[0]
+        mime, body = retrievePdf(bucket_name, s3_key)
+        bytes_inputs = convertS3Pdf(mime, body)
+        # bytes_inputs = convertPdf(f)
+
+        prompt = Prompt(
+            identifier = metadata_dict[file_id]["prompt_id"],
+            ver = metadata_dict[file_id]["prompt_ver"]
+        )
+
+        system_prompt = Prompt(
+            identifier = metadata_dict[file_id]["system_prompt_id"],
+            ver = metadata_dict[file_id]["system_prompt_ver"]
+        )
+
+        logging.info(f"Start processing data for {j} - {f}")
+        try:
+            model_input_jsonl, chunk_count = prepare_model_inputs(bytes_inputs, model_id, prompt, system_prompt)
+
+        except Exception as e:
+            logging.error(f"Error creating model input: {e}")
+            continue
+
+        logging.info(f"Writing model_input JSON for {j} - {f}")
+        try:
+            file_name = f'tmp/{file_id}.jsonl'
+            write_jsonl(model_input_jsonl, file_name)
+        except Exception as e:
+            logging.error(f"Error creating model input: {e}")
+            continue
+
+        logging.info(f"Saving model_input JSON to S3: {j} - {f}")
+        try:
+            upload_to_s3(path=f"./{file_name}", 
+                         bucket_name=dest_bucket, 
+                         bucket_subfolder=f'{data_folder}/model-input')
+        except Exception as e:
+            logging.error(f"Error saving model input to S3: {e}")
+            continue
+
+        metadata_dict[file_id]["chunk_count"] = chunk_count
 
 def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
     """
@@ -77,144 +163,17 @@ def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
         A list of bytes for the PDF data. The length of the list equals to the number of pages of the PDF.
     """
     bytes_outputs = []
-
-    doc = pymupdf.open(mime, body.read())  # open document
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(dpi=100)  # render page to an image
-        pdfbytes=pix.tobytes()
-        bytes_outputs.append(pdfbytes)
+    try:
+        doc = pymupdf.open(mime, body.read())  # open document
+        for page in doc:  # iterate through the pages
+            pix = page.get_pixmap(dpi=90)  # render page to an image
+            pdfbytes=pix.tobytes()
+            b64 = base64.b64encode(pdfbytes).decode('utf8')
+            bytes_outputs.append(b64)
+    except Exception as e:
+        logging.error(f"Error converting document: {e}")
+        raise e
     return bytes_outputs
-
-def convertPdf(file_path: str) -> list[bytes]:
-    """
-    Convert the PDF file to bytes.
-
-    Parameters:
-    ----------
-    file_path : str
-        The loca path to the PDF.
-
-    Returns:
-    ----------
-    list[bytes]
-        A list of bytes for the PDF data. The length of the list equals to the number of pages of the PDF.
-    """
-    bytes_outputs = []
-
-    doc = pymupdf.open(file_path)
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(dpi=100)  # render page to an image
-        pdfbytes=pix.tobytes(output='png')
-        bytes_outputs.append(pdfbytes)
-    return bytes_outputs
-
-def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, model_id: str, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
-    """
-    Save the model response to a DynamoDB Table.
-
-    Parameters:
-    ----------
-    table_name : str
-        The destination DynamoDB Table name.
-
-    project_name : str
-        The internal project name.
-
-    sqs_message_id : str
-        The SQS message ID that triggers the Lambda function.
-
-    file_id : str
-        The unique file ID for the PDF.
-
-    current_time : str
-        The ingestion time for the file.
-
-    prompt : Prompt
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-
-    system_prompt : Prompt
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-    
-    model_id : str
-        The ID of the model used in Bedrock.
-
-    chunk_count : int
-        The total number of chunk for the document.
-
-    chunk_id : int
-        The ID of the chunk (containing 20-page worth of data) that has been processed.
-
-    exception : str, optional
-        The exception message if the LLM call fails.
-
-    model_response : dict, optional
-        The response output from boto3 Bedrock converse API.
-
-    Returns:
-    ----------
-    None
-    """
-    dynamodb = boto3.client('dynamodb')
-
-    prompt_id = prompt.identifier
-    prompt_ver = prompt.ver
-
-    system_prompt_id = system_prompt.identifier
-    system_prompt_ver = system_prompt.ver
-
-    if model_response:
-        flag_status = False
-
-        response_text = model_response["output"]["message"]["content"][0]["text"]
-        try:
-            final_output = re.search(r'<final_output>(.*?)</final_output>', response_text, re.DOTALL).group(1).strip()
-        except AttributeError:
-            final_output = "[]"
-
-        latency = model_response["metrics"]["latencyMs"]
-        input_token = model_response["usage"]["inputTokens"]
-        output_token = model_response["usage"]["outputTokens"]
-
-        item = {
-                "project_name": {"S": project_name},
-                "chunk_count": {"N": str(chunk_count)},
-                "chunk_id": {"N": str(chunk_id)},
-                "sqs_message_id": {"S": sqs_message_id},
-                "document_id": {"S": file_id.split('.')[0]},
-                "ingestion_time": {"S": current_time},
-                "model_response": {"S": final_output},
-                "latency": {"N": str(latency)},
-                "input_token": {"N": str(input_token)},
-                "output_token": {"N": str(output_token)},
-                "exception_FLAG": {"BOOL": flag_status},
-                "prompt_id": {"S": prompt_id},
-                "prompt_ver": {"S": prompt_ver},
-                "model_id": {"S": model_id}
-            }
-    else:
-        flag_status = True
-        item = {
-            "project_name": {"S": project_name},
-            "chunk_count": {"N": str(chunk_count)},
-            "chunk_id": {"N": str(chunk_id)},
-            "sqs_message_id": {"S": sqs_message_id},
-            "document_id": {"S": file_id.split('.')[0]},
-            "ingestion_time": {"S": current_time},
-            "exception": {"S": str(exception)},
-            "exception_FLAG": {"BOOL": flag_status},
-            "prompt_id": {"S": prompt_id},
-            "prompt_ver": {"S": prompt_ver},
-            "model_id": {"S": model_id}
-        }
-
-    if prompt_ver:
-        item['prompt_ver'] = {"S": prompt_ver}
-    if system_prompt_id:
-        item['system_prompt_id'] = {"S": system_prompt_id}
-        item['system_prompt_ver'] = {"S": system_prompt_ver}
-
-
-    dynamodb.put_item(TableName=table_name, Item=item)
 
 def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
     """
@@ -244,67 +203,49 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
 
     return prompt, prompt_ver
 
-def call_llm(bytes_inputs: list[bytes], model_id: str, prompt: Prompt, system_prompt: Prompt =None) -> dict:
+def retrievePdf(bucket: str , s3_key: str) -> tuple[str, StreamingBody]:
     """
-    Construct an input to call the LLM using the boto3 Bedrock runtime converse API.
+    Retrieve data of a file from an S3 bucket.
 
     Parameters:
     ----------
-    bytes_inputs : list[bytes]
-        A list of bytes containing data for each page in the PDF document.
+    bucket : str
+        The name of the S3 bucket.
 
-    model_id : str
-        The ID of the model to be used in Bedrock.
-
-    prompt : Prompt
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-
-    system_prompt : Prompt [optional, default = None]
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
+    s3_key : str
+        The file path to the file.
 
     Returns:
     ----------
-    dict
-        The output of the Bedrock runtime converse API.
+    tuple[str, StreamingBody]
+        A tuple containing:
+        - mime (str): A standard MIME type describing the format of the file data.
+        - body (StreamingBody): The file data.
+
     """
-    config = Config(read_timeout=1000)
-    bedrock_runtime = boto3.client("bedrock-runtime", region_name="us-east-1", config=config)
+    s3 = boto3.client('s3')
 
-    temperature = 0
-    top_p = 0.1
+    response = s3.get_object(Bucket=bucket, Key=s3_key)
+    mime = response["ContentType"]
+    body = response["Body"]
 
-    content_input = []
-    for bytes_input in bytes_inputs:
-        content_input.append({"image": {"format": "png", "source": {"bytes": bytes_input}}})
+    return mime, body
 
-    content_input.append({"text": prompt.text})
+class Prompt():
+    """
+    A class to represent a prompt.
 
-    messages = [
-        {
-            "role": "user",
-            "content": content_input,
-        }
-    ]
+    Attributes
+    ----------
+    identifier : str
+        The unique ID of the prompt on Amazon Bedrock Prompt Management.
+    ver : str
+        The version of the prompt on Amazon Bedrock Prompt Management.
+    text : str
+        The prompt body.
 
-    if system_prompt.identifier:
-        response = bedrock_runtime.converse(
-            modelId=model_id,
-            messages=messages,
-            system=[
-                    {"text": system_prompt.text
-                    }],
-            inferenceConfig={
-                'temperature': temperature,
-                'topP': top_p
-            }
-        )
-    else:
-        response = bedrock_runtime.converse(
-            modelId=model_id,
-            messages=messages,
-            inferenceConfig={
-                'temperature': temperature,
-                'topP': top_p
-            }
-        )
-    return response
+    """
+    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
+        self.identifier = identifier
+        self.ver = ver
+        self.text = text

@@ -1,143 +1,168 @@
-import logging
-import botocore
-import boto3
-import pymupdf
-from datetime import datetime
-import re
 from helper_functions import *
-from typing import Optional
-import math
+import sys
+from multiprocessing import Process, Manager
+import json
 import os
+import boto3
+from datetime import datetime
 
 # Logger information
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def lambda_handler(event, context):
+# Read environment variables
+queue_url = os.environ.get('QUEUE_URL')
+dest_bucket = os.environ.get('BATCH_DATA_BUCKET')
+# TODO: add role ARN from ENV VAR
 
-    #################### Retrieve variables ####################
+def lambda_function(event, context):
+    s3 = boto3.client('s3')
+    sqs = boto3.client('sqs')
+
+    data_folder = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+
+    EXPECTED = 1000
+    queue_arr = []
+    doc_arr = []
+    # create array of SQS queue message with ReceiptHandle
+    # quit if the ApproximateNumberOfMessages of the first record is less than 1000
     try:
-        print(event)
-       
-        message = event['Records'][0]
-        message_attributes = message['messageAttributes']
-        sqs_message_id = message['messageId']
-        project_name = message_attributes['application']['stringValue']
-        s3_loc = message_attributes['s3_location']['stringValue']
-        model_id = message_attributes['model_id']['stringValue']
-        receipt_handle = message['receiptHandle']
-
-        prompt = Prompt(
-            identifier = message_attributes['prompt_id']['stringValue'],
-            ver = message_attributes.get('prompt_version', {}).get('stringValue', None)
+    # checking if there are required messages
+        logging.info("Checking # of message in the queue...")   
+        response = sqs.get_queue_attributes(
+                QueueUrl=queue_url,
+                AttributeNames=[ 'All' ],
         )
+        attrib = response['Attributes']['ApproximateNumberOfMessages']
+        logging.info(f"ApproximateNumberOfMessages: {attrib}")
+        if ( int(attrib) < EXPECTED):
+            logging.info("Not enough messages for batch inference")   
+            sys.exit(0)
 
-    except KeyError as e:
-        logging.error(f"The SQS message has missing attribute: {e}.")
-        raise
-
-    table_name = os.environ['DDB_TABLE_NAME']
-    queue_url=os.environ['QUEUE_URL']
-    # table_name="aws-proserve-land-doc"
-
-    system_prompt = Prompt(
-        identifier = message_attributes.get('system_prompt_id', {}).get('stringValue', None),
-        ver = message_attributes.get('system_prompt_version', {}).get('stringValue', None)
-    )
-
-    #################### Extract file loc details ####################
-    bucket_name = s3_loc.split('/')[2]
-    s3_key = s3_loc.split('/', 3)[3:][0]
-    file_id = s3_loc.split('/')[-1].split('.')[0]
-
-    #################### Read file from S3 ####################
-    try:
-        logging.info(f"s3_key: {s3_key}")
-        logging.info(f"Reading file {file_id} from bucket {bucket_name}")
-        mime, body = retrievePdf(bucket_name, s3_key)
-
-    except Exception as e:
-        logging.error(f"Error getting file from S3: {e}")
-        raise
-
-    #################### Convert PDF to model input ####################
-    try:
-        logging.info(f"Converting PDF to byte: {file_id}")
-        bytes_inputs = convertS3Pdf(mime, body)
-
-        logging.info(f"Number of pages in the pdf: {len(bytes_inputs)}")
-
-    except Exception as e:
-        logging.error(f"Error reading the file: {e}")
-        raise
-
-    #################### Retrieve Prompt from Bedrock ####################
-    try:
-        logging.info(f"Retrieving prompt {prompt.identifier} from Bedrock...")
-        prompt.text, prompt.ver = retrieve_bedrock_prompt(prompt.identifier, prompt.ver)
-
-    except Exception as e:
-        logging.error(f"Error retrieving prompt: {e}")
-        raise
-
-    if system_prompt.identifier:
-        try:
-            logging.info(f"Retrieving system prompt {system_prompt.identifier} from Bedrock...")
-            system_prompt.text, system_prompt.ver = retrieve_bedrock_prompt(system_prompt.identifier, system_prompt.ver)
-
-        except Exception as e:
-            logging.error(f"Error retrieving system prompt: {e}")
-            raise
-
-    #################### LLM call ####################
-    # Split the images to chunks of 20
-    if len(bytes_inputs) <= 20:
-        num_chunk = 1
-        logging.info(f"There are {len(bytes_inputs)} pages in the document. Processing all pages in one chunk.")
-    elif len(bytes_inputs) > 20:
-        num_chunk = math.ceil(len(bytes_inputs)/20)
-        logging.info(f"Splitting the images into {num_chunk} chunks...")
-
-    grouped_bytes_input = [bytes_inputs[i:i+20] for i in range(0, len(bytes_inputs), 20)]
-
-    exception_flag = False
-
-    for i, byte_input in enumerate(grouped_bytes_input):
-        logging.info(f"Extracting land description for chunk {i+1}...")
-        ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        try:
-            model_response = call_llm(byte_input, model_id, prompt, system_prompt)
-            # response_text = model_response["output"]["message"]["content"][0]["text"]
-            # print(f"response_text for chunk {i+1}: ----------------\n {response_text}")
-
-        except Exception as e:
-            logging.error(f"Error making LLM call: {e} Storing error details to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, num_chunk, chunk_id=i+1, exception=e)
-            exception_flag = True
-            raise
-
-        try:
-            logging.info(f"Storing results of chunk {i+1} to DynamoDB Table: {table_name}")
-            update_ddb_table(table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, num_chunk, chunk_id=i+1, model_response=model_response)
-        except Exception as e:
-            logging.error(f"Error saving to DynamoDB table: {e}")
-            raise
-
-    ################### Delete received message from queue if there is no error in the LLM-calling step ####################
-    if not exception_flag:
-        try:
-            logging.info("Document successfully processed. Deleting SQS message from queue...")
-            sqs = boto3.client('sqs')
-            sqs.delete_message(
-            QueueUrl=queue_url,
-            ReceiptHandle=receipt_handle
+        logging.info("Rceiving SQS message from queue...")   
+        msg_count = 0
+        
+        msg_attributes = {}
+        
+        # one receive_message call can receive up to 10 messages a time 
+        # so we will contine to call if we haven't received the EXPECTED number yet
+        # note we could receive a few more messages depending on how many messages in the last call
+        while (msg_count < EXPECTED):
+            logging.info(f"Calling receive_message: messages received so far = {msg_count}")
+            response = sqs.receive_message(
+                QueueUrl=queue_url,
+                MaxNumberOfMessages=10,
+                MessageAttributeNames=['All']
             )
-        except Exception as e:
-            logging.error(f"Error deleting SQS message from queue: {e}")
-            raise
 
-    return {
-        'statusCode': 200,
-        'body': f'File {file_id} processed successfully!'
+            # add up to 10 messages to the array
+            try:
+                messages = response['Messages']
+                num_messages = len(messages)
+            except KeyError:
+                logging.log("No more records, exit loop")
+                num_messages = 0
+            for j in range(0, num_messages):
+                try:
+                    message = messages[j]
+                except KeyError:
+                    logging.error("Error in receive message, exit normally")
+                    raise
+                else:
+                    try:
+                        msg_count = msg_count + 1
+                        sqs_message_id = message['MessageId']
+                        logging.info(f"sqs_message_id: {j} - {sqs_message_id}")
+                        receipt_handle = message['ReceiptHandle']
+                        message_attributes = message['MessageAttributes']
+                        project_name = message_attributes['application']['StringValue']
+                        s3_loc = message_attributes['s3_location']['StringValue']
+                        file_id = s3_loc.split('/')[-1].split('.')[0]
+                        #model_id = message_attributes['model_id']['StringValue']
+                        prompt_id = message_attributes['prompt_id']['StringValue']
+                        prompt_ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
+                        system_prompt_id = message_attributes.get('system_prompt_id', {}).get('stringValue', None)
+                        system_prompt_ver = message_attributes.get('system_prompt_version', {}).get('stringValue', None)
+
+                        msg_attributes[file_id] = {
+                            "sqs_message_id": sqs_message_id,
+                            "prompt_id": prompt_id,
+                            "prompt_ver": prompt_ver,
+                            "system_prompt_id": system_prompt_id,
+                            "system_prompt_ver": system_prompt_ver,
+                            }
+
+                        doc_arr.append(s3_loc)
+                        queue_arr.append(receipt_handle)
+
+                    except KeyError as e:
+                        logging.error(f"Error receiving SQS message from queue: {e}")
+                        raise
+  
+    except Exception as e:
+        logging.error(f"Error receiving SQS message from queue: {e}")
+        sys.exit(0)
+    
+
+    # TODO:  add logic to determine the model ID
+    
+    logging.info("Finish reading SQS messages.")
+    
+    logging.info("Start processing data.")
+    
+    with Manager() as manager:
+        try:
+            metadata_dict = manager.dict(msg_attributes)
+            processes = []
+
+            p = Process(target=parallel_enabled, args=(doc_arr, metadata_dict, dest_bucket, data_folder, ))
+            processes.append(p)
+            p.start()
+
+            for p in processes:
+                p.join()
+
+            metadata = dict(metadata_dict)
+            metadata_temp_loc = '/tmp/metadata.json'
+
+            with open(metadata_temp_loc, 'w') as f:
+                json.dump(metadata, f, indent=4)
+
+        except Exception as e:
+            logging.error(f"Error processing data: {e}")
+
+        try:
+            logging.info(f"Uploading metadata.json to {dest_bucket}")
+            upload_to_s3(metadata_temp_loc, dest_bucket, f'{data_folder}/metadata')
+        except Exception as e:
+            logging.error(f"Error uploading metadata.json: {e}")
+    
+    logging.info("Finish processing data.")
+    logging.info("Creating Bedrock batch inference job.")
+    
+    inputDataConfig=({
+    "s3InputDataConfig": {
+        "s3Uri": f"s3://{dest_bucket}/model-input/"
     }
+    })
+
+    outputDataConfig=({
+    "s3OutputDataConfig": {
+        "s3Uri": f"s3://{dest_bucket}/model-output/"
+        }
+    })
+    
+    bedrock = boto3.client(service_name="bedrock")
+    job_name = f"batch-inference-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+    try:
+        response=bedrock.create_model_invocation_job(
+                                                    roleArn="arn:aws:iam::070551638384:role/PassRole-proserve-land-role", # TODO: change the role ARN to the Lambda ARN
+                                                    modelId="anthropic.claude-3-5-sonnet-20240620-v1:0",
+                                                    jobName=job_name,
+                                                    inputDataConfig=inputDataConfig,
+                                                    outputDataConfig=outputDataConfig,
+                                                    timeoutDurationInHours=72
+                                                )
+        logging.info(f"Bedrock batch inference job successfully created. Job name: {job_name}")
+    except Exception as e:
+        logging.error(f"Error creating Bedrock batch inference job: {e}")
