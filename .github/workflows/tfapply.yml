@@ -17,8 +17,8 @@ on:
         type: string
       deploy:
         required: true
-        default: 'false'
         type: string
+        default: 'false'
 
 defaults:
   run:
