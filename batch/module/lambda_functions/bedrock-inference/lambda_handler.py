@@ -85,8 +85,8 @@ def lambda_function(event, context):
                         model_id = message_attributes['model_id']['StringValue']
                         prompt_id = message_attributes['prompt_id']['StringValue']
                         prompt_ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
-                        system_prompt_id = message_attributes.get('system_prompt_id', {}).get('stringValue', None)
-                        system_prompt_ver = message_attributes.get('system_prompt_version', {}).get('stringValue', None)
+                        system_prompt_id = message_attributes.get('system_prompt_id', {}).get('StringValue', None)
+                        system_prompt_ver = message_attributes.get('system_prompt_version', {}).get('StringValue', None)
 
                         msg_attributes[file_id] = {
                             "sqs_message_id": sqs_message_id,
