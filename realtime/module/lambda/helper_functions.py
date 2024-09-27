@@ -188,8 +188,8 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
                 "output_token": {"N": str(output_token)},
                 "exception_FLAG": {"BOOL": flag_status},
                 "prompt_id": {"S": prompt_id},
-                "prompt_ver": {"S": prompt_ver},
-                "model_id": {"S": model_id}
+                "model_id": {"S": model_id},
+                "inference_mode": {"S": 'on demand'}
             }
     else:
         flag_status = True
@@ -203,8 +203,8 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
             "exception": {"S": str(exception)},
             "exception_FLAG": {"BOOL": flag_status},
             "prompt_id": {"S": prompt_id},
-            "prompt_ver": {"S": prompt_ver},
-            "model_id": {"S": model_id}
+            "model_id": {"S": model_id},
+            "inference_mode": {"S": 'on demand'}
         }
 
     if prompt_ver:
@@ -212,7 +212,6 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     if system_prompt_id:
         item['system_prompt_id'] = {"S": system_prompt_id}
         item['system_prompt_ver'] = {"S": system_prompt_ver}
-
 
     dynamodb.put_item(TableName=table_name, Item=item)
 
