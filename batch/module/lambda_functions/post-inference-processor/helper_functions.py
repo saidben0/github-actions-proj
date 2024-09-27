@@ -172,7 +172,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     except Exception as e:
         logging.error(f"Error saving record to DynamoDB table: {e}")
 
-def parallel_enabled(array, metadata_dict, dest_bucket, data_folder, dynamodb_table_name, project_name):
+def parallel_enabled(array, metadata_dict, dynamodb_table_name):
     for j in range(0, len(array)):
         f = array[j]
         logging.info(f"Start processing model output:{j} - {f}")
@@ -189,6 +189,7 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder, dynamodb_ta
             system_prompt_id = metadata_dict[file_id]['system_prompt_id']
             system_prompt_ver = metadata_dict[file_id]['system_prompt_ver']
             chunk_count = metadata_dict[file_id]['chunk_count']
+            project_name = metadata_dict[file_id]['project_name']
 
         except KeyError:
             logging.error(f"Error retrieving the sqs msg attributes for {file_id}")

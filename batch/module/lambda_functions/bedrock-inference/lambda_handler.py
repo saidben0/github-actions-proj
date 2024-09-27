@@ -94,6 +94,7 @@ def lambda_function(event, context):
                             "prompt_ver": prompt_ver,
                             "system_prompt_id": system_prompt_id,
                             "system_prompt_ver": system_prompt_ver,
+                            "project_name": project_name
                             }
 
                         model_count[model_id] = model_count.get(model_id, 0) + 1

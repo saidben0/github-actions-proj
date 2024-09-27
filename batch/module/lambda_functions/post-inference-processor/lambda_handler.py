@@ -1,6 +1,6 @@
 from helper_functions import *
 import sys
-from multiprocessing import Process
+from multiprocessing import Process, Manager
 import json
 import os
 import boto3
@@ -67,30 +67,14 @@ def lambda_handler(event, context):
             msg_attributes_dict = manager.dict(msg_attributes)
             processes = []
 
-            p = Process(target=parallel_enabled, args=(doc_arr, metadata_dict, dest_bucket, data_folder, dynamodb_table_name, project_name, ))
+            p = Process(target=parallel_enabled, args=(model_output_arr, msg_attributes_dict, dynamodb_table_name, ))
             processes.append(p)
             p.start()
 
             for p in processes:
                 p.join()
-        logging.info("Finish all inference processing.")
+            
+            logging.info("Finish all inference processing.")
 
         except Exception as e:
             logging.error(f"Error processing batch inference output: {e}")
-
-        
-
-    
-    
-
-        
-        
-    # doc_arr = ['s3://enverus-courthouse-dev-chd-plants/bedrock-batch-inference-test/model-output/ynw8ha1ds4jh/0017e166-8ea3-4a30-83c0-cca3946d39af.jsonl.out']
-    # doc_arr = ['s3://enverus-courthouse-dev-chd-plants/bedrock-batch-inference-test/model-output/ynw8ha1ds4jh/16ff094d-9bb1-4752-97d9-1a946d923552.jsonl.out']
-    # doc_arr = ['s3://enverus-courthouse-dev-chd-plants/bedrock-batch-inference-test/model-output/ynw8ha1ds4jh/02b691e3-17f4-4db4-b62e-02d3874d22fb']
-    doc_arr = ['s3://enverus-courthouse-dev-chd-plants/bedrock-batch-inference-test/model-output/ynw8ha1ds4jh/02b691e3-17f4-4db4-b62e-02d3874d22fb.jsonl.out']
-    p = Process(target=process_model_output, args=(doc_arr,))
-    p.start()
-    p.join()
-    
-    print(f"Finish time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
