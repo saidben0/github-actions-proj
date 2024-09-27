@@ -70,9 +70,8 @@ resource "aws_lambda_function" "bedrock_inference" {
 
   environment {
     variables = {
+      QUEUE_URL                    = aws_sqs_queue.this.url
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
-      DDB_TABLE_NAME               = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
-      # QUEUE_URL                    = aws_sqs_queue.this.url
     }
   }
 
@@ -105,9 +104,9 @@ resource "aws_lambda_function" "post_inference_processor" {
 
   environment {
     variables = {
-      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL         = aws_sqs_queue.this.url
+      DDB_TABLE_NAME               = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
       BATCH_DATA_BUCKET = aws_s3_bucket.batch_inference_bucket.id
+      # QUEUE_URL         = aws_sqs_queue.this.url
     }
   }
 
