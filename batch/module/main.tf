@@ -104,7 +104,7 @@ resource "aws_lambda_function" "post_inference_processor" {
 
   environment {
     variables = {
-      DDB_TABLE_NAME               = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
+      DDB_TABLE_NAME    = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
       BATCH_DATA_BUCKET = aws_s3_bucket.batch_inference_bucket.id
       # QUEUE_URL         = aws_sqs_queue.this.url
     }
