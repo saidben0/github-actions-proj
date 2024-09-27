@@ -38,11 +38,15 @@ variable "project_name" {
 }
 
 variable "tags" {
-  type = map(string)
+  type = map(object)
   default = {
-    GitRepo = "Land.Llandman"
-    Env     = "Dev"
-    Owner   = "Ops"
+    Team = "Tech-Land-Manufacturing@enverus.com"
+    Dataset = "land"
+    SourceCode = "https://github.com/enverus-ea/land.llandman"
+    Component =  "llandman"
+    BusinessUnit = "ea"
+    Product = "courthouse"
+    Environment = "dev"
   }
 }
 
