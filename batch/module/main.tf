@@ -39,7 +39,7 @@ data "terraform_remote_state" "realtime_dev_use1" {
   config = {
     bucket = "di-dev-terraform"
     # bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
-    key = "dev/llandman/terraform.tfstate"
+    key    = "dev/llandman/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -71,7 +71,7 @@ resource "aws_lambda_function" "bedrock_inference" {
   environment {
     variables = {
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
-      DDB_TABLE_NAME = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
+      DDB_TABLE_NAME               = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
       # QUEUE_URL                    = aws_sqs_queue.this.url
     }
   }
