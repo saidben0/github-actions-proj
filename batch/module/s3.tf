@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "batch_inference_bucket" {
   provider      = aws.acc
-  bucket        = "${var.prefix}-${var.env}-batch-inference"
+  bucket        = "${var.prefix}-${var.env}-batch-inference-${local.account_id}"
   force_destroy = true
 }
 
