@@ -1,114 +1,73 @@
-import logging
-import multiprocessing 
-from joblib import Parallel, delayed
-import botocore
+import sys
+import json
+import os
 import boto3
-from decimal import Decimal
-import math
-import pymupdf
 from datetime import datetime
-import re
-from botocore.config import Config
-from botocore.response import StreamingBody
-from typing import Optional
 
-class Prompt():
-    """
-    A class to represent a prompt.
+dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+s3 = boto3.client('s3')
 
-    Attributes
-    ----------
-    identifier : str
-        The unique ID of the prompt on Amazon Bedrock Prompt Management.
-    ver : str
-        The version of the prompt on Amazon Bedrock Prompt Management.
-    text : str
-        The prompt body.
+def process_model_output(array):
+    for j in range(0, len(array)):
+        f = array[j]
+        print(f"Processing file:{j} - {f}")
 
-    """
-    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
-        self.identifier = identifier
-        self.ver = ver
-        self.text = text
-		
-def retrievePdf(bucket: str , s3_key: str) -> tuple[str, StreamingBody]:
-    """
-    Retrieve data of a file from an S3 bucket.
+        ##### Download outputs from s3
+        bucket = f.split('/')[2]
+        key = f.split('/',3)[3:][0]
+        file_id = f.split('/')[-1].split('.')[0]
 
-    Parameters:
-    ----------
-    bucket : str
-        The name of the S3 bucket.
+        print(f'file id: {file_id}')
+        response = s3.get_object(
+                            Bucket=bucket,
+                            Key=key,
+                            )
+        content = response['Body'].iter_lines()
+        # print(f'content: {content}')
 
-    s3_key : str
-        The file path to the file.
+        chunk_count = 0
+        for line in content:
+            ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            chunk_count+=1
+            print(chunk_count)
+            output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
+            # print(output_item)
+            # print(f'output_item: {output_item}')
+            response_text=output_item['modelOutput']['content'][0]['text']
+            print(f"Response for chunk {chunk_count}: {response_text}")
 
-    Returns:
-    ----------
-    tuple[str, StreamingBody]
-        A tuple containing:
-        - mime (str): A standard MIME type describing the format of the file data.
-        - body (StreamingBody): The file data.
+            flag_status = False
 
-    """
-    s3 = boto3.client('s3')
+            try:
+                final_output = re.search(r'<final_output>(.*?)</final_output>', response_text, re.DOTALL).group(1).strip()
+            except AttributeError:
+                final_output = "[]"
+            # print(f"final_output: {final_output}")
+            input_token = output_item["modelOutput"]["usage"]["input_tokens"]
+            output_token = output_item["modelOutput"]["usage"]["output_tokens"]
+            ##### Save to DDB table
+            item = {
+                "project_name": {"S": 'landman'},
+                # "chunk_count": {"N": str(len(model_outputs))},
+                "chunk_id": {"N": str(chunk_count)},
+                # "sqs_message_id": {"S": sqs_message_id},
+                "document_id": {"S": file_id.split('.')[0]},
+                "ingestion_time": {"S": ingestion_time},
+                "model_response": {"S": final_output},
+                # "latency": {"N": str(latency)},
+                "input_token": {"N": str(input_token)},
+                "output_token": {"N": str(output_token)},
+                "exception_FLAG": {"BOOL": flag_status},
+                "inference_mode": {"S": 'batch'},
+                # "prompt_id": {"S": prompt_id},
+                # "prompt_ver": {"S": prompt_ver},
+                "model_id": {"S": 'anthropic.claude-3-5-sonnet-20240620-v1:0'}
+            }
+            # ddb_response = dynamodb.put_item(TableName='aws-proserve-land-doc', Item=item)
+            # print(f"ddb_response: {ddb_response}")
+        print(f"Finish processing file: {f}")
 
-    response = s3.get_object(Bucket=bucket, Key=s3_key)
-    mime = response["ContentType"]
-    body = response["Body"]
-
-    return mime, body
-
-def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
-    """
-    Convert the file data to bytes.
-
-    Parameters:
-    ----------
-    mime : str
-        The standard MIME type describing the format of the file data.
-
-    body : str
-        The file data.
-
-    Returns:
-    ----------
-    list[bytes]
-        A list of bytes for the PDF data. The length of the list equals to the number of pages of the PDF.
-    """
-    bytes_outputs = []
-
-    doc = pymupdf.open(mime, body.read())  # open document
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(dpi=100)  # render page to an image
-        pdfbytes=pix.tobytes()
-        bytes_outputs.append(pdfbytes)
-    return bytes_outputs
-
-def convertPdf(file_path: str) -> list[bytes]:
-    """
-    Convert the PDF file to bytes.
-
-    Parameters:
-    ----------
-    file_path : str
-        The loca path to the PDF.
-
-    Returns:
-    ----------
-    list[bytes]
-        A list of bytes for the PDF data. The length of the list equals to the number of pages of the PDF.
-    """
-    bytes_outputs = []
-
-    doc = pymupdf.open(file_path)
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap(dpi=100)  # render page to an image
-        pdfbytes=pix.tobytes(output='png')
-        bytes_outputs.append(pdfbytes)
-    return bytes_outputs
-
-def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, model_id: str, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
+def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
     """
     Save the model response to a DynamoDB Table.
 
@@ -134,9 +93,6 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
 
     system_prompt : Prompt
         An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-    
-    model_id : str
-        The ID of the model used in Bedrock.
 
     chunk_count : int
         The total number of chunk for the document.
@@ -165,31 +121,30 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     if model_response:
         flag_status = False
 
-        response_text = model_response["output"]["message"]["content"][0]["text"]
+        model_id = model_response["model"]
+        response_text = model_response["content"][0]["text"]
         try:
             final_output = re.search(r'<final_output>(.*?)</final_output>', response_text, re.DOTALL).group(1).strip()
         except AttributeError:
             final_output = "[]"
 
-        latency = model_response["metrics"]["latencyMs"]
-        input_token = model_response["usage"]["inputTokens"]
-        output_token = model_response["usage"]["outputTokens"]
+        input_token = model_response["usage"]["input_tokens"]
+        output_token = model_response["usage"]["output_tokens"]
 
         item = {
                 "project_name": {"S": project_name},
                 "chunk_count": {"N": str(chunk_count)},
                 "chunk_id": {"N": str(chunk_id)},
                 "sqs_message_id": {"S": sqs_message_id},
-                "document_id": {"S": file_id.split('.')[0]},
+                "document_id": {"S": file_id},
                 "ingestion_time": {"S": current_time},
                 "model_response": {"S": final_output},
-                "latency": {"N": str(latency)},
                 "input_token": {"N": str(input_token)},
                 "output_token": {"N": str(output_token)},
                 "exception_FLAG": {"BOOL": flag_status},
                 "prompt_id": {"S": prompt_id},
-                "prompt_ver": {"S": prompt_ver},
-                "model_id": {"S": model_id}
+                "model_id": {"S": model_id},
+                "inference_mode": {"S": 'batch'}
             }
     else:
         flag_status = True
@@ -198,12 +153,11 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
             "chunk_count": {"N": str(chunk_count)},
             "chunk_id": {"N": str(chunk_id)},
             "sqs_message_id": {"S": sqs_message_id},
-            "document_id": {"S": file_id.split('.')[0]},
+            "document_id": {"S": file_id},
             "ingestion_time": {"S": current_time},
             "exception": {"S": str(exception)},
             "exception_FLAG": {"BOOL": flag_status},
             "prompt_id": {"S": prompt_id},
-            "prompt_ver": {"S": prompt_ver},
             "model_id": {"S": model_id}
         }
 
@@ -213,98 +167,82 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
         item['system_prompt_id'] = {"S": system_prompt_id}
         item['system_prompt_ver'] = {"S": system_prompt_ver}
 
+    try:
+        response = dynamodb.put_item(TableName=table_name, Item=item)
+    except Exception as e:
+        logging.error(f"Error saving record to DynamoDB table: {e}")
 
-    dynamodb.put_item(TableName=table_name, Item=item)
+def parallel_enabled(array, metadata_dict, dest_bucket, data_folder, dynamodb_table_name, project_name):
+    for j in range(0, len(array)):
+        f = array[j]
+        logging.info(f"Start processing model output:{j} - {f}")
 
-def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
+        bucket_name = f.split('/')[2]
+        key = f.split('/', 3)[3:][0]
+        file_id = f.split('/')[-1].split('.')[0]
+
+        ######### Retrieve msg attributes from metadata json ############
+        try:
+            sqs_message_id = metadata_dict[file_id]['sqs_message_id']
+            prompt_id = metadata_dict[file_id]['prompt_id']
+            prompt_ver = metadata_dict[file_id]['prompt_ver']
+            system_prompt_id = metadata_dict[file_id]['system_prompt_id']
+            system_prompt_ver = metadata_dict[file_id]['system_prompt_ver']
+            chunk_count = metadata_dict[file_id]['chunk_count']
+
+        except KeyError:
+            logging.error(f"Error retrieving the sqs msg attributes for {file_id}")
+            continue
+        
+        ######### Create prompt and system prompt objects ################
+        prompt = Prompt(identifier=prompt_id, ver=prompt_ver)
+        system_prompt = Prompt(identifier=system_prompt_id, ver=system_prompt_ver)
+
+        ######### Download file from S3 ################
+        try:
+            logging.info(f"Downloading model output from {bucket_name}/{s3_key}")
+            response = s3.get_object(
+                                Bucket=bucket,
+                                Key=key,
+                                )
+        except Exception as we:
+            logging.error(f"Error downloading model output from {bucket_name}/{s3_key}: {e}")
+            raise
+
+        try:
+            logging.info(f"Saving model output to DynamoDB table.")          
+            content = response['Body'].iter_lines()
+            ######### Process model output ################
+            chunk_num = 0
+            for line in content:
+                ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                chunk_num+=1
+                logging.info(f"Processing chunk {chunk_num}...")
+                output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
+
+                if 'modelOutput' in output_item:
+                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, model_response=output_item['modelOutput'])
+                else:
+                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, exception=output_item['error'])
+        except Exception as e:
+            logging.error(f"Error saving the model output to DynamoDB table: {e}")          
+
+
+class Prompt():
     """
-    Retrieve a prompt from Amazon Bedrock Prompt Management.
+    A class to represent a prompt.
 
-    Parameters:
+    Attributes
     ----------
-    prompt_id : str
-        The unique identifier or ARN of the prompt
+    identifier : str
+        The unique ID of the prompt on Amazon Bedrock Prompt Management.
+    ver : str
+        The version of the prompt on Amazon Bedrock Prompt Management.
+    text : str
+        The prompt body.
 
-    prompt_ver : str
-        The version of the prompt
-
-    Returns:
-    ----------
-    str
-        The prompt.
-    str
-        The prompt version.
     """
-    client = boto3.client('bedrock-agent')
-    # logging.info(f"Returning version {prompt_ver} of the prompt {prompt_id}.")
-    response = client.get_prompt(promptIdentifier=prompt_id,
-								promptVersion=prompt_ver)
-
-    prompt = response['variants'][0]['templateConfiguration']['text']['text']
-
-    return prompt, prompt_ver
-
-def call_llm(bytes_inputs: list[bytes], model_id: str, prompt: Prompt, system_prompt: Prompt =None) -> dict:
-    """
-    Construct an input to call the LLM using the boto3 Bedrock runtime converse API.
-
-    Parameters:
-    ----------
-    bytes_inputs : list[bytes]
-        A list of bytes containing data for each page in the PDF document.
-
-    model_id : str
-        The ID of the model to be used in Bedrock.
-
-    prompt : Prompt
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-
-    system_prompt : Prompt [optional, default = None]
-        An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
-
-    Returns:
-    ----------
-    dict
-        The output of the Bedrock runtime converse API.
-    """
-    config = Config(read_timeout=1000)
-    bedrock_runtime = boto3.client("bedrock-runtime", region_name="us-east-1", config=config)
-
-    temperature = 0
-    top_p = 0.1
-
-    content_input = []
-    for bytes_input in bytes_inputs:
-        content_input.append({"image": {"format": "png", "source": {"bytes": bytes_input}}})
-
-    content_input.append({"text": prompt.text})
-
-    messages = [
-        {
-            "role": "user",
-            "content": content_input,
-        }
-    ]
-
-    if system_prompt.identifier:
-        response = bedrock_runtime.converse(
-            modelId=model_id,
-            messages=messages,
-            system=[
-                    {"text": system_prompt.text
-                    }],
-            inferenceConfig={
-                'temperature': temperature,
-                'topP': top_p
-            }
-        )
-    else:
-        response = bedrock_runtime.converse(
-            modelId=model_id,
-            messages=messages,
-            inferenceConfig={
-                'temperature': temperature,
-                'topP': top_p
-            }
-        )
-    return response
+    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
+        self.identifier = identifier
+        self.ver = ver
+        self.text = text
