@@ -71,7 +71,8 @@ resource "aws_lambda_function" "bedrock_inference" {
   environment {
     variables = {
       QUEUE_URL                    = aws_sqs_queue.this.url
-      LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
+      LLANDMAN_DEV_LAMBDA_ROLE_ARN = data.terraform_remote_state.realtime_dev_use1.outputs.lambda_role_arn
+      # LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
     }
   }
 
