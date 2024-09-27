@@ -14,7 +14,7 @@ logger.setLevel("INFO")
 # Read environment variables
 queue_url = os.environ.get('QUEUE_URL')
 dest_bucket = os.environ.get('BATCH_DATA_BUCKET')
-# TODO: add role ARN from ENV VAR
+role_arn = os.environ.get('LLANDMAN_DEV_LAMBDA_ROLE_ARN')
 
 def lambda_function(event, context):
     s3 = boto3.client('s3')
@@ -169,7 +169,7 @@ def lambda_function(event, context):
     job_name = f"landman-batch-inference-{data_folder}"
     try:
         response=bedrock.create_model_invocation_job(
-                                                    roleArn="arn:aws:iam::070551638384:role/PassRole-proserve-land-role", # TODO: change the role ARN to the Lambda ARN
+                                                    roleArn=role_arn,
                                                     modelId=max_model_id,
                                                     jobName=job_name,
                                                     inputDataConfig=inputDataConfig,
