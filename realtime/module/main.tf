@@ -128,8 +128,9 @@ resource "aws_lambda_event_source_mapping" "this" {
 
 
 resource "aws_dynamodb_table" "model_outputs" {
-  provider     = aws.acc
-  name         = "${var.prefix}-${var.env}-model-outputs"
+  provider = aws.acc
+  # name         = "${var.prefix}-${var.env}-model-outputs"
+  name         = "${var.prefix}-model-outputs"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "document_id"
   range_key    = "ingestion_time"
