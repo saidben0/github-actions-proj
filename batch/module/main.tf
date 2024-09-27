@@ -33,6 +33,18 @@ resource "aws_sqs_queue" "redrive_dlq" {
 }
 
 
+# configure backend to access state-file of realtime/dev-use1 module
+data "terraform_remote_state" "realtime_dev_use1" {
+  backend = "s3"
+  config = {
+    bucket = "di-dev-terraform"
+    # bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
+    key = "dev/llandman/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+
 # Package the Lambda function code
 data "archive_file" "bedrock_inference" {
   type        = "zip"
@@ -58,9 +70,9 @@ resource "aws_lambda_function" "bedrock_inference" {
 
   environment {
     variables = {
-      # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL                    = aws_sqs_queue.this.url
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
+      DDB_TABLE_NAME = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
+      # QUEUE_URL                    = aws_sqs_queue.this.url
     }
   }
 
@@ -183,19 +195,6 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 
 
 
-
-
-# # configure backend to access state-file of realtime/dev-use1 module
-# data "terraform_remote_state" "realtime_dev_use1" {
-#   backend = "s3"
-#   config = {
-#     # bucket = "di-dev-terraform"
-#     bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
-#     # key = "dev/llandman/terraform.tfstate"
-#     key    = "dev/use1/tfstate" # for testing in proserve shared acc
-#     region = "us-east-1"
-#   }
-# }
 
 # # Define an sqs policy to allow S3 to send messages to the SQS queue
 # resource "aws_sqs_queue_policy" "this" {

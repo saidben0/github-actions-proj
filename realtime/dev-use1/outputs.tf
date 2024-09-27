@@ -30,3 +30,7 @@ output "lambda_layer_version_arn" {
 # output "lambda_layer_arn" {
 #   value = module.dev-use1.lambda_layer_arn
 # }
+
+output "dynamodb_table_name" {
+  value = module.dev-use1.dynamodb_table_name
+}
