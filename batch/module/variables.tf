@@ -40,13 +40,13 @@ variable "project_name" {
 variable "tags" {
   type = map(object)
   default = {
-    Team = "Tech-Land-Manufacturing@enverus.com"
-    Dataset = "land"
-    SourceCode = "https://github.com/enverus-ea/land.llandman"
-    Component =  "llandman"
+    Team         = "Tech-Land-Manufacturing@enverus.com"
+    Dataset      = "land"
+    SourceCode   = "https://github.com/enverus-ea/land.llandman"
+    Component    = "llandman"
     BusinessUnit = "ea"
-    Product = "courthouse"
-    Environment = "dev"
+    Product      = "courthouse"
+    Environment  = "dev"
   }
 }
 
