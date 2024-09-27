@@ -177,8 +177,18 @@ def lambda_function(event, context):
                                                     timeoutDurationInHours=72
                                                 )
         logging.info(f"Bedrock batch inference job successfully created. Job name: {job_name}")
-        #delete messages from SQS using queue_arr 
-        delete_queue_messages(sqs, queue_url, queue_arr)
+
+        job_arn = response.get('jobArn')
+        job_response = bedrock.get_model_invocation_job(jobIdentifier=job_arn)
+        status = job_response['status']
+        if status != 'Failed':
+            logging.info("Deleting SQS messages...")
+            # delete messages from SQS using queue_arr 
+            delete_queue_messages(sqs, queue_url, queue_arr)
+            logging.info("Deleted SQS messages.")
+        else:
+            logging.info("The Bedrock batch inference job has failed. Please check Bedrock for more info.")
+            logging.info("The SQS messages are not deleted.")
 
     except Exception as e:
         logging.error(f"Error creating Bedrock batch inference job: {e}")
