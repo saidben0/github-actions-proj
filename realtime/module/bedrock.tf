@@ -5,14 +5,20 @@ resource "awscc_bedrock_prompt" "this" {
   default_variant = each.value.default_variant
   name            = each.value.name
   variants        = each.value.variants
+
+  tags = var.tags
 }
+
 
 resource "awscc_bedrock_prompt_version" "this" {
   for_each = local.bedrock_prompts
 
   provider   = awscc.acc
   prompt_arn = awscc_bedrock_prompt.this[each.key].arn
+
+  tags = var.tags
 }
+
 
 resource "null_resource" "main_prompt_version_ssm_param" {
   provisioner "local-exec" {

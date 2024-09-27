@@ -9,8 +9,8 @@ variable "env" {
 
 variable "inputs_bucket_name" {
   type    = string
-  default = "enverus-courthouse-dev-chd-plants"
-  # default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
+  # default = "enverus-courthouse-dev-chd-plants"
+  default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
 }
 
 variable "lambda_function_name" {
@@ -59,4 +59,17 @@ variable "system_prompt_ver" {
 
 variable "lambda_layer_version_arn" {
   type = string
+}
+
+variable "lambda_layer_name" {
+  type = string
+}
+
+variable "tags" {
+  type = map(string)
+  default = {
+    GitRepo = "Land.Llandman"
+    Env     = "Dev"
+    Owner   = "Ops"
+  }
 }
