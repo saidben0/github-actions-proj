@@ -42,7 +42,10 @@ def lambda_function(event, context):
         logging.info("Rceiving SQS message from queue...")   
         msg_count = 0
         
-        msg_attributes = {}
+        msg_attributes = {}     # to save message attributes for each doc
+
+        # for model polling
+        model_count = {}
         
         # one receive_message call can receive up to 10 messages a time 
         # so we will contine to call if we haven't received the EXPECTED number yet
@@ -78,7 +81,7 @@ def lambda_function(event, context):
                         project_name = message_attributes['application']['StringValue']
                         s3_loc = message_attributes['s3_location']['StringValue']
                         file_id = s3_loc.split('/')[-1].split('.')[0]
-                        #model_id = message_attributes['model_id']['StringValue']
+                        model_id = message_attributes['model_id']['StringValue']
                         prompt_id = message_attributes['prompt_id']['StringValue']
                         prompt_ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
                         system_prompt_id = message_attributes.get('system_prompt_id', {}).get('stringValue', None)
@@ -92,6 +95,8 @@ def lambda_function(event, context):
                             "system_prompt_ver": system_prompt_ver,
                             }
 
+                        model_count[model_id] = model_count.get(model_id, 0) + 1
+
                         doc_arr.append(s3_loc)
                         queue_arr.append(receipt_handle)
 
@@ -103,8 +108,15 @@ def lambda_function(event, context):
         logging.error(f"Error receiving SQS message from queue: {e}")
         sys.exit(0)
     
-
-    # TODO:  add logic to determine the model ID
+    logging.info("Determining the model to use.")
+    try:
+        if model_count:
+            max_model_id = max(model_count, key=model_count.get)
+            max_count = model_count[max_model_id]
+            logging.info(f"{max_count} out of {msg_count} messages use {max_model_id}. Using {max_model_id} for the batch inference.")
+    except Exception as e:
+        logging.error(f"Error determining the model to use: {e}")
+        raise
     
     logging.info("Finish reading SQS messages.")
     
@@ -153,11 +165,11 @@ def lambda_function(event, context):
     })
     
     bedrock = boto3.client(service_name="bedrock")
-    job_name = f"batch-inference-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+    job_name = f"landman-batch-inference-{data_folder}"
     try:
         response=bedrock.create_model_invocation_job(
                                                     roleArn="arn:aws:iam::070551638384:role/PassRole-proserve-land-role", # TODO: change the role ARN to the Lambda ARN
-                                                    modelId="anthropic.claude-3-5-sonnet-20240620-v1:0",
+                                                    modelId=max_model_id,
                                                     jobName=job_name,
                                                     inputDataConfig=inputDataConfig,
                                                     outputDataConfig=outputDataConfig,
