@@ -38,7 +38,7 @@ variable "project_name" {
 }
 
 variable "tags" {
-  type = map(object)
+  type = map(string)
   default = {
     Team         = "Tech-Land-Manufacturing@enverus.com"
     Dataset      = "land"
