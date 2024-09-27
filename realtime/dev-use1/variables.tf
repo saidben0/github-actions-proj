@@ -64,12 +64,3 @@ variable "lambda_layer_version_arn" {
 variable "lambda_layer_name" {
   type = string
 }
-
-variable "tags" {
-  type = map(string)
-  default = {
-    GitRepo = "Land.Llandman"
-    Env     = "Dev"
-    Owner   = "Ops"
-  }
-}
