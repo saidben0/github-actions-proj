@@ -8,7 +8,7 @@ variable "env" {
 }
 
 variable "inputs_bucket_name" {
-  type    = string
+  type = string
   # default = "enverus-courthouse-dev-chd-plants"
   default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
 }
