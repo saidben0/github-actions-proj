@@ -120,10 +120,10 @@ resource "aws_lambda_function" "post_inference_processor" {
 resource "aws_sqs_queue" "this" {
   provider                   = aws.acc
   name                       = "${var.prefix}-${var.env}-batch-queue"
-  visibility_timeout_seconds = 900
+  visibility_timeout_seconds = 7200
   delay_seconds              = 0
   max_message_size           = 10000
-  message_retention_seconds  = 864000
+  message_retention_seconds  = 8640000
   receive_wait_time_seconds  = 10
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.redrive_dlq.arn
