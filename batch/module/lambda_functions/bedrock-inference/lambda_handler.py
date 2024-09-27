@@ -5,6 +5,7 @@ import json
 import os
 import boto3
 from datetime import datetime
+import logging
 
 # Logger information
 logger = logging.getLogger()
@@ -154,13 +155,13 @@ def lambda_function(event, context):
     
     inputDataConfig=({
     "s3InputDataConfig": {
-        "s3Uri": f"s3://{dest_bucket}/model-input/"
+        "s3Uri": f"s3://{dest_bucket}/{data_folder}/model-input/"
     }
     })
 
     outputDataConfig=({
     "s3OutputDataConfig": {
-        "s3Uri": f"s3://{dest_bucket}/model-output/"
+        "s3Uri": f"s3://{dest_bucket}/{data_folder}/model-output/"
         }
     })
     
