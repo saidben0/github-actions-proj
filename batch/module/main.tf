@@ -59,7 +59,7 @@ resource "aws_lambda_function" "bedrock_inference" {
   environment {
     variables = {
       # DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
-      QUEUE_URL = aws_sqs_queue.this.url
+      QUEUE_URL                    = aws_sqs_queue.this.url
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
     }
   }
