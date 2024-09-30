@@ -16,7 +16,7 @@ queue_url = os.environ.get('QUEUE_URL')
 dest_bucket = os.environ.get('BATCH_DATA_BUCKET')
 role_arn = os.environ.get('LLANDMAN_DEV_LAMBDA_ROLE_ARN')
 
-def lambda_function(event, context):
+def lambda_handler(event, context):
     s3 = boto3.client('s3')
     sqs = boto3.client('sqs')
 
