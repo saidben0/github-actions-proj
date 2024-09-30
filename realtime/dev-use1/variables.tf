@@ -17,6 +17,10 @@ variable "python_version" {
   type = string
 }
 
+variable "lambda_role_name" {
+  type    = string
+}
+
 variable "lambda_layer_version_arn" {
   type = string
 }

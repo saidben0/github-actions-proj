@@ -15,6 +15,9 @@ on:
       aws-region:
         required: true
         type: string
+      lambda-role-name:
+        required: true
+        type: string
       deploy:
         required: true
         type: string
@@ -139,6 +142,7 @@ jobs:
                                           --output text)
           terraform plan \
             -var env=${{ inputs.env }} \
+            -var lambda_role_name=${{ inputs.lambda-role-name }} \
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan
@@ -192,6 +196,7 @@ jobs:
           cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
           terraform plan \
             -var env=${{ inputs.env }} \
+            -var lambda_role_name=${{ inputs.lambda-role-name }} \
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan &> /dev/null

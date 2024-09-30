@@ -7,6 +7,10 @@ variable "env" {
   type = string
 }
 
+variable "lambda_role_name" {
+  type    = string
+}
+
 variable "lambda_layer_version_arn" {
   type = string
 }
@@ -38,11 +42,6 @@ variable "python_version" {
 # variable "lambda_function_name" {
 #   type    = string
 #   default = "queue-processing"
-# }
-
-# variable "lambda_role_name" {
-#   type    = string
-#   default = "llandman-dev-lambda-exec-role"
 # }
 
 # variable "dynamodb_table_name" {
