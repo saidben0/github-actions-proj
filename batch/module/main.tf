@@ -60,6 +60,9 @@ resource "aws_lambda_function" "bedrock_inference" {
   timeout                        = "900"
   reserved_concurrent_executions = 100
   memory_size                    = 10240
+  ephemeral_storage {
+    size = 2048
+  }
 
   environment {
     variables = {
