@@ -106,13 +106,40 @@ def prepare_model_inputs(bytes_inputs: list[bytes], prompt: Prompt, system_promp
 
     return model_inputs, chunk_count
 
-def write_jsonl(data):
+def write_jsonl(data: list):
+    """
+    Write the formatted model input jsons into a string.
+
+    Parameters:
+    ----------
+    data : list
+        A list containing json objects, each for one request to send to Bedrock.
+    
+    Returns:
+    ----------
+    jsonl_content : str
+        A str containing the jsonl, ready to be uploaded directly to S3 as a jsonl object,
+
+    """
     jsonl_content = ''
     for item in data:
         jsonl_content += json.dumps(item) + '\n'
     return jsonl_content
 
-def upload_to_s3(bucket_name, key, body):
+def upload_to_s3(bucket_name: str, key: str, body: str):
+    """
+    Upload jsons to an S3 location
+
+    Parameters:
+    ----------
+    bucket_name : str
+        The destination bucket name.
+    key : str
+        The destionation key. It should include the whole path with the file name.
+    body : str
+        The data to be uploaded to S3.
+
+    """
     s3 = boto3.client('s3')
     s3.put_object(
         Bucket=bucket_name,
@@ -121,7 +148,22 @@ def upload_to_s3(bucket_name, key, body):
         ContentType='application/json'
     )
     
-def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
+def parallel_enabled(array: list[str], metadata_dict: dict, dest_bucket: str, data_folder: str):
+    """
+    Process multiple files in a parallelized manner.
+
+    Parameters:
+    ----------
+    array : list[str]
+        A list of s3 locations for at least 1000 documents.
+    metadata_dict : dict
+        A dictionary containing sqs message attributes to be shared among parallelized processes.
+    dest_bucket : str
+        The destination bucket to store the formatted model input.
+    data_folder : str
+        The folder name for all model input jsonl for this Bedrock batch inference job.
+
+    """
     for j in range(0, len(array)):
         f = array[j]
         logging.info(f"Start processing file:{j} - {f}")
