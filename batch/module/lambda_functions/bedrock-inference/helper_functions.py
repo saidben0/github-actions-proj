@@ -187,15 +187,15 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
         except Exception as e:
             logging.error(f"Error creating model input: {e}")
             continue
-
-        logging.info(f"Saving model_input JSON to S3: {j} - {f}")
-        try:
-            upload_to_s3(path=f"./{file_name}", 
-                         bucket_name=dest_bucket, 
-                         bucket_subfolder=f'{data_folder}/model-input')
-        except Exception as e:
-            logging.error(f"Error saving model input to S3: {e}")
-            continue
+        # TODO: uncomment
+        # logging.info(f"Saving model_input JSON to S3: {j} - {f}")
+        # try:
+        #     upload_to_s3(path=f"./{file_name}", 
+        #                  bucket_name=dest_bucket, 
+        #                  bucket_subfolder=f'{data_folder}/model-input')
+        # except Exception as e:
+        #     logging.error(f"Error saving model input to S3: {e}")
+        #     continue
 
         metadata_dict[file_id]["chunk_count"] = chunk_count
 

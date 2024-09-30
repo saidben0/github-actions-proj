@@ -22,7 +22,7 @@ def lambda_handler(event, context):
 
     data_folder = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 
-    EXPECTED = 1000
+    EXPECTED = 800  # TODO: Change back to 1000
     queue_arr = []
     doc_arr = []
     # create array of SQS queue message with ReceiptHandle
@@ -147,7 +147,10 @@ def lambda_handler(event, context):
 
         try:
             logging.info(f"Uploading metadata.json to {dest_bucket}")
-            upload_to_s3(metadata_temp_loc, dest_bucket, f'{data_folder}/metadata')
+            # TODO: uncomment
+            # upload_to_s3(metadata_temp_loc, dest_bucket, f'{data_folder}/metadata')
+
+            logging.info(metadata)
         except Exception as e:
             logging.error(f"Error uploading metadata.json: {e}")
     
@@ -183,7 +186,7 @@ def lambda_handler(event, context):
         job_response = bedrock.get_model_invocation_job(jobIdentifier=job_arn)
         status = job_response['status']
         if status != 'Failed':
-            logging.info("Deleting SQS messages...")
+            logging.info(f"The Bedrock batch inference job is {status}. Deleting SQS messages...")
             # delete messages from SQS using queue_arr 
             delete_queue_messages(sqs, queue_url, queue_arr)
             logging.info("Deleted SQS messages.")
