@@ -3,70 +3,34 @@ import json
 import os
 import boto3
 from datetime import datetime
+import regex as re
+import logging
+from typing import Optional
 
-dynamodb = boto3.client('dynamodb', region_name='us-east-1')
 s3 = boto3.client('s3')
 
-def process_model_output(array):
-    for j in range(0, len(array)):
-        f = array[j]
-        print(f"Processing file:{j} - {f}")
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
-        ##### Download outputs from s3
-        bucket = f.split('/')[2]
-        key = f.split('/',3)[3:][0]
-        file_id = f.split('/')[-1].split('.')[0]
+class Prompt():
+    """
+    A class to represent a prompt.
 
-        print(f'file id: {file_id}')
-        response = s3.get_object(
-                            Bucket=bucket,
-                            Key=key,
-                            )
-        content = response['Body'].iter_lines()
-        # print(f'content: {content}')
+    Attributes
+    ----------
+    identifier : str
+        The unique ID of the prompt on Amazon Bedrock Prompt Management.
+    ver : str
+        The version of the prompt on Amazon Bedrock Prompt Management.
+    text : str
+        The prompt body.
 
-        chunk_count = 0
-        for line in content:
-            ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            chunk_count+=1
-            print(chunk_count)
-            output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
-            # print(output_item)
-            # print(f'output_item: {output_item}')
-            response_text=output_item['modelOutput']['content'][0]['text']
-            print(f"Response for chunk {chunk_count}: {response_text}")
-
-            flag_status = False
-
-            try:
-                final_output = re.search(r'<final_output>(.*?)</final_output>', response_text, re.DOTALL).group(1).strip()
-            except AttributeError:
-                final_output = "[]"
-            # print(f"final_output: {final_output}")
-            input_token = output_item["modelOutput"]["usage"]["input_tokens"]
-            output_token = output_item["modelOutput"]["usage"]["output_tokens"]
-            ##### Save to DDB table
-            item = {
-                "project_name": {"S": 'landman'},
-                # "chunk_count": {"N": str(len(model_outputs))},
-                "chunk_id": {"N": str(chunk_count)},
-                # "sqs_message_id": {"S": sqs_message_id},
-                "document_id": {"S": file_id.split('.')[0]},
-                "ingestion_time": {"S": ingestion_time},
-                "model_response": {"S": final_output},
-                # "latency": {"N": str(latency)},
-                "input_token": {"N": str(input_token)},
-                "output_token": {"N": str(output_token)},
-                "exception_FLAG": {"BOOL": flag_status},
-                "inference_mode": {"S": 'batch'},
-                # "prompt_id": {"S": prompt_id},
-                # "prompt_ver": {"S": prompt_ver},
-                "model_id": {"S": 'anthropic.claude-3-5-sonnet-20240620-v1:0'}
-            }
-            # ddb_response = dynamodb.put_item(TableName='aws-proserve-land-doc', Item=item)
-            # print(f"ddb_response: {ddb_response}")
-        print(f"Finish processing file: {f}")
-
+    """
+    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
+        self.identifier = identifier
+        self.ver = ver
+        self.text = text
+        
 def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
     """
     Save the model response to a DynamoDB Table.
@@ -168,7 +132,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
         item['system_prompt_ver'] = {"S": system_prompt_ver}
 
     try:
-        response = dynamodb.put_item(TableName=table_name, Item=item)
+        dynamodb.put_item(TableName=table_name, Item=item)
     except Exception as e:
         logging.error(f"Error saving record to DynamoDB table: {e}")
 
@@ -203,7 +167,7 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
         try:
             logging.info(f"Downloading model output from {bucket_name}/{s3_key}")
             response = s3.get_object(
-                                Bucket=bucket,
+                                Bucket=bucket_name,
                                 Key=key,
                                 )
         except Exception as we:
@@ -229,21 +193,3 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
             logging.error(f"Error saving the model output to DynamoDB table: {e}")          
 
 
-class Prompt():
-    """
-    A class to represent a prompt.
-
-    Attributes
-    ----------
-    identifier : str
-        The unique ID of the prompt on Amazon Bedrock Prompt Management.
-    ver : str
-        The version of the prompt on Amazon Bedrock Prompt Management.
-    text : str
-        The prompt body.
-
-    """
-    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
-        self.identifier = identifier
-        self.ver = ver
-        self.text = text

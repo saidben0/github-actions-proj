@@ -10,12 +10,15 @@ import logging
 # ENV VAR
 dest_bucket = os.environ.get('BATCH_DATA_BUCKET')
 dynamodb_table_name = os.environ.get('DDB_TABLE_NAME')
-project_name = os.environ.get('PROJECT_NAME')
+
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
     # batch inference job details
+    logging.info(f"EVENT: {event}")
     try:
         logging.info("Reading batch job details from event.")
         job_arn = event["detail"]["batchJobArn"]
@@ -46,6 +49,7 @@ def lambda_handler(event, context):
         logging.info(f"s3_uris: {model_output_arr}")
     except Exception as e:
         logging.error(f"Error getting S3 URIs: {e}")
+        raise
         
     # read sqs message attributes json
     try:
