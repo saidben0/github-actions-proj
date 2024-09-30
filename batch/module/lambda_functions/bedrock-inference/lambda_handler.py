@@ -64,8 +64,8 @@ def lambda_handler(event, context):
                 messages = response['Messages']
                 num_messages = len(messages)
             except KeyError:
-                logging.log("No more records, exit loop")
-                num_messages = 0
+                logging.info("No more records, exit loop")
+                # num_messages = 0
             for j in range(0, num_messages):
                 try:
                     message = messages[j]
