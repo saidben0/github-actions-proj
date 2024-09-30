@@ -1,5 +1,5 @@
 joblib==1.4.2
-# boto3==1.35.29
+boto3==1.35.29
 
 # Python 3.12 PyMuPDF
 # Get link to "PyMuPDF-1.24.10-cp312-none-manylinux2014_x86_64.whl"
