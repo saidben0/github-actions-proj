@@ -3,6 +3,10 @@ import json
 import os
 import boto3
 from datetime import datetime
+from botocore.response import StreamingBody
+import pymupdf
+import base64
+from typing import Optional
 
 def prepare_model_inputs(bytes_inputs, model_id, prompt, system_prompt):
     temperature = 0
@@ -65,6 +69,9 @@ def write_jsonl(data, file_path):
             file.write(json_str + '\n')
 
 def upload_to_s3(path, bucket_name, bucket_subfolder=None):
+
+    s3 = boto3.client('s3')
+
     # check if the path is a file
     if os.path.isfile(path):
         # If the path is a file, upload it directly
@@ -93,8 +100,6 @@ def upload_to_s3(path, bucket_name, bucket_subfolder=None):
         return None
     
 def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
-    totalsize = 0
-    totalpage = 0
 
     for j in range(0, len(array)):
         f = array[j]
