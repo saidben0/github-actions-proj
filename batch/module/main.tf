@@ -49,10 +49,10 @@ data "archive_file" "bedrock_inference" {
 
 
 resource "aws_lambda_function" "bedrock_inference" {
-  provider      = aws.acc
-  filename      = data.archive_file.bedrock_inference.output_path
-  function_name = "${var.prefix}-${var.env}-bedrock-inference"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider                       = aws.acc
+  filename                       = data.archive_file.bedrock_inference.output_path
+  function_name                  = "${var.prefix}-${var.env}-bedrock-inference"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.bedrock_inference.output_base64sha256
@@ -83,10 +83,10 @@ data "archive_file" "post_inference_processor" {
 }
 
 resource "aws_lambda_function" "post_inference_processor" {
-  provider      = aws.acc
-  filename      = data.archive_file.post_inference_processor.output_path
-  function_name = "${var.prefix}-${var.env}-post-inference-processor"
-  role          = data.aws_iam_role.llandman_lambda_exec_role.arn
+  provider                       = aws.acc
+  filename                       = data.archive_file.post_inference_processor.output_path
+  function_name                  = "${var.prefix}-${var.env}-post-inference-processor"
+  role                           = data.aws_iam_role.llandman_lambda_exec_role.arn
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.post_inference_processor.output_base64sha256
