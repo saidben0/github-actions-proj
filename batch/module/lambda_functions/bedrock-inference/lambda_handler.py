@@ -22,7 +22,7 @@ def lambda_handler(event, context):
 
     data_folder = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 
-    EXPECTED = 900  # TODO: Change back to 1000
+    EXPECTED = 1000
     queue_arr = []
     doc_arr = []
     # create array of SQS queue message with ReceiptHandle
