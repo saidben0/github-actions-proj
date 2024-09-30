@@ -30,6 +30,7 @@ variable "inputs_bucket_name" {
 }
 
 
+
 # variable "lambda_function_name" {
 #   type    = string
 #   default = "queue-processing"

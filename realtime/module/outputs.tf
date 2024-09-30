@@ -26,10 +26,6 @@ output "lambda_layer_version_arn" {
   value = var.lambda_layer_version_arn
 }
 
-# output "lambda_layer_arn" {
-#   value = aws_lambda_layer_version.lambda_layer.arn
-# }
-
 output "dynamodb_table_name" {
   value = aws_dynamodb_table.model_outputs.name
 }
