@@ -7,6 +7,10 @@ from botocore.response import StreamingBody
 import pymupdf
 import base64
 from typing import Optional
+import logging
+
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 class Prompt():
     """

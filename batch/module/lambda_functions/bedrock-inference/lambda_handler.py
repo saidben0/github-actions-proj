@@ -144,6 +144,7 @@ def lambda_handler(event, context):
 
         except Exception as e:
             logging.error(f"Error processing data: {e}")
+            raise
 
         try:
             logging.info(f"Uploading metadata.json to {dest_bucket}")
@@ -153,6 +154,7 @@ def lambda_handler(event, context):
             logging.info(metadata)
         except Exception as e:
             logging.error(f"Error uploading metadata.json: {e}")
+            raise
     
     logging.info("Finish processing data.")
     logging.info("Creating Bedrock batch inference job.")
