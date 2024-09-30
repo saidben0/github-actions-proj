@@ -8,15 +8,55 @@ import pymupdf
 import base64
 from typing import Optional
 
-def prepare_model_inputs(bytes_inputs, model_id, prompt, system_prompt):
+class Prompt():
+    """
+    A class to represent a prompt.
+
+    Attributes
+    ----------
+    identifier : str
+        The unique ID of the prompt on Amazon Bedrock Prompt Management.
+    ver : str
+        The version of the prompt on Amazon Bedrock Prompt Management.
+    text : str
+        The prompt body.
+
+    """
+    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
+        self.identifier = identifier
+        self.ver = ver
+        self.text = text
+
+def prepare_model_inputs(bytes_inputs: list[bytes], prompt: Prompt, system_prompt: Prompt) -> tuple[list, int]:
+    """
+    Prepare the data to the required format for Bedrock batch inference.
+
+    Parameters:
+    ----------
+    bytes_inputs : list[bytes]
+        A list containing the data, in bytes, for each page of the PDF.
+
+    prompt : Prompt
+        An instance of the Prompt class that contains the user prompt to be used in the record.
+    
+    system_prompt : Prompt
+        An instance of the Prompt class that contains the system prompt to be used in the record.
+
+    Returns:
+    ----------
+    tuple[list, int]
+        A tuple containing:
+        - A list of formatted dictionaries to send to Bedrock batch inference job
+        - An integer of the total number of formatted dictionaries. This is used as the total number of chunks in a PDF.
+    """
     temperature = 0
     top_p = 0.1
     max_tokens = 4096
     anthropic_version = "bedrock-2023-05-31"
-    
+
     ### Retrieve prompts from Bedrock
     prompt.text, prompt.ver = retrieve_bedrock_prompt(prompt.identifier, prompt.ver)
-    
+  
     if system_prompt.identifier:
         system_prompt.text, system_prompt.ver = retrieve_bedrock_prompt(system_prompt.identifier, system_prompt.ver)
 
@@ -134,7 +174,7 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
 
         logging.info(f"Start processing data for {j} - {f}")
         try:
-            model_input_jsonl, chunk_count = prepare_model_inputs(bytes_inputs, model_id, prompt, system_prompt)
+            model_input_jsonl, chunk_count = prepare_model_inputs(bytes_inputs, prompt, system_prompt)
 
         except Exception as e:
             logging.error(f"Error creating model input: {e}")
@@ -189,7 +229,7 @@ def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
         raise e
     return bytes_outputs
 
-def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
+def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str) -> tuple[str, str]:
     """
     Retrieve a prompt from Amazon Bedrock Prompt Management.
 
@@ -203,10 +243,10 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str):
 
     Returns:
     ----------
-    str
-        The prompt.
-    str
-        The prompt version.
+    tuple[str, str]
+        A tuple containing:
+        - prompt (str): The text of the prompt returned by Amazon Bedrock Prompt Management.
+        - prompt_ver (str): The version of the prompt returned.
     """
     client = boto3.client('bedrock-agent')
     # logging.info(f"Returning version {prompt_ver} of the prompt {prompt_id}.")
@@ -255,21 +295,3 @@ def delete_queue_messages(sqs, queue_url, queue_arr):
         sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=queue_arr[i])
     logging.info(f"sqs message deleted: - {i}")
 
-class Prompt():
-    """
-    A class to represent a prompt.
-
-    Attributes
-    ----------
-    identifier : str
-        The unique ID of the prompt on Amazon Bedrock Prompt Management.
-    ver : str
-        The version of the prompt on Amazon Bedrock Prompt Management.
-    text : str
-        The prompt body.
-
-    """
-    def __init__(self, identifier: Optional[str] = None, ver: Optional[str] = None, text: Optional[str] = None):
-        self.identifier = identifier
-        self.ver = ver
-        self.text = text
