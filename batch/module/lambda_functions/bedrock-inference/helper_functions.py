@@ -106,11 +106,11 @@ def prepare_model_inputs(bytes_inputs: list[bytes], prompt: Prompt, system_promp
 
     return model_inputs, chunk_count
 
-def write_jsonl(data, file_path):
-    with open(file_path, 'w') as file:
-        for item in data:
-            json_str = json.dumps(item)
-            file.write(json_str + '\n')
+def write_jsonl(data):
+    jsonl_content = ''
+    for item in data:
+        jsonl_content += json.dumps(item) + '\n'
+    return jsonl_content
 
 def upload_to_s3(path, bucket_name, bucket_subfolder=None):
 
@@ -186,11 +186,21 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
 
         logging.info(f"Writing model_input JSON for {j} - {f}")
         try:
-            file_name = f'tmp/{file_id}.jsonl'
-            write_jsonl(model_input_jsonl, file_name)
+            # file_name = f'/tmp/{file_id}.jsonl'
+            jsonl_content = write_jsonl(model_input_jsonl)
         except Exception as e:
             logging.error(f"Error creating model input: {e}")
             continue
+        
+        # TODO: apply to all pdfs
+        if j == 1:
+            print(f"Saving jsonl for {j} - {file_id}.jsonl")
+            response = s3.put_object(
+                Bucket=dest_bucket,
+                Key=f'{data_folder}/model-input/{file_id}.jsonl',
+                Body=jsonl_content,
+                ContentType='application/json'
+            )
         # TODO: uncomment
         # logging.info(f"Saving model_input JSON to S3: {j} - {f}")
         # try:
