@@ -112,39 +112,16 @@ def write_jsonl(data):
         jsonl_content += json.dumps(item) + '\n'
     return jsonl_content
 
-def upload_to_s3(path, bucket_name, bucket_subfolder=None):
-
+def upload_to_s3(bucket_name, key, body):
     s3 = boto3.client('s3')
-
-    # check if the path is a file
-    if os.path.isfile(path):
-        # If the path is a file, upload it directly
-        object_name = os.path.basename(path) if bucket_subfolder is None else f"{bucket_subfolder}/{os.path.basename(path)}"
-        try:
-            s3.upload_file(path, bucket_name, object_name)
-            print(f"Successfully uploaded {path} to {bucket_name}/{object_name}")
-            return True
-        except Exception as e:
-            print(f"Error uploading {path} to S3: {e}")
-            return False
-    elif os.path.isdir(path):
-        # If the path is a directory, recursively upload all files within it
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                relative_path = os.path.relpath(file_path, path)
-                object_name = relative_path if bucket_subfolder is None else f"{bucket_subfolder}/{relative_path}"
-                try:
-                    s3.upload_file(file_path, bucket_name, object_name)
-                except Exception as e:
-                    print(f"Error uploading {file_path} to S3: {e}")
-        return None
-    else:
-        print(f"{path} is not a file or directory.")
-        return None
+    s3.put_object(
+        Bucket=bucket_name,
+        Key=key,
+        Body=body,
+        ContentType='application/json'
+    )
     
 def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
-
     for j in range(0, len(array)):
         f = array[j]
         logging.info(f"Start processing file:{j} - {f}")
@@ -152,7 +129,7 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
         bucket_name = f.split('/')[2]
         s3_key = f.split('/', 3)[3:][0]
         file_id = f.split('/')[-1].split('.')[0]
-        # file_id = f.split('.')[0]
+
         try:
             mime, body = retrievePdf(bucket_name, s3_key)
         except Exception as e:
@@ -186,30 +163,17 @@ def parallel_enabled(array, metadata_dict, dest_bucket, data_folder):
 
         logging.info(f"Writing model_input JSON for {j} - {f}")
         try:
-            # file_name = f'/tmp/{file_id}.jsonl'
             jsonl_content = write_jsonl(model_input_jsonl)
         except Exception as e:
             logging.error(f"Error creating model input: {e}")
             continue
         
-        # TODO: apply to all pdfs
-        if j == 1:
-            print(f"Saving jsonl for {j} - {file_id}.jsonl")
-            response = s3.put_object(
-                Bucket=dest_bucket,
-                Key=f'{data_folder}/model-input/{file_id}.jsonl',
-                Body=jsonl_content,
-                ContentType='application/json'
-            )
-        # TODO: uncomment
-        # logging.info(f"Saving model_input JSON to S3: {j} - {f}")
-        # try:
-        #     upload_to_s3(path=f"./{file_name}", 
-        #                  bucket_name=dest_bucket, 
-        #                  bucket_subfolder=f'{data_folder}/model-input')
-        # except Exception as e:
-        #     logging.error(f"Error saving model input to S3: {e}")
-        #     continue
+        try:
+            logging.info(f"Saving JSONL for {j} - {f} ")
+            upload_to_s3(dest_bucket, f'{data_folder}/model-input/{file_id}.jsonl', jsonl_content)
+        except Exception as e:
+            logging.error(f"Error saving JSONL: {e}")
+            raise
 
         metadata_dict[file_id]["chunk_count"] = chunk_count
 

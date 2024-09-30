@@ -137,10 +137,6 @@ def lambda_handler(event, context):
                 p.join()
 
             metadata = dict(metadata_dict)
-            metadata_temp_loc = '/tmp/metadata.json'
-
-            with open(metadata_temp_loc, 'w') as f:
-                json.dump(metadata, f, indent=4)
 
         except Exception as e:
             logging.error(f"Error processing data: {e}")
@@ -148,10 +144,8 @@ def lambda_handler(event, context):
 
         try:
             logging.info(f"Uploading metadata.json to {dest_bucket}")
-            # TODO: uncomment
-            # upload_to_s3(metadata_temp_loc, dest_bucket, f'{data_folder}/metadata')
+            upload_to_s3(dest_bucket, f'{data_folder}/metadata/metadata.json', metadata)
 
-            logging.info(metadata)
         except Exception as e:
             logging.error(f"Error uploading metadata.json: {e}")
             raise
