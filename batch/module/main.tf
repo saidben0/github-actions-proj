@@ -111,7 +111,7 @@ resource "aws_lambda_function" "post_inference_processor" {
 resource "aws_sqs_queue" "this" {
   provider                   = aws.acc
   name                       = "${var.prefix}-${var.env}-batch-queue"
-  visibility_timeout_seconds = 300 # TODO: Change back to 7200 after batch pipeline test
+  visibility_timeout_seconds = 900 # TODO: Change back to 7200 after batch pipeline test
   delay_seconds              = 0
   max_message_size           = 10000
   message_retention_seconds  = 1209600
