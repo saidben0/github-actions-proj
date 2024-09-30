@@ -48,13 +48,6 @@ resource "aws_s3_bucket_public_access_block" "batch_inference_bucket" {
   restrict_public_buckets = true
 }
 
-# resource "aws_s3_bucket_logging" "this" {
-#   bucket = aws_s3_bucket.${var.inputs_bucket_name}.id
-
-#   target_bucket = aws_s3_bucket.log_bucket.id
-#   target_prefix = "log/"
-# }
-
 resource "aws_s3_bucket_ownership_controls" "this" {
   provider = aws.acc
   bucket   = aws_s3_bucket.batch_inference_bucket.id
@@ -62,13 +55,3 @@ resource "aws_s3_bucket_ownership_controls" "this" {
     object_ownership = "BucketOwnerEnforced"
   }
 }
-
-# resource "aws_s3_bucket_acl" "this" {
-#   provider = aws.acc
-#   bucket   = aws_s3_bucket.${var.inputs_bucket_name}.id
-#   acl      = "private"
-
-#   depends_on = [aws_s3_bucket_ownership_controls.this]
-# }
-########################################################################
-########################################################################

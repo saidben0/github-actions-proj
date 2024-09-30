@@ -10,12 +10,6 @@ data "aws_region" "this" {
   provider = aws.acc
 }
 
-
-# data "aws_s3_bucket" "inputs_bucket" {
-#   provider = aws.acc
-#   bucket   = var.inputs_bucket_name
-# }
-
 data "aws_iam_role" "llandman_lambda_exec_role" {
   provider = aws.acc
   name     = "${var.prefix}-${var.env}-lambda-exec-role"
@@ -59,7 +53,6 @@ resource "aws_lambda_function" "bedrock_inference" {
   filename      = data.archive_file.bedrock_inference.output_path
   function_name = "${var.prefix}-${var.env}-bedrock-inference"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.bedrock_inference.output_base64sha256
@@ -73,7 +66,6 @@ resource "aws_lambda_function" "bedrock_inference" {
       QUEUE_URL                    = aws_sqs_queue.this.url
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = data.terraform_remote_state.realtime_dev_use1.outputs.lambda_role_arn
       BATCH_DATA_BUCKET            = aws_s3_bucket.batch_inference_bucket.id
-      # LLANDMAN_DEV_LAMBDA_ROLE_ARN = "arn:aws:iam::${local.account_id}:role/${var.lambda_role_name}"
     }
   }
 
@@ -95,7 +87,6 @@ resource "aws_lambda_function" "post_inference_processor" {
   filename      = data.archive_file.post_inference_processor.output_path
   function_name = "${var.prefix}-${var.env}-post-inference-processor"
   role          = data.aws_iam_role.llandman_lambda_exec_role.arn
-  # layers                         = [data.terraform_remote_state.realtime_dev_use1.outputs.lambda_layer_arn]
   layers                         = [var.lambda_layer_version_arn]
   handler                        = "lambda_handler.lambda_handler"
   source_code_hash               = data.archive_file.post_inference_processor.output_base64sha256
@@ -108,7 +99,6 @@ resource "aws_lambda_function" "post_inference_processor" {
     variables = {
       DDB_TABLE_NAME    = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
       BATCH_DATA_BUCKET = aws_s3_bucket.batch_inference_bucket.id
-      # QUEUE_URL         = aws_sqs_queue.this.url
     }
   }
 
@@ -193,40 +183,3 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.bedrock_batch_inference_complete.arn
 }
-
-
-
-
-# # Define an sqs policy to allow S3 to send messages to the SQS queue
-# resource "aws_sqs_queue_policy" "this" {
-#   provider  = aws.acc
-#   queue_url = aws_sqs_queue.this.url
-
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Principal = {
-#           Service = "s3.amazonaws.com"
-#         },
-#         Action   = "sqs:SendMessage",
-#         Resource = aws_sqs_queue.this.arn,
-#         Condition = {
-#           ArnEquals = {
-#             "aws:SourceArn" = data.aws_s3_bucket.inputs_bucket.arn
-#           }
-#         }
-#       }
-#     ]
-#   })
-# }
-
-# # map sqs queue to trigger the lambda function when an s3 event is received
-# resource "aws_lambda_event_source_mapping" "this" {
-#   provider         = aws.acc
-#   event_source_arn = aws_sqs_queue.this.arn
-#   function_name    = aws_lambda_function.bedrock_inference.arn
-#   enabled          = true
-#   batch_size       = 1
-# }

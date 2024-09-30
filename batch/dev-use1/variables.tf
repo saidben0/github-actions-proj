@@ -7,6 +7,29 @@ variable "env" {
   type = string
 }
 
+variable "lambda_layer_version_arn" {
+  type = string
+}
+
+variable "python_version" {
+  type = string
+}
+
+variable "tags" {
+  type = map(string)
+  default = {
+    Team         = "Tech-Land-Manufacturing@enverus.com"
+    Dataset      = "land"
+    SourceCode   = "https://github.com/enverus-ea/land.llandman"
+    Component    = "llandman"
+    BusinessUnit = "ea"
+    Product      = "courthouse"
+    Environment  = "dev"
+  }
+}
+
+
+
 # variable "inputs_bucket_name" {
 #   type    = string
 #   default = "enverus-courthouse-dev-chd-plants"
@@ -27,24 +50,6 @@ variable "env" {
 #   type    = string
 #   default = "model-outputs"
 # }
-
-variable "python_version" {
-  type = string
-}
-
-variable "tags" {
-  type = map(string)
-  default = {
-    Team         = "Tech-Land-Manufacturing@enverus.com"
-    Dataset      = "land"
-    SourceCode   = "https://github.com/enverus-ea/land.llandman"
-    Component    = "llandman"
-    BusinessUnit = "ea"
-    Product      = "courthouse"
-    Environment  = "dev"
-  }
-}
-
 
 # variable "prompt_ver" {
 #   type    = string
@@ -70,7 +75,3 @@ variable "tags" {
 #   type    = string
 #   default = "subnet-01ac397cf39dce5ba"
 # }
-
-variable "lambda_layer_version_arn" {
-  type = string
-}
