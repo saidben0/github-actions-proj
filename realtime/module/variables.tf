@@ -12,30 +12,30 @@ variable "inputs_bucket_name" {
   default = "enverus-courthouse-dev-chd-plants"
 }
 
-variable "lambda_function_name" {
-  type    = string
-  default = "queue-processing"
-}
+# variable "lambda_function_name" {
+#   type    = string
+#   default = "queue-processing"
+# }
 
-variable "lambda_role_name" {
-  type    = string
-  default = "llandman-dev-lambda-exec-role"
-}
+# variable "lambda_role_name" {
+#   type    = string
+#   default = "llandman-dev-lambda-exec-role"
+# }
 
-variable "dynamodb_table_name" {
-  type    = string
-  default = "model-outputs"
-}
+# variable "dynamodb_table_name" {
+#   type    = string
+#   default = "model-outputs"
+# }
 
-variable "kms_alias_name" {
-  type    = string
-  default = "key-alias"
-}
+# variable "kms_alias_name" {
+#   type    = string
+#   default = "key-alias"
+# }
 
-variable "project_name" {
-  type    = string
-  default = "land-doc-processing"
-}
+# variable "project_name" {
+#   type    = string
+#   default = "land-doc-processing"
+# }
 
 variable "tags" {
   type    = map(string)
@@ -47,20 +47,20 @@ variable "python_version" {
 }
 
 
-variable "prompt_ver" {
-  type    = string
-  default = "1"
-}
+# variable "prompt_ver" {
+#   type    = string
+#   default = "1"
+# }
 
 # variable "system_prompt_id" {
 #   type    = string
 #   default = "IB5O7AZE0G"
 # }
 
-variable "system_prompt_ver" {
-  type    = string
-  default = "1"
-}
+# variable "system_prompt_ver" {
+#   type    = string
+#   default = "1"
+# }
 
 variable "lambda_layer_version_arn" {
   type = string
