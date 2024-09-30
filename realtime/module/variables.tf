@@ -7,10 +7,24 @@ variable "env" {
   type = string
 }
 
+variable "lambda_layer_version_arn" {
+  type = string
+}
+
+variable "python_version" {
+  type = string
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
 variable "inputs_bucket_name" {
   type    = string
   default = "enverus-courthouse-dev-chd-plants"
 }
+
 
 # variable "lambda_function_name" {
 #   type    = string
@@ -37,15 +51,6 @@ variable "inputs_bucket_name" {
 #   default = "land-doc-processing"
 # }
 
-variable "tags" {
-  type    = map(string)
-  default = {}
-}
-
-variable "python_version" {
-  type = string
-}
-
 
 # variable "prompt_ver" {
 #   type    = string
@@ -61,12 +66,6 @@ variable "python_version" {
 #   type    = string
 #   default = "1"
 # }
-
-variable "lambda_layer_version_arn" {
-  type = string
-}
-
-
 
 # variable "bedrock_prompts" {
 #   type = map(object({

@@ -13,22 +13,11 @@ variable "inputs_bucket_name" {
   # default = "enverus-courthouse-dev-chd-plants-0823" # for testing in proserve shared acc
 }
 
-# variable "lambda_function_name" {
-#   type    = string
-#   default = "queue-processing"
-# }
-
-# variable "lambda_role_name" {
-#   type    = string
-#   default = "llandman-dev-lambda-exec-role"
-# }
-
-# variable "dynamodb_table_name" {
-#   type    = string
-#   default = "model-outputs"
-# }
-
 variable "python_version" {
+  type = string
+}
+
+variable "lambda_layer_version_arn" {
   type = string
 }
 
@@ -46,6 +35,23 @@ variable "tags" {
 }
 
 
+
+
+# variable "lambda_function_name" {
+#   type    = string
+#   default = "queue-processing"
+# }
+
+# variable "lambda_role_name" {
+#   type    = string
+#   default = "llandman-dev-lambda-exec-role"
+# }
+
+# variable "dynamodb_table_name" {
+#   type    = string
+#   default = "model-outputs"
+# }
+
 # variable "prompt_ver" {
 #   type    = string
 #   default = "1"
@@ -60,7 +66,3 @@ variable "tags" {
 #   type    = string
 #   default = "1"
 # }
-
-variable "lambda_layer_version_arn" {
-  type = string
-}
