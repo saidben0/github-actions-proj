@@ -240,7 +240,7 @@ def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
     try:
         doc = pymupdf.open(mime, body.read())  # open document
         for page in doc:  # iterate through the pages
-            pix = page.get_pixmap(dpi=100)  # render page to an image
+            pix = page.get_pixmap(dpi=90)  # render page to an image
             pdfbytes=pix.tobytes()
             b64 = base64.b64encode(pdfbytes).decode('utf8')
             bytes_outputs.append(b64)
