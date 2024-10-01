@@ -57,7 +57,7 @@ resource "aws_cloudwatch_event_target" "sfn_inference_target" {
   provider = aws.acc
   rule     = aws_cloudwatch_event_rule.inference_sfn_rule.name
   arn      = aws_sfn_state_machine.inference_sfn.arn
-  role_arn   = data.aws_iam_role.llandman_event_exec_role.arn
+  role_arn = data.aws_iam_role.llandman_event_exec_role.arn
 }
 
 
