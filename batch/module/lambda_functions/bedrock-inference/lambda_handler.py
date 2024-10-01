@@ -74,33 +74,37 @@ def lambda_handler(event, context):
                     raise
                 else:
                     try:
-                        msg_count = msg_count + 1
-                        sqs_message_id = message['MessageId']
-                        logging.info(f"sqs_message_id: {j} - {sqs_message_id}")
                         receipt_handle = message['ReceiptHandle']
-                        message_attributes = message['MessageAttributes']
-                        project_name = message_attributes['application']['StringValue']
-                        s3_loc = message_attributes['s3_location']['StringValue']
-                        file_id = s3_loc.split('/')[-1].split('.')[0]
-                        model_id = message_attributes['model_id']['StringValue']
-                        prompt_id = message_attributes['prompt_id']['StringValue']
-                        prompt_ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
-                        system_prompt_id = message_attributes.get('system_prompt_id', {}).get('StringValue', None)
-                        system_prompt_ver = message_attributes.get('system_prompt_version', {}).get('StringValue', None)
+                        if receipt_handle in queue_arr:
+                            logging.info(f"Message already received before. Reading the next message.")
+                            continue
+                        else:
+                            msg_count = msg_count + 1
+                            sqs_message_id = message['MessageId']
+                            logging.info(f"sqs_message_id: {j} - {sqs_message_id}")
+                            message_attributes = message['MessageAttributes']
+                            project_name = message_attributes['application']['StringValue']
+                            s3_loc = message_attributes['s3_location']['StringValue']
+                            file_id = s3_loc.split('/')[-1].split('.')[0]
+                            model_id = message_attributes['model_id']['StringValue']
+                            prompt_id = message_attributes['prompt_id']['StringValue']
+                            prompt_ver = message_attributes.get('prompt_version', {}).get('StringValue', None)
+                            system_prompt_id = message_attributes.get('system_prompt_id', {}).get('StringValue', None)
+                            system_prompt_ver = message_attributes.get('system_prompt_version', {}).get('StringValue', None)
 
-                        msg_attributes[file_id] = {
-                            "sqs_message_id": sqs_message_id,
-                            "prompt_id": prompt_id,
-                            "prompt_ver": prompt_ver,
-                            "system_prompt_id": system_prompt_id,
-                            "system_prompt_ver": system_prompt_ver,
-                            "project_name": project_name
-                            }
+                            msg_attributes[file_id] = {
+                                "sqs_message_id": sqs_message_id,
+                                "prompt_id": prompt_id,
+                                "prompt_ver": prompt_ver,
+                                "system_prompt_id": system_prompt_id,
+                                "system_prompt_ver": system_prompt_ver,
+                                "project_name": project_name
+                                }
 
-                        model_count[model_id] = model_count.get(model_id, 0) + 1
+                            model_count[model_id] = model_count.get(model_id, 0) + 1
 
-                        doc_arr.append(s3_loc)
-                        queue_arr.append(receipt_handle)
+                            doc_arr.append(s3_loc)
+                            queue_arr.append(receipt_handle)
 
                     except KeyError as e:
                         logging.info(f"Error parsing SQS message # {msg_count}: {e}")
