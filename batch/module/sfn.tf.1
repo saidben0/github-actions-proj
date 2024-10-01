@@ -30,27 +30,27 @@ resource "aws_sfn_state_machine" "inference_sfn" {
   }
 }
 
-# create an event rule
-resource "aws_cloudwatch_event_rule" "inference_sfn_rule" {
-  provider    = aws.acc
-  name        = "${var.prefix}-${var.env}-inference-sfn-rule"
-  description = "Trigger Step Function"
+# # create an event rule
+# resource "aws_cloudwatch_event_rule" "inference_sfn_rule" {
+#   provider    = aws.acc
+#   name        = "${var.prefix}-${var.env}-inference-sfn-rule"
+#   description = "Trigger Step Function"
 
-  event_pattern = <<EOF
-{
-  "source": ["aws.s3"],
-  "detail-type": ["Object Created"],
-  "detail": {
-    "bucket": {
-      "name": ["${aws_s3_bucket.this.id}"]
-    },
-    "object": {
-      "key": [{"prefix": "${aws_s3_object.inputs.key}"}]
-    }
-  }
-}
-EOF
-}
+#   event_pattern = <<EOF
+# {
+#   "source": ["aws.s3"],
+#   "detail-type": ["Object Created"],
+#   "detail": {
+#     "bucket": {
+#       "name": ["${aws_s3_bucket.this.id}"]
+#     },
+#     "object": {
+#       "key": [{"prefix": "${aws_s3_object.inputs.key}"}]
+#     }
+#   }
+# }
+# EOF
+# }
 
 # define the step function as the target for the eventbridge rule
 resource "aws_cloudwatch_event_target" "sfn_inference_target" {
