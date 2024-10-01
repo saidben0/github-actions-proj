@@ -58,12 +58,6 @@ def prepare_model_inputs(bytes_inputs: list[bytes], prompt: Prompt, system_promp
     max_tokens = 4096
     anthropic_version = "bedrock-2023-05-31"
 
-    ### Retrieve prompts from Bedrock
-    prompt.text, prompt.ver = retrieve_bedrock_prompt(prompt.identifier, prompt.ver)
-  
-    if system_prompt.identifier:
-        system_prompt.text, system_prompt.ver = retrieve_bedrock_prompt(system_prompt.identifier, system_prompt.ver)
-
     ### Split the data into chunks of 20 pages
     grouped_bytes_input = [bytes_inputs[i:i+20] for i in range(0, len(bytes_inputs), 20)]
 
@@ -148,7 +142,7 @@ def upload_to_s3(bucket_name: str, key: str, body: str):
         ContentType='application/json'
     )
     
-def parallel_enabled(array: list[str], metadata_dict: dict, dest_bucket: str, data_folder: str):
+def parallel_enabled(array: list[str], metadata_dict: dict, prompts: dict, dest_bucket: str, data_folder: str):
     """
     Process multiple files in a parallelized manner.
 
@@ -158,6 +152,8 @@ def parallel_enabled(array: list[str], metadata_dict: dict, dest_bucket: str, da
         A list of s3 locations for at least 1000 documents.
     metadata_dict : dict
         A dictionary containing sqs message attributes to be shared among parallelized processes.
+    prompts : dict
+        A dictionary containing all the required user prompts and system prompts for creating the model input json.
     dest_bucket : str
         The destination bucket to store the formatted model input.
     data_folder : str
@@ -183,17 +179,23 @@ def parallel_enabled(array: list[str], metadata_dict: dict, dest_bucket: str, da
         except Exception as e:
             logging.info(f"Error conversting document thus skipping: {s3_key} - {e}")
             continue
-        # bytes_inputs = convertPdf(f)
 
         prompt = Prompt(
             identifier = metadata_dict[file_id]["prompt_id"],
-            ver = metadata_dict[file_id]["prompt_ver"]
+            ver = metadata_dict[file_id]["prompt_ver"],
+            text = prompts[metadata_dict[file_id]["prompt_id"]][metadata_dict[file_id]["prompt_ver"]]
         )
-
-        system_prompt = Prompt(
-            identifier = metadata_dict[file_id]["system_prompt_id"],
-            ver = metadata_dict[file_id]["system_prompt_ver"]
-        )
+        if metadata_dict[file_id]["system_prompt_id"] is not None:
+            system_prompt = Prompt(
+                identifier = metadata_dict[file_id]["system_prompt_id"],
+                ver = metadata_dict[file_id]["system_prompt_ver"],
+                text = prompts[metadata_dict[file_id]["system_prompt_id"]][metadata_dict[file_id]["system_prompt_ver"]]
+            )
+        else:
+            system_prompt = Prompt(
+                identifier = metadata_dict[file_id]["system_prompt_id"],
+                ver = metadata_dict[file_id]["system_prompt_ver"]
+            )
 
         logging.info(f"Start processing data for {j} - {f}")
         try:
@@ -249,7 +251,7 @@ def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
         raise e
     return bytes_outputs
 
-def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str) -> tuple[str, str]:
+def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str) -> str:
     """
     Retrieve a prompt from Amazon Bedrock Prompt Management.
 
@@ -263,10 +265,8 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str) -> tuple[str, str]:
 
     Returns:
     ----------
-    tuple[str, str]
-        A tuple containing:
-        - prompt (str): The text of the prompt returned by Amazon Bedrock Prompt Management.
-        - prompt_ver (str): The version of the prompt returned.
+    str
+        The text of the prompt returned by Amazon Bedrock Prompt Management.
     """
     client = boto3.client('bedrock-agent')
     # logging.info(f"Returning version {prompt_ver} of the prompt {prompt_id}.")
@@ -275,7 +275,17 @@ def retrieve_bedrock_prompt(prompt_id: str, prompt_ver: str) -> tuple[str, str]:
 
     prompt = response['variants'][0]['templateConfiguration']['text']['text']
 
-    return prompt, prompt_ver
+    return prompt
+
+def add_prompt_if_missing(prompts: dict, prompt_id: str, prompt_ver: str):
+    if prompt_id not in prompts:
+        prompts[prompt_id] = {}
+
+    if prompt_ver not in prompts[prompt_id]:
+        text = retrieve_bedrock_prompt(prompt_id, prompt_ver)
+        prompts[prompt_id][prompt_ver] = text
+    return prompts
+            
 
 def retrievePdf(bucket: str , s3_key: str) -> tuple[str, StreamingBody]:
     """

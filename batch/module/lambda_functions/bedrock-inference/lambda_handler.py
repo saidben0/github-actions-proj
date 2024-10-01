@@ -48,6 +48,9 @@ def lambda_handler(event, context):
         # for model polling
         model_count = {}
         
+        # for storing prompts
+        prompts = {}
+
         # one receive_message call can receive up to 10 messages a time 
         # so we will contine to call if we haven't received the EXPECTED number yet
         # note we could receive a few more messages depending on how many messages in the last call
@@ -109,6 +112,15 @@ def lambda_handler(event, context):
                     except KeyError as e:
                         logging.info(f"Error parsing SQS message # {msg_count}: {e}")
                         continue
+
+                    try:
+                        logging.info("Checking if prompts have already been retrieved.")
+                        # check if the text already exists in prompts
+                        # if not, add the text to the dictionary
+                        prompts = add_prompt_if_missing(prompts, prompt_id, prompt_ver)
+                        prompts = add_prompt_if_missing(prompts, system_prompt_id, system_prompt_ver)
+                    except Exception as e:
+                        logging.info(f"Error checking the prompts: {e}")
   
     except Exception as e:
         logging.error(f"Error receiving SQS message from queue: {e}")
@@ -134,7 +146,7 @@ def lambda_handler(event, context):
             processes = []
             
             for doc in doc_arr:
-                p = Process(target=parallel_enabled, args=([doc], metadata_dict, dest_bucket, data_folder, ))
+                p = Process(target=parallel_enabled, args=([doc], metadata_dict, prompts, dest_bucket, data_folder, ))
                 processes.append(p)
                 p.start()
 
