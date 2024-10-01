@@ -8,13 +8,19 @@ data "aws_iam_role" "llandman_event_exec_role" {
   name     = "${var.prefix}-${var.env}-event-exec-role"
 }
 
+resource "aws_cloudwatch_log_group" "sfn_cw_log_group" {
+  provider          = aws.acc
+  name_prefix       = "/aws/vendedlogs/states/"
+  retention_in_days = 365
+}
+
 resource "aws_sfn_state_machine" "inference_sfn" {
   provider   = aws.acc
   name       = "${var.prefix}-${var.env}-inference-sfn"
   role_arn   = data.aws_iam_role.llandman_sfn_exec_role.arn
   definition = file("${path.module}/templates/inference-statemachine.asl.json")
   logging_configuration {
-    log_destination        = "${aws_cloudwatch_log_group.EnverusSFNLogGroup.arn}:*"
+    log_destination        = "${aws_cloudwatch_log_group.sfn_cw_log_group.arn}:*"
     include_execution_data = true
     level                  = "ALL"
   }
