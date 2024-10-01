@@ -31,8 +31,8 @@ resource "aws_sqs_queue" "redrive_dlq" {
 data "terraform_remote_state" "realtime_dev_use1" {
   backend = "s3"
   config = {
-    bucket = "di-dev-terraform"
-    # bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
+    # bucket = "di-dev-terraform"
+    bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
     key    = "dev/llandman/terraform.tfstate"
     region = "us-east-1"
   }
