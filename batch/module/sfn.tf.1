@@ -59,38 +59,3 @@ resource "aws_cloudwatch_event_target" "sfn_inference_target" {
   arn      = aws_sfn_state_machine.inference_sfn.arn
   role_arn = data.aws_iam_role.llandman_event_exec_role.arn
 }
-
-
-
-
-# # create an eventbridge role
-# resource "aws_iam_role" "llandman_event_exec_role" {
-#   provider    = aws.acc
-#   name_prefix = "${var.prefix}-${var.env}-event-exec-role"
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = "sts:AssumeRole"
-#         Effect = "Allow"
-#         Principal = {
-#           Service = "events.amazonaws.com"
-#         }
-#       }
-#     ]
-#   })
-
-#   inline_policy {
-#     name = "invoke-step-function"
-#     policy = jsonencode({
-#       Version = "2012-10-17"
-#       Statement = [
-#         {
-#           Action   = "states:StartExecution"
-#           Effect   = "Allow"
-#           Resource = aws_sfn_state_machine.inference_sfn.arn
-#         }
-#       ]
-#     })
-#   }
-# }
