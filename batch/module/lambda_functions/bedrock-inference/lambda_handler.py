@@ -132,10 +132,11 @@ def lambda_handler(event, context):
         try:
             metadata_dict = manager.dict(msg_attributes)
             processes = []
-
-            p = Process(target=parallel_enabled, args=(doc_arr, metadata_dict, dest_bucket, data_folder, ))
-            processes.append(p)
-            p.start()
+            
+            for doc in doc_arr:
+                p = Process(target=parallel_enabled, args=([doc], metadata_dict, dest_bucket, data_folder, ))
+                processes.append(p)
+                p.start()
 
             for p in processes:
                 p.join()
