@@ -1,0 +1,77 @@
+{
+    "ExecutedVersion": "$LATEST",
+    "Payload": {
+      "foo": "bar",
+      "cars": [
+        {
+            "year": 2010,
+            "make": "Toyota",
+            "model": "Camry"
+        },
+        {
+            "year": 2015,
+            "make": "Honda",
+            "model": "Civic"
+        },
+        {
+            "year": 2018,
+            "make": "Ford",
+            "model": "Mustang"
+        }
+      ],
+      "colors": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "car": {
+        "year": 2008,
+        "make": "Toyota",
+        "model": "Matrix"
+      }
+    },
+    "SdkHttpMetadata": {
+      "AllHttpHeaders": {
+        "X-Amz-Executed-Version": [
+          "$LATEST"
+        ],
+        "x-amzn-Remapped-Content-Length": [
+          "0"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "x-amzn-RequestId": [
+          "ac79dacd-7c6f-41c7-bfcf-eea70b43e141"
+        ],
+        "Content-Length": [
+          "50"
+        ],
+        "Date": [
+          "Fri, 19 Mar 2021 00:38:02 GMT"
+        ],
+        "X-Amzn-Trace-Id": [
+          "root=1-6053f269-177467df0c94095a622bc2b8;sampled=0"
+        ],
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "HttpHeaders": {
+        "Connection": "keep-alive",
+        "Content-Length": "50",
+        "Content-Type": "application/json",
+        "Date": "Fri, 19 Mar 2021 00:38:02 GMT",
+        "X-Amz-Executed-Version": "$LATEST",
+        "x-amzn-Remapped-Content-Length": "0",
+        "x-amzn-RequestId": "ac79dacd-7c6f-41c7-bfcf-eea70b43e141",
+        "X-Amzn-Trace-Id": "root=1-6053f269-177467df0c94095a622bc2b8;sampled=0"
+      },
+      "HttpStatusCode": 200
+    },
+    "SdkResponseMetadata": {
+      "RequestId": "ac79dacd-7c6f-41c7-bfcf-eea70b43e141"
+    },
+    "StatusCode": 200
+  }
+  
