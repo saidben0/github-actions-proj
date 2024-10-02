@@ -137,8 +137,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
         logging.error(f"Error saving record to DynamoDB table: {e}")
 
 def parallel_enabled(array, metadata_dict, dynamodb_table_name):
-    for j in range(0, len(array)):
-        f = array[j]
+    for j, f in enumerate(array):
         logging.info(f"Start processing model output:{j} - {f}")
 
         bucket_name = f.split('/')[2]
@@ -156,7 +155,7 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
             project_name = metadata_dict[file_id]['project_name']
 
         except KeyError:
-            logging.error(f"Error retrieving the sqs msg attributes for {file_id}")
+            logging.error(f"Error retrieving the sqs msg attributes for {file_id}. Please check the metadata.json to make sure all the required sqs msg attributes are present.")
             continue
         
         ######### Create prompt and system prompt objects ################
@@ -165,13 +164,13 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
 
         ######### Download file from S3 ################
         try:
-            logging.info(f"Downloading model output from {bucket_name}/{s3_key}")
+            logging.info(f"Downloading model output from {bucket_name}/{key}")
             response = s3.get_object(
                                 Bucket=bucket_name,
                                 Key=key,
                                 )
         except Exception as we:
-            logging.error(f"Error downloading model output from {bucket_name}/{s3_key}: {e}")
+            logging.error(f"Error downloading model output from {bucket_name}/{key}: {e}")
             raise
 
         try:

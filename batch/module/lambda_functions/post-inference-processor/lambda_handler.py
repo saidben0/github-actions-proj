@@ -66,14 +66,20 @@ def lambda_handler(event, context):
 
     # Parallel processing for the model output
     logging.info("Starting post inference processing...")
+
+    chunk_size = 100
+    model_output_arr_chunks = [model_output_arr[i:i + chunk_size] for i in range(0, len(model_output_arr), chunk_size)]
+    logging.info(f"There are {len(model_output_arr)} records in the Bedrock inference job output. Dividing them into {len(model_output_arr_chunks)} chunks for parallel processing. ")
+
     with Manager() as manager:
         try:
             msg_attributes_dict = manager.dict(msg_attributes)
             processes = []
 
-            p = Process(target=parallel_enabled, args=(model_output_arr, msg_attributes_dict, dynamodb_table_name, ))
-            processes.append(p)
-            p.start()
+            for model_output_chunk in model_output_arr_chunks:
+                p = Process(target=parallel_enabled, args=(model_output_chunk, msg_attributes_dict, dynamodb_table_name, ))
+                processes.append(p)
+                p.start()
 
             for p in processes:
                 p.join()
