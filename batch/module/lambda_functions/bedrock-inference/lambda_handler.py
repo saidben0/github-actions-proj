@@ -114,7 +114,6 @@ def lambda_handler(event, context):
                         continue
 
                     try:
-                        logging.info("Checking if prompts have already been retrieved.")
                         # check if the text already exists in prompts
                         # if not, add the text to the dictionary
                         prompts = add_prompt_if_missing(prompts, prompt_id, prompt_ver)
@@ -140,13 +139,18 @@ def lambda_handler(event, context):
     
     logging.info("Start processing data.")
     
+    # Divide the doc_arr into chunks of 200 so that multiprocessing would not create too many connections
+    chunk_size = 100
+    doc_arr_chunks = [doc_arr[i:i + chunk_size] for i in range(0, len(doc_arr), chunk_size)]
+    logging.info(f"There are {len(doc_arr)} PDFs to process. Dividing them into {len(doc_arr_chunks)} chunks for parallel processing.")
+
     with Manager() as manager:
         try:
             metadata_dict = manager.dict(msg_attributes)
             processes = []
             
-            for doc in doc_arr:
-                p = Process(target=parallel_enabled, args=([doc], metadata_dict, prompts, dest_bucket, data_folder, ))
+            for doc_arr_chunk in doc_arr_chunks:
+                p = Process(target=parallel_enabled, args=(doc_arr_chunk, metadata_dict, prompts, dest_bucket, data_folder, ))
                 processes.append(p)
                 p.start()
 
@@ -161,7 +165,7 @@ def lambda_handler(event, context):
 
         try:
             logging.info(f"Uploading metadata.json to {dest_bucket}")
-            upload_to_s3(dest_bucket, f'{data_folder}/metadata/metadata.json', metadata)
+            upload_to_s3(dest_bucket, f'{data_folder}/metadata/metadata.json', json.dumps(metadata))
 
         except Exception as e:
             logging.error(f"Error uploading metadata.json: {e}")

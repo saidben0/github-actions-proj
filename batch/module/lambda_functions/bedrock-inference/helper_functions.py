@@ -218,8 +218,14 @@ def parallel_enabled(array: list[str], metadata_dict: dict, prompts: dict, dest_
         except Exception as e:
             logging.error(f"Error saving JSONL: {e}")
             raise
-
-        metadata_dict[file_id]["chunk_count"] = chunk_count
+        
+        try:
+            logging.info(f"Adding chunk_count to metadata_dict[{file_id}]['chunk_count']")
+            file_metadata_to_replace = metadata_dict[file_id]
+            file_metadata_to_replace["chunk_count"] = chunk_count
+            metadata_dict[file_id] = file_metadata_to_replace
+        except Exception as e:
+            logging.error(f"Error adding chunk_count to metadata_dict")
 
 def convertS3Pdf(mime: str, body: StreamingBody) -> list[bytes]:
     """
