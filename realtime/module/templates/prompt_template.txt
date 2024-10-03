@@ -1,8 +1,8 @@
 Think step-by-step. You must strictly follow the steps sequentially.
 
-Return your answer in under 4096 tokens.
+Limit your reasoning to one sentence for each step.
 
-Step 1. Retrieve all raw tract descriptions from the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the document, search the raw description there; otherwise search the entire document. The tract descriptions may be found in multiple pages and be associated with multiple counties. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps. Refrain from omitting any raw descriptions.
+Step 1. Retrieve all raw tract descriptions from the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the images, search the raw description there; otherwise search all images. The tract descriptions may be found in multiple pages and be associated with multiple counties. Exclude the tract descriptions that follow the phrase 'SAVES AND EXCEPTS' or some other phrases that carry similar meaning. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps.
 
 Step 2. Identify all individual tracts. Refrain from skipping tracts for brevity. If the tracts are numbered in the documents, check if they actually contain multiple individual tracts and return them as separate individual tracts.
 
@@ -66,7 +66,7 @@ Example: "abstract": "A-545; A-645" when document states 'A-545, Glasscock Count
 Step 12. If multiple counties apply to a single tract, join them with a semicolon.
 Example: "county": "Glasscock; Reagan"
 
-Step 13. For section: If both section and subdivision are present, append the section to the end of subdivision and discard the 'section' field.
+Step 13. For section: If the section number follows right after the subdivision in the raw description, it is regarded as being associated with the subdivision. Append the section to the end of subdivision and discard the 'section' field.
 
 Step 14. Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
 
@@ -95,5 +95,5 @@ Important:
 - Include only fields that are explicitly mentioned in the document.
 - Ensure all JSON objects are properly formatted and closed.
 - Double-check that all relevant information has been captured for each tract.
-- Verify that quarters have been properly split into separate tracts when necessary.
+- Verify that sections and quarters have been properly split into separate tracts when necessary.
 - Verify that multiple abstracts, multiple counties, multiple surveys in a tract have been properly joined.
