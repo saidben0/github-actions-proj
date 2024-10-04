@@ -1,8 +1,8 @@
-Think step-by-step. You must strictly follow the steps sequentially.
+Think step-by-step. You must strictly follow all the steps sequentially.
 
-Limit your reasoning to one sentence for each step.
+Give your reasoning for each step in one sentence.
 
-Step 1. Retrieve all raw tract descriptions from the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the images, search the raw description there; otherwise search all images. The tract descriptions may be found in multiple pages and be associated with multiple counties. Exclude the tract descriptions that follow the phrase 'SAVES AND EXCEPTS' or some other phrases that carry similar meaning. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps.
+Step 1. Retrieve all raw tract descriptions from all the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the images, search the raw description there; otherwise search all images. The tract descriptions may be found in multiple pages. Exclude the tract descriptions that follow the phrase 'SAVES AND EXCEPTS' or any other phrases that carry similar meaning. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps.
 
 Step 2. Identify all individual tracts. Refrain from skipping tracts for brevity. If the tracts are numbered in the documents, check if they actually contain multiple individual tracts and return them as separate individual tracts.
 
@@ -23,7 +23,7 @@ If the answers to all fields are null or zero, the response should be an empty J
 <instruction>
 - Assign a sequential tract number.
 - Identify the state.
-- Identify the counties. Get all values from the document. One tract can have multiple counties. If there are multiple counties, return their corresponding states. Example {'tract':1, 'state': 'Texas; Texas', 'county': 'Glasscock; Reagan', ...}
+- Identify the counties. Get all county names that is associated with a tract from the images. One tract can have multiple counties.
 - Identify all abstracts in the raw tract(format: A-####, the letter 'A' followed by a few digits, optionally with a hyphen in-between. Example: 'A-1456' or 'A136'). One tract can have multiple abstracts.
 - Identify the survey name (sometimes called the original grantee).
 - Identify the subdivision. Subdivision is found when there is a stated "Subdivision", "Division" or "Addition".
@@ -33,7 +33,7 @@ If the answers to all fields are null or zero, the response should be an empty J
 - Identify the range block (often labeled as "Block"). Range block are found when a "Section" is described.
 - Identify the township. Township is found when the "Section" and "Range block" are described. Township value must follows the format: "T-<digit>-<direction>" and could be separated by a hyphen, such as 'T5S' and 'T-2-E'.
 - Extract all quarter descriptions exactly as written. Sometimes it starts with directional word such as 'South One-Fourth (S/4)', sometimes it contains directional notations such as 'E/4'.
-- Extract the acreage of the tract. Acreage must be indicated with keywords like 'acres' or 'acreage'.
+- Extract the acreage of the tract. Acreage must be indicated with keywords 'acres' or 'acreage'.
 </instruction>
 
 Refrain from returning these raw JSONs in your answer.
@@ -70,7 +70,9 @@ Step 13. For section: If the section number follows right after the subdivision 
 
 Step 14. Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
 
-Step 15. From the output of Step 14, format the output as a list of JSON objects, each representing a single tract. Include the final output in XML <final_output> tags. Example:
+Step 15. If there are multiple counties, for each of the counties, return their respective state. Verify that the number of state in the json equals to the number of county. Example: {'tract':1, 'state': 'Texas; Texas; Texas', 'county': 'Glasscock; Reagan; Upton', ...}
+
+Step 16. From the output of Step 15, format the output as a list of JSON objects, each representing a single tract. Include the final output in XML <final_output> tags. Example:
 <final_output>
 [
   {
