@@ -96,7 +96,7 @@ resource "aws_lambda_function" "post_inference_processor" {
   runtime                        = "python${var.python_version}"
   timeout                        = "900"
   reserved_concurrent_executions = 100
-  memory_size                    = 1024
+  memory_size                    = 5120
 
   environment {
     variables = {
