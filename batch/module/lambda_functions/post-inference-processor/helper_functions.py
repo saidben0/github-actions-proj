@@ -171,24 +171,21 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
                                 )
         except Exception as we:
             logging.error(f"Error downloading model output from {bucket_name}/{key}: {e}")
-            raise
+            continue
 
-        try:
-            logging.info(f"Saving model output to DynamoDB table.")          
-            content = response['Body'].iter_lines()
-            ######### Process model output ################
-            chunk_num = 0
-            for line in content:
-                ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                chunk_num+=1
-                logging.info(f"Processing chunk {chunk_num}...")
-                output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
-
+        logging.info(f"Saving {file_id} model output to DynamoDB table.")
+        content = response['Body'].iter_lines()
+        ######### Process model output ################
+        chunk_num = 0
+        for line in content:
+            ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            chunk_num+=1
+            output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
+            try:
                 if 'modelOutput' in output_item:
                     update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, model_response=output_item['modelOutput'])
                 else:
                     update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, exception=output_item['error'])
-        except Exception as e:
-            logging.error(f"Error saving the model output to DynamoDB table: {e}")          
-
-
+            except Exception as e:
+                logging.error(f"Error saving the {file_id} chunk {chunk_num} model output to DynamoDB table: {e}")
+                continue
