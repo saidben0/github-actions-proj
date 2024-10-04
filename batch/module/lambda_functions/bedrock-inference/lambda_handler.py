@@ -187,7 +187,7 @@ def lambda_handler(event, context):
     })
     
     bedrock = boto3.client(service_name="bedrock", region_name="us-east-1")
-    job_name = f"landman-batch-inference-{data_folder}"
+    job_name = f"llandman-batch-inference-{data_folder}"    # Todo: confirm prefix
     try:
         response=bedrock.create_model_invocation_job(
                                                     roleArn=role_arn,
