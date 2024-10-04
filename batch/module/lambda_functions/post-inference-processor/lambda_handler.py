@@ -32,9 +32,9 @@ def lambda_handler(event, context):
     
     # read files from the model output folder
     try:
-        logging.info(f"Searching S3 URIs for model outputs from {dest_bucket}/{data_folder}/model-output/")
+        logging.info(f"Searching S3 URIs for model outputs from {dest_bucket}/{data_folder}/model-output/{job_id}")
         paginator = s3_client.get_paginator('list_objects_v2')
-        pages = paginator.paginate(Bucket=dest_bucket, Prefix=f"{data_folder}/model-output/")
+        pages = paginator.paginate(Bucket=dest_bucket, Prefix=f"{data_folder}/model-output/{job_id}/")
         model_output_arr = []
         for page in pages:
             try:
@@ -67,6 +67,7 @@ def lambda_handler(event, context):
     # Parallel processing for the model output
     logging.info("Starting post inference processing...")
 
+    # Divide the output files into chunks
     chunk_size = 100
     model_output_arr_chunks = [model_output_arr[i:i + chunk_size] for i in range(0, len(model_output_arr), chunk_size)]
     logging.info(f"There are {len(model_output_arr)} records in the Bedrock inference job output. Dividing them into {len(model_output_arr_chunks)} chunks for parallel processing. ")
