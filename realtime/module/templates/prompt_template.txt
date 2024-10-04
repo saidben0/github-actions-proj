@@ -1,8 +1,8 @@
 Think step-by-step. You must strictly follow all the steps sequentially.
 
-Give your reasoning for each step in one sentence.
+Limit your reasoning for each step in one sentence.
 
-Step 1. Retrieve all raw tract descriptions from all the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the images, search the raw description there; otherwise search all images. The tract descriptions may be found in multiple pages. Exclude the tract descriptions that follow the phrase 'SAVES AND EXCEPTS' or any other phrases that carry similar meaning. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps.
+Step 1. Retrieve all raw tract descriptions from all the images provided to you. But refrain from putting the raw description in the output. If there is 'LEGAL DESCRIPTION' in the images, search the raw description there; otherwise search all images. The tract descriptions may be found in multiple pages. Exclude the tract descriptions that follow the phrase 'SAVES AND EXCEPTS' or any other phrases that carry similar meaning. Exclude any addresses. If there are no specific tract descriptions, just return "<final_output> [] </final_output>" and skip all remaining steps.
 
 Step 2. Identify all individual tracts. Refrain from skipping tracts for brevity. If the tracts are numbered in the documents, check if they actually contain multiple individual tracts and return them as separate individual tracts.
 
@@ -16,9 +16,9 @@ Refrain from inferring or deriving any information from the document. Refrain fr
 
 You must follow the instruction to extract the fields, including the format of the fields.
 
-Example of one tract: {'tract': 1, 'state': 'Texas', 'county': 'Travis', 'abstract': 'A-546', 'survey': 'T&P RR CO SURVEY', 'subdivision': 'Flatrock Creek Phase 1', 'lot': '1', 'subdivision_block': '1', 'section': '5', 'township': 'T-4-S', 'range_block': '5', 'quarter': 'N/2 N/2', 'acreage': '126.3'} 
+Example of one tract: {'tract': 1, 'state': 'Texas', 'county': 'Travis', 'abstract': 'A-546', 'survey': 'T&P RR CO SURVEY', 'subdivision': 'Flatrock Creek Phase 1', 'lot': '1', 'subdivision_block': '1', 'section': '5', 'township': 'T-4-S', 'range_block': '5', 'quarter': 'N/2', 'acreage': '126.3'} 
 
-If the answers to all fields are null or zero, the response should be an empty JSON object {}. Only return valid JSON.
+Only return valid JSON.
 
 <instruction>
 - Assign a sequential tract number.
@@ -32,13 +32,11 @@ If the answers to all fields are null or zero, the response should be an empty J
 - Extract the section number. In some cases, section number might have the 'Survey' prefix. Example: 'Survey 123' means 123 is the section number.
 - Identify the range block (often labeled as "Block"). Range block are found when a "Section" is described.
 - Identify the township. Township is found when the "Section" and "Range block" are described. Township value must follows the format: "T-<digit>-<direction>" and could be separated by a hyphen, such as 'T5S' and 'T-2-E'.
-- Extract all quarter descriptions exactly as written. Sometimes it starts with directional word such as 'South One-Fourth (S/4)', sometimes it contains directional notations such as 'E/4'.
+- Extract all quarter descriptions exactly as written in the images. Sometimes it starts with directional word such as 'South One-Fourth (S/4)', sometimes it contains directional notations such as 'E/4' or 'N/2 N/2'. A tract can contain more than one quarter, e.g. 'S/2 of the NE/4 and the N/2 of the SE/4'
 - Extract the acreage of the tract. Acreage must be indicated with keywords 'acres' or 'acreage'.
 </instruction>
 
 Refrain from returning these raw JSONs in your answer.
-
-Refrain from being verbose. 
 
 Step 4. From the output of Step 3, validate that only the requested fields are included. Delete any other fields.
 
@@ -66,7 +64,7 @@ Example: "abstract": "A-545; A-645" when document states 'A-545, Glasscock Count
 Step 12. If multiple counties apply to a single tract, join them with a semicolon.
 Example: "county": "Glasscock; Reagan"
 
-Step 13. For section: If the section number follows right after the subdivision in the raw description, it is regarded as being associated with the subdivision. Append the section to the end of subdivision and discard the 'section' field.
+Step 13. For section: If the section follows right after the subdivision in the raw description, it is regarded as being associated with the subdivision. Append the section to the end of subdivision and discard the 'section' field. Example: "Heritage Park, Section 3" should be parsed as the whole subdivision.
 
 Step 14. Verify the format of the township. Sometimes '5' and 'S' are easily mixed up. If the tonwship appears to be 'TSS', you know it is the wrong format and should output 'T5S' instead.
 
