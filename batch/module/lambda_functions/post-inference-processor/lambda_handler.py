@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         job_arn = event["detail"]["batchJobArn"]
         job_id = job_arn.split("/")[-1]
         job_name = event["detail"]["batchJobName"]
-        data_folder = job_name.split("-", 4)[-1]
+        data_folder = job_name.split("-", 3)[-1]
         logging.info(f"JobID: {job_id}")
         logging.info(f"JobName: {job_name}")
     except KeyError as e:
@@ -40,7 +40,7 @@ def lambda_handler(event, context):
             try:
                 for obj in page['Contents']:
                     key = obj['Key']
-                    if len(key) > 0: 
+                    if (len(key) > 0) and (key.split('/')[-1].split('.')[0] != 'manifest'):
                         model_output_arr.append(f's3://{dest_bucket}/{key}')
             except KeyError:
                 logging.error("No files exist")

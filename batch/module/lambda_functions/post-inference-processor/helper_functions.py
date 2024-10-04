@@ -3,7 +3,7 @@ import json
 import os
 import boto3
 from datetime import datetime
-import regex as re
+import re
 import logging
 from typing import Optional
 
