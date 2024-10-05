@@ -73,15 +73,13 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install jinja2 && pip show jinja2
-        pip install PyYAML && pip show PyYAML
+        pip install jinja2==3.1.4 && pip show jinja2
+        pip install PyYAML==6.0.2 && pip show PyYAML
   
     - name: Terraform Files Generation
       run: |
-        pwd && ls
         cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-        pwd && ls
         export BUCKET=${{ inputs.tfbackend_bucket }}
         export KEY=${{ inputs.tfbackend_key }}
         export BACKEND_REGION=${{ inputs.tfbackend_region }}
@@ -90,9 +88,8 @@ jobs:
         export ENV=${{ inputs.env }}
         chmod +x generate-tfiles.py
         python generate-tfiles.py
-
-        pwd && ls
         cat backend.tf
+        echo
         cat providers.tf
 
 

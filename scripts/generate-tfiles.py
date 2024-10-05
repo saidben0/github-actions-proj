@@ -5,12 +5,12 @@ import os
 # Set up the Jinja2 environment
 env = Environment(loader=FileSystemLoader('.'))
 
-bucket = 'enverus-tfstates-0823'
-key = 'dev/llandman/terraform.batch.tfstate'
-backend_region = 'us-east-1'
-provider_region = 'us-east-1'
-alias = 'use1'
-tfenv = 'dev'
+bucket = os.environ['BUCKET']
+key = os.environ['KEY']
+backend_region = os.environ['BACKEND_REGION']
+provider_region = os.environ['PROVIDER_REGION']
+alias = os.environ['ALIAS']
+tfenv = os.environ['ENV']
 
 # Load the backend template
 template = env.get_template('backend.jinja')
