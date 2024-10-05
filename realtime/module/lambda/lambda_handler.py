@@ -104,7 +104,7 @@ def lambda_handler(event, context):
 
     for i, byte_input in enumerate(grouped_bytes_input):
         logging.info(f"Extracting land description for chunk {i+1}...")
-        ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         try:
             model_response = call_llm(byte_input, model_id, prompt, system_prompt)

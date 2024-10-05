@@ -178,7 +178,7 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
         ######### Process model output ################
         chunk_num = 0
         for line in content:
-            ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            ingestion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
             chunk_num+=1
             output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
             try:
