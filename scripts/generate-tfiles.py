@@ -29,10 +29,10 @@ tfbackend_output = template.render(tfbackend_context)
 with open('backend.tf', 'w') as f:
     f.write(tfbackend_output)
 
-# Optionally, load and print the rendered tf file to verify
-with open('backend.tf') as f:
-    config = yaml.safe_load(f)
-    print(yaml.dump(config, default_flow_style=False))
+# # Optionally, load and print the rendered tf file to verify
+# with open('backend.tf') as f:
+#     config = yaml.safe_load(f)
+#     print(yaml.dump(config, default_flow_style=False))
 
 
 # Load the providers template
@@ -52,7 +52,7 @@ tfproviders_output = template.render(tfproviders_context)
 with open('providers.tf', 'w') as f:
     f.write(tfproviders_output)
 
-# Optionally, load and print the rendered tf file to verify
-with open('providers.tf') as f:
-    config = yaml.safe_load(f)
-    print(yaml.dump(config, default_flow_style=False))
+# # Optionally, load and print the rendered tf file to verify
+# with open('providers.tf') as f:
+#     config = yaml.safe_load(f)
+#     print(yaml.dump(config, default_flow_style=False))
