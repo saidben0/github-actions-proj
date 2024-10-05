@@ -5,29 +5,29 @@ import os
 # Set up the Jinja2 environment
 env = Environment(loader=FileSystemLoader('.'))
 
-bucket = 'enverus-tfstates-0823'
-key = 'dev/llandman/terraform.batch.tfstate'
-backend_region = 'us-east-1'
-provider_region = 'us-east-1'
-alias = 'use1'
-tfenv = 'dev'
+bucket=os.environ['BUCKET']
+key=os.environ['KEY']
+backend_region=os.environ['BACKEND_REGION']
+provider_region=os.environ['PROVIDER_REGION']
+alias=os.environ['ALIAS']
+tfenv=os.environ['ENV']
 
 # Load the backend template
 template = env.get_template('backend.jinja')
 
 # Define variables for substitution
-tfbackend_context = {
+context = {
     'tfbackend_bucket': bucket,
     'tfbackend_key': key,
     'tfbackend_region': backend_region,
 }
 
 # Render the template with the context
-tfbackend_output = template.render(tfbackend_context)
+output = template.render(context)
 
 # Save the rendered output to a tf file
 with open('backend.tf', 'w') as f:
-    f.write(tfbackend_output)
+    f.write(output)
 
 # Optionally, load and print the rendered tf file to verify
 with open('backend.tf') as f:
@@ -39,18 +39,15 @@ with open('backend.tf') as f:
 template = env.get_template('providers.jinja')
 
 # Define variables for substitution
-tfproviders_context = {
+context = {
     'tfprovider_alias': alias,
     'tfprovider_region': provider_region,
     'env': tfenv
 }
 
-# Render the template with the context
-tfproviders_output = template.render(tfproviders_context)
-
 # Save the rendered output to a separate tf file
 with open('providers.tf', 'w') as f:
-    f.write(tfproviders_output)
+    f.write(output)
 
 # Optionally, load and print the rendered tf file to verify
 with open('providers.tf') as f:
