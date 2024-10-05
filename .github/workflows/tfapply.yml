@@ -81,15 +81,15 @@ jobs:
         pwd && ls
         cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-        pwd && ls && exit 1
+        pwd && ls
         export BUCKET=${{ inputs.tfbackend_bucket }}
         export KEY=${{ inputs.tfbackend_key }}
         export BACKEND_REGION=${{ inputs.tfbackend_region }}
         export PROVIDER_REGION=${{ inputs.tfprovider_region }}
         export ALIAS=${{ inputs.tfprovider_alias }}
         export ENV=${{ inputs.env }}
-        chmod +x ./generate-tfiles.py
-        python ./generate-tf-files.py
+        chmod +x generate-tfiles.py
+        python generate-tf-files.py
         
         pwd && ls
         cat backend.tf
