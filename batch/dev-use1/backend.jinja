@@ -1,7 +1,6 @@
 terraform {
   backend "s3" {
     bucket = "{{ tfbackend_bucket }}"
-    # bucket = "enverus-tfstates-0823" # for testing in proserve shared acc
     key    = "{{ tfbackend_key }}"
     region = "{{ tfbackend_region }}"
   }
