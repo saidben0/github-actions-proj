@@ -71,10 +71,10 @@ jobs:
         role-duration-seconds: 3600
         audience: sts.amazonaws.com
 
-    - name: Install Jinja2
+    - name: Install Dependencies
       run: |
-        pip install jinja2
-        pip show jinja2
+        pip install jinja2 && pip show jinja2
+        pip install PyYAML && pip show PyYAML
   
     - name: Terraform Files Generation
       run: |
