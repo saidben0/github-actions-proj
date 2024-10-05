@@ -271,7 +271,7 @@ jobs:
             -var python_version=${{ vars.GH_RUNNER_PY_VER }} \
             -var lambda_layer_version_arn=$lambda_layer_version_arn \
             -out=tfplan &> /dev/null
-          tree -L 2 ../module
+          tree -L 2 ./module
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v3
