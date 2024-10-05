@@ -20,7 +20,6 @@ jobs:
     with:
       data-pipeline: batch
       env: dev
-      aws-env-dir: root
       aws-region: us-east-1
       lambda-role-name: llandman-dev-lambda-exec-role
       # tfbackend_bucket: di-dev-terraform # make sure gh_oidc iam role has access to the bucket

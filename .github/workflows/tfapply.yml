@@ -9,9 +9,6 @@ on:
       data-pipeline:
         required: True
         type: string
-      aws-env-dir:
-        required: true
-        type: string
       aws-region:
         required: true
         type: string
@@ -78,8 +75,8 @@ jobs:
   
     - name: Terraform Files Generation
       run: |
-        cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+        cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/
+        cd ${{ inputs.data-pipeline }}/
         export BUCKET=${{ inputs.tfbackend_bucket }}
         export KEY=${{ inputs.tfbackend_key }}
         export BACKEND_REGION=${{ inputs.tfbackend_region }}
@@ -101,13 +98,13 @@ jobs:
         
     - name: Terraform Init
       run: |
-        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+        cd ${{ inputs.data-pipeline }}/
         rm -rf .terraform*
         terraform init
   
     - name: Terraform Validate
       run: |
-        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+        cd ${{ inputs.data-pipeline }}/
         terraform validate
 
     # Check that all Terraform configuration files adhere to a canonical format
@@ -155,8 +152,8 @@ jobs:
   
       - name: Terraform Files Generation
         run: |
-          cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/
+          cd ${{ inputs.data-pipeline }}/
           export BUCKET=${{ inputs.tfbackend_bucket }}
           export KEY=${{ inputs.tfbackend_key }}
           export BACKEND_REGION=${{ inputs.tfbackend_region }}
@@ -182,14 +179,14 @@ jobs:
         
       - name: Terraform Init
         run: |
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/
           rm -rf .terraform*
           terraform init
 
       - name: Terraform Plan
         id: plan
         run: |
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/
           lambda_layer_version_arn=$(aws lambda list-layer-versions \
                                           --layer-name python-libs \
                                           --query 'LayerVersions[0].LayerVersionArn' \
@@ -205,7 +202,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: terraform-plan
-          path: ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/tfplan
+          path: ${{ inputs.data-pipeline }}/tfplan
 
 
   terraform-apply:
@@ -241,8 +238,8 @@ jobs:
   
       - name: Terraform Files Generation
         run: |
-          cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/
+          cd ${{ inputs.data-pipeline }}/
           export BUCKET=${{ inputs.tfbackend_bucket }}
           export KEY=${{ inputs.tfbackend_key }}
           export BACKEND_REGION=${{ inputs.tfbackend_region }}
@@ -261,13 +258,13 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/
           rm -rf .terraform*
           terraform init
       
       - name: Generate Lambda Archive Zip
         run: |
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/
           terraform plan \
             -var env=${{ inputs.env }} \
             -var lambda_role_name=${{ inputs.lambda-role-name }} \
@@ -283,7 +280,7 @@ jobs:
       
       - name: Terraform Apply
         run: |
-          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/
           terraform apply ../../tfplan
           # TF_LOG=trace terraform apply --auto-approve ../tfplan &> log.log
           # cat log.log | grep "DEBUG: Request"
