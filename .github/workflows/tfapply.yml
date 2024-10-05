@@ -78,7 +78,8 @@ jobs:
   
     - name: Terraform Files Generation
       run: |
-        cp ./scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+        pwd && ls
+        cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
         export BUCKET=${{ inputs.tfbackend_bucket }}
         export KEY=${{ inputs.tfbackend_key }}
