@@ -1,5 +1,5 @@
 module "dev-use1" {
-  source                   = "../module"
+  source                   = "./module"
   python_version           = var.python_version
   lambda_role_name         = var.lambda_role_name
   lambda_layer_version_arn = var.lambda_layer_version_arn
