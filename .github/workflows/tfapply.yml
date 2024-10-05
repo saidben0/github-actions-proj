@@ -89,8 +89,8 @@ jobs:
         export ALIAS=${{ inputs.tfprovider_alias }}
         export ENV=${{ inputs.env }}
         chmod +x generate-tfiles.py
-        python generate-tf-files.py
-        
+        python generate-tfiles.py
+
         pwd && ls
         cat backend.tf
         cat providers.tf
