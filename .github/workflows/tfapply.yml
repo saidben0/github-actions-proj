@@ -91,7 +91,6 @@ jobs:
         echo && cat backend.tf
         echo && cat providers.tf
 
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
@@ -149,25 +148,25 @@ jobs:
           role-duration-seconds: 3600
           audience: sts.amazonaws.com
 
-    - name: Install Dependencies
-      run: |
-        pip install jinja2==3.1.4 && pip show jinja2
-        pip install PyYAML==6.0.2 && pip show PyYAML
+      - name: Install Dependencies
+        run: |
+          pip install jinja2==3.1.4 && pip show jinja2
+          pip install PyYAML==6.0.2 && pip show PyYAML
   
-    - name: Terraform Files Generation
-      run: |
-        cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-        cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
-        export BUCKET=${{ inputs.tfbackend_bucket }}
-        export KEY=${{ inputs.tfbackend_key }}
-        export BACKEND_REGION=${{ inputs.tfbackend_region }}
-        export PROVIDER_REGION=${{ inputs.tfprovider_region }}
-        export ALIAS=${{ inputs.tfprovider_alias }}
-        export ENV=${{ inputs.env }}
-        chmod +x generate-tfiles.py
-        python generate-tfiles.py
-        echo && cat backend.tf
-        echo && cat providers.tf
+      - name: Terraform Files Generation
+        run: |
+          cp scripts/generate-tfiles.py ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          cd ${{ inputs.data-pipeline }}/${{ inputs.aws-env-dir }}/
+          export BUCKET=${{ inputs.tfbackend_bucket }}
+          export KEY=${{ inputs.tfbackend_key }}
+          export BACKEND_REGION=${{ inputs.tfbackend_region }}
+          export PROVIDER_REGION=${{ inputs.tfprovider_region }}
+          export ALIAS=${{ inputs.tfprovider_alias }}
+          export ENV=${{ inputs.env }}
+          chmod +x generate-tfiles.py
+          python generate-tfiles.py
+          echo && cat backend.tf
+          echo && cat providers.tf
 
       - name: Check Current IAM Role
         run: aws sts get-caller-identity
