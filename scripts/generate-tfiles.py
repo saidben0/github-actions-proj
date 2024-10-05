@@ -10,7 +10,7 @@ key=os.environ['KEY']
 backend_region=os.environ['BACKEND_REGION']
 provider_region=os.environ['PROVIDER_REGION']
 alias=os.environ['ALIAS']
-env=os.environ['ENV']
+tfenv=os.environ['ENV']
 
 # Load the backend template
 template = env.get_template('backend.jinja')
@@ -42,7 +42,7 @@ template = env.get_template('providers.jinja')
 context = {
     'tfprovider_alias': alias,
     'tfprovider_region': provider_region,
-    'env': env
+    'env': tfenv
 }
 
 # Save the rendered output to a separate tf file
