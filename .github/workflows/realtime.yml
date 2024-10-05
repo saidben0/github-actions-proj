@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - dev
-    paths:
-      - 'realtime/**'
+      - jinja2
+    # paths:
+    #   - 'realtime/**'
   workflow_run: # In order for this to work, you must use the default repo branch.
     workflows: ["Lambda Layer Pipeline"]
     branches: [dev]
@@ -19,9 +20,15 @@ jobs:
     with:
       data-pipeline: realtime
       env: dev
-      aws-env-dir: dev-use1
+      aws-env-dir: root
       aws-region: us-east-1
       lambda-role-name: llandman-dev-lambda-exec-role
+      # tfbackend_bucket: di-dev-terraform # make sure gh_oidc iam role has access to the bucket
+      tfbackend_bucket: enverus-tfstates-0823
+      tfbackend_key: dev/llandman/terraform.batch.tfstate
+      tfbackend_region: us-east-1
+      tfprovider_alias: use1
+      tfprovider_region: us-east-1
       deploy: 'true' # must be set to 'true' to run `terraform apply` job
 
   
