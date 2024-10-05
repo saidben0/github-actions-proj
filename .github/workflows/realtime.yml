@@ -26,7 +26,7 @@ jobs:
       tfprovider_region: us-east-1
       # tfbackend_bucket: di-dev-terraform # make sure gh_oidc iam role has access to the bucket
       tfbackend_bucket: enverus-tfstates-0823
-      tfbackend_key: dev/llandman/terraform.batch.tfstate
+      tfbackend_key: dev/llandman/terraform.tfstate
       tfbackend_region: us-east-1
       deploy: 'true' # must be set to 'true' to run `terraform apply` job
 
