@@ -42,7 +42,7 @@ data "terraform_remote_state" "realtime_dev_use1" {
 # Create a signing profile
 resource "aws_signer_signing_profile" "this" {
   name        = "${var.prefix}-signing-profile"
-  platform_id = "aws_lambda_python${var.python_version}"
+  platform_id = "AWSLambda-SHA384-ECDSA"
   signature_validity_period {
     value = 5
     type  = "YEARS"
