@@ -44,8 +44,17 @@ resource "aws_signer_signing_profile" "this" {
   name        = "${var.prefix}-signing-profile"
   platform_id = "AWSLambda-SHA384-ECDSA"
   signature_validity_period {
-    value = 5
-    type  = "YEARS"
+    value = 3
+    type  = "MONTHS"
+  }
+}
+
+resource "aws_lambda_code_signing_config" "this" {
+  allowed_publishers {
+    signing_profile_version_arns = [aws_signer_signing_profile.this.version_arn]
+  }
+  policies {
+    untrusted_artifact_on_deployment = "Warn"
   }
 }
 
@@ -82,7 +91,8 @@ resource "aws_lambda_function" "bedrock_inference" {
     }
   }
 
-  signing_profile_version_arn = aws_signer_signing_profile.this.arn
+  # signing_profile_version_arn = aws_signer_signing_profile.this.arn
+  code_signing_config_arn = aws_lambda_code_signing_config.this.arn
 
   tracing_config {
     mode = "Active"
@@ -117,7 +127,8 @@ resource "aws_lambda_function" "post_inference_processor" {
     }
   }
 
-  signing_profile_version_arn = aws_signer_signing_profile.this.arn
+  # signing_profile_version_arn = aws_signer_signing_profile.this.arn
+  code_signing_config_arn = aws_lambda_code_signing_config.this.arn
 
   tracing_config {
     mode = "Active"
