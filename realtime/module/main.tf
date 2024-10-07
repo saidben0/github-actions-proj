@@ -34,6 +34,25 @@ resource "aws_sqs_queue" "redrive_dlq" {
 }
 
 
+# lambda code signing
+resource "aws_signer_signing_profile" "this" {
+  name        = "${var.prefix}-signing-profile"
+  platform_id = "AWSLambda-SHA384-ECDSA"
+  signature_validity_period {
+    value = 3
+    type  = "MONTHS"
+  }
+}
+
+resource "aws_lambda_code_signing_config" "this" {
+  allowed_publishers {
+    signing_profile_version_arns = [aws_signer_signing_profile.this.version_arn]
+  }
+  policies {
+    untrusted_artifact_on_deployment = "Warn"
+  }
+}
+
 # Package the Lambda function code
 data "archive_file" "this" {
   type        = "zip"
@@ -61,6 +80,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
       QUEUE_URL      = aws_sqs_queue.this.url
     }
   }
+  code_signing_config_arn = aws_lambda_code_signing_config.this.arn
 
   tracing_config {
     mode = "Active"

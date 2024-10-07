@@ -26,6 +26,10 @@ output "lambda_layer_version_arn" {
   value = var.lambda_layer_version_arn
 }
 
+output "aws_lambda_code_signing_config_arn" {
+  value = aws_lambda_code_signing_config.this.arn
+}
+
 output "dynamodb_table_name" {
   value = aws_dynamodb_table.model_outputs.name
 }
