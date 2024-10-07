@@ -43,7 +43,10 @@ data "terraform_remote_state" "realtime_dev_use1" {
 resource "aws_signer_signing_profile" "this" {
   name                      = "${var.prefix}-signing-profile"
   platform_id               = "aws_lambda_python${var.python_version}"
-  signature_validity_period = 30 # in days
+  signature_validity_period {
+    value = 5
+    type  = "YEARS"
+  }
 }
 
 # Package the Lambda function code
@@ -79,9 +82,7 @@ resource "aws_lambda_function" "bedrock_inference" {
     }
   }
 
-  signing_configuration {
-    signing_profile_version_arn = aws_signer_signing_profile.this.arn
-  }
+  signing_profile_version_arn = aws_signer_signing_profile.this.arn
 
   tracing_config {
     mode = "Active"
@@ -116,9 +117,7 @@ resource "aws_lambda_function" "post_inference_processor" {
     }
   }
 
-  signing_configuration {
-    signing_profile_version_arn = aws_signer_signing_profile.this.arn
-  }
+  signing_profile_version_arn = aws_signer_signing_profile.this.arn
 
   tracing_config {
     mode = "Active"
