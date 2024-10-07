@@ -8,6 +8,7 @@ import logging
 from typing import Optional
 
 s3 = boto3.client('s3')
+dynamodb = boto3.client('dynamodb')
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
@@ -31,7 +32,7 @@ class Prompt():
         self.ver = ver
         self.text = text
         
-def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
+def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, file_id: str, current_time: str, prompt: Prompt, system_prompt: Prompt, model_id: str, chunk_count: int, chunk_id: int, exception:str =None, model_response: dict =None):
     """
     Save the model response to a DynamoDB Table.
 
@@ -58,6 +59,9 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     system_prompt : Prompt
         An instance of the 'Prompt' class containing the prompt ID and prompt version from Bedrock Prompt Management.
 
+    model_id : str
+        The ID of the model used in Bedrock.
+
     chunk_count : int
         The total number of chunk for the document.
 
@@ -74,7 +78,6 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     ----------
     None
     """
-    dynamodb = boto3.client('dynamodb')
 
     prompt_id = prompt.identifier
     prompt_ver = prompt.ver
@@ -85,7 +88,6 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     if model_response:
         flag_status = False
 
-        model_id = model_response["model"]
         response_text = model_response["content"][0]["text"]
         try:
             final_output = re.search(r'<final_output>(.*?)</final_output>', response_text, re.DOTALL).group(1).strip()
@@ -108,10 +110,11 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
                 "exception_FLAG": {"BOOL": flag_status},
                 "prompt_id": {"S": prompt_id},
                 "model_id": {"S": model_id},
-                "inference_mode": {"S": 'batch'}
+                "inference_mode": {"S": "batch"}
             }
     else:
         flag_status = True
+
         item = {
             "project_name": {"S": project_name},
             "chunk_count": {"N": str(chunk_count)},
@@ -122,7 +125,8 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
             "exception": {"S": str(exception)},
             "exception_FLAG": {"BOOL": flag_status},
             "prompt_id": {"S": prompt_id},
-            "model_id": {"S": model_id}
+            "model_id": {"S": model_id},
+            "inference_mode": {"S": "batch"}
         }
 
     if prompt_ver:
@@ -136,7 +140,7 @@ def update_ddb_table(table_name: str, project_name: str, sqs_message_id: str, fi
     except Exception as e:
         logging.error(f"Error saving record to DynamoDB table: {e}")
 
-def parallel_enabled(array, metadata_dict, dynamodb_table_name):
+def parallel_enabled(array, metadata_dict, dynamodb_table_name, model_id):
     for j, f in enumerate(array):
         logging.info(f"Start processing model output:{j} - {f}")
 
@@ -183,9 +187,9 @@ def parallel_enabled(array, metadata_dict, dynamodb_table_name):
             output_item = json.loads(line.decode('utf-8'))  # Decode and parse JSON object
             try:
                 if 'modelOutput' in output_item:
-                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, model_response=output_item['modelOutput'])
+                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, chunk_count, chunk_num, model_response=output_item['modelOutput'])
                 else:
-                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, chunk_count, chunk_num, exception=output_item['error'])
+                    update_ddb_table(dynamodb_table_name, project_name, sqs_message_id, file_id, ingestion_time, prompt, system_prompt, model_id, chunk_count, chunk_num, exception=output_item['error'])
             except Exception as e:
                 logging.error(f"Error saving the {file_id} chunk {chunk_num} model output to DynamoDB table: {e}")
                 continue

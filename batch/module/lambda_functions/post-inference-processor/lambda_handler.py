@@ -25,6 +25,8 @@ def lambda_handler(event, context):
         job_id = job_arn.split("/")[-1]
         job_name = event["detail"]["batchJobName"]
         data_folder = job_name.split("-", 3)[-1]
+
+        model_id = event['detail']['batchModelId'].split('/')[-1]
         logging.info(f"JobID: {job_id}")
         logging.info(f"JobName: {job_name}")
     except KeyError as e:
@@ -78,7 +80,7 @@ def lambda_handler(event, context):
             processes = []
 
             for model_output_chunk in model_output_arr_chunks:
-                p = Process(target=parallel_enabled, args=(model_output_chunk, msg_attributes_dict, dynamodb_table_name, ))
+                p = Process(target=parallel_enabled, args=(model_output_chunk, msg_attributes_dict, dynamodb_table_name, model_id, ))
                 processes.append(p)
                 p.start()
 
