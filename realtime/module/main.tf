@@ -36,7 +36,7 @@ resource "aws_sqs_queue" "redrive_dlq" {
 
 # lambda code signing
 resource "aws_signer_signing_profile" "this" {
-  name        = "${var.prefix}"
+  name        = var.prefix
   platform_id = "AWSLambda-SHA384-ECDSA"
   signature_validity_period {
     value = 3
