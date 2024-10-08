@@ -78,7 +78,7 @@ resource "aws_lambda_function" "queue_processing_lambda_function" {
     variables = {
       DDB_TABLE_NAME = aws_dynamodb_table.model_outputs.name
       QUEUE_URL      = aws_sqs_queue.this.url
-      TAGS = var.tags
+      TAGS           = var.tags
     }
   }
   code_signing_config_arn = aws_lambda_code_signing_config.this.arn
