@@ -69,7 +69,7 @@ resource "aws_lambda_function" "bedrock_inference" {
       QUEUE_URL                    = aws_sqs_queue.this.url
       LLANDMAN_DEV_LAMBDA_ROLE_ARN = data.terraform_remote_state.realtime_dev_use1.outputs.lambda_role_arn
       BATCH_DATA_BUCKET            = aws_s3_bucket.batch_inference_bucket.id
-      TAGS                         = var.tags
+      TAGS                         = jsonencode(var.tags)
     }
   }
   code_signing_config_arn = data.terraform_remote_state.realtime_dev_use1.outputs.aws_lambda_code_signing_config_arn
@@ -104,7 +104,7 @@ resource "aws_lambda_function" "post_inference_processor" {
     variables = {
       DDB_TABLE_NAME    = data.terraform_remote_state.realtime_dev_use1.outputs.dynamodb_table_name
       BATCH_DATA_BUCKET = aws_s3_bucket.batch_inference_bucket.id
-      TAGS              = var.tags
+      TAGS              = jsonencode(var.tags)
     }
   }
   code_signing_config_arn = data.terraform_remote_state.realtime_dev_use1.outputs.aws_lambda_code_signing_config_arn
