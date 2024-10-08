@@ -40,7 +40,7 @@ def lambda_handler(event, context):
             logging.info("Not enough messages for batch inference")   
             sys.exit(0)
 
-        logging.info("Rceiving SQS message from queue...")   
+        logging.info("Receiving SQS message from queue...")   
         msg_count = 0
         
         msg_attributes = {}     # to save message attributes for each doc
