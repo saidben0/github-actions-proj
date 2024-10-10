@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - usw2
     paths:
       - 'lambda-layer/requirements.txt'
 
@@ -18,3 +19,9 @@ jobs:
     with:
       env: dev
       aws-region: us-east-1
+
+  dev-usw2:
+    uses: ./.github/workflows/publish-layer.yml
+    with:
+      env: dev
+      aws-region: us-west-2
