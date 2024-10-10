@@ -23,6 +23,17 @@ jobs:
       aws-region: us-east-1
       lambda-role-name: llandman-dev-lambda-exec-role
       deploy: 'true' # must be set to 'true' to run `terraform apply` job
+  
+  dev-usw2:
+    if: github.event_name == 'push' || ${{ github.event.workflow_run.outputs.env == 'staging' }}
+    uses: ./.github/workflows/tfapply.yml
+    with:
+      data-pipeline: batch
+      env: staging
+      aws-env-dir: dev-use1
+      aws-region: us-west-2
+      lambda-role-name: llandman-dev-lambda-exec-role
+      deploy: 'true' # must be set to 'true' to run `terraform apply` job
 
   
   # dev-usw2:
